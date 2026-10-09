@@ -204,3 +204,21 @@ An inline alert for forms or screens. Supports `success`, `error`, `warning`, an
 Located in: `src/components/feedback/EmptyState.tsx`
 
 Consistent inline views for loading sequences or empty data fetch results natively utilizing the `ActivityIndicator` and primary layout bindings.
+
+### `Badge`
+Located in: `src/components/ui/Badge.tsx`
+
+Small informational pills or status dots binding to semantic theme colors.
+
+**Props:**
+- `label` (`string`): The text to display inside the pill.
+- `variant` (`'default' | 'success' | 'warning' | 'error' | 'info'`): Controls the semantic background.
+- `dotOnly` (`boolean`): If true, renders a fixed-size colored dot instead of a text label, useful for unread indicators.
+
+**Example:**
+```tsx
+import { Badge } from '@/components/ui';
+
+<Badge label="New" variant="success" />
+<Badge dotOnly variant="error" />
+```

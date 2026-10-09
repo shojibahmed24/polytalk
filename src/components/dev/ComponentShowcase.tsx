@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Stack, Divider, Row } from '@/components/layout';
-import { Text, Button, TextInput, Card } from '@/components/ui';
+import { Text, Button, TextInput, Card, Badge } from '@/components/ui';
 import { Dialog, BottomSheet, AlertBanner, EmptyState, LoadingState } from '@/components/feedback';
 import { theme } from '@/theme';
 
@@ -49,6 +49,28 @@ export function ComponentShowcase() {
           <Button label="Secondary Action" variant="secondary" onPress={() => {}} />
           <Button label="Outline Button" variant="outline" onPress={() => {}} />
           <Button label="Destructive Action" variant="destructive" onPress={() => {}} disabled={isLoading} />
+        </Stack>
+      </Card>
+
+      <Card variant="default">
+        <Text variant="title" color="textPrimary" style={{ marginBottom: theme.spacing.md }}>
+          Badges & Status
+        </Text>
+        <Stack gap="md">
+          <Row gap="sm" style={{ flexWrap: 'wrap' }}>
+            <Badge label="Default" />
+            <Badge label="Success" variant="success" />
+            <Badge label="Warning" variant="warning" />
+            <Badge label="Error" variant="error" />
+            <Badge label="Info" variant="info" />
+          </Row>
+          <Row gap="md" align="center">
+            <Text variant="bodySmall" color="textSecondary">Status Dots:</Text>
+            <Badge variant="success" dotOnly />
+            <Badge variant="warning" dotOnly />
+            <Badge variant="error" dotOnly />
+            <Badge variant="info" dotOnly />
+          </Row>
         </Stack>
       </Card>
 
