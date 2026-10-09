@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { theme } from '@/theme';
 
 export default function RootLayout() {
   return (
@@ -8,14 +9,14 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#0F172A', // Dark Navy
+            backgroundColor: theme.colors.background,
           },
-          headerTintColor: '#fff',
+          headerTintColor: theme.colors.textPrimary,
           headerTitleStyle: {
-            fontWeight: 'bold',
+            fontWeight: theme.typography.weights.bold,
           },
           contentStyle: {
-            backgroundColor: '#0F172A',
+            backgroundColor: theme.colors.background,
           },
         }}>
         <Stack.Screen name="index" options={{ title: 'PolyTalk' }} />

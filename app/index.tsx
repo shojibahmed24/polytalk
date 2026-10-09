@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { theme } from '@/theme';
 
 export default function IndexScreen() {
   return (
@@ -13,6 +14,7 @@ export default function IndexScreen() {
           <Text style={styles.statusText}>✓ Native Architecture Initialized</Text>
           <Text style={styles.statusText}>✓ Expo Router Configured</Text>
           <Text style={styles.statusText}>✓ TypeScript Strict Mode</Text>
+          <Text style={styles.statusText}>✓ Design Tokens Applied</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -22,43 +24,43 @@ export default function IndexScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0F172A', // Dark Navy
+    backgroundColor: theme.colors.background,
   },
   container: {
     flex: 1,
-    padding: 24,
+    padding: theme.layout.screenPadding,
     justifyContent: 'center',
     alignItems: 'center',
   },
   brandTitle: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#06B6D4', // Cyan accent
-    marginBottom: 8,
+    fontSize: theme.typography.sizes.display,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.primary,
+    marginBottom: theme.spacing.sm,
   },
   subtitle: {
-    fontSize: 18,
-    color: '#A855F7', // Purple accent
-    marginBottom: 48,
+    fontSize: theme.typography.sizes.lg,
+    color: theme.colors.secondary,
+    marginBottom: theme.spacing.xxl,
   },
   statusBox: {
-    backgroundColor: '#1E293B',
-    padding: 20,
-    borderRadius: 12,
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.lg,
+    borderRadius: theme.radii.lg,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: theme.colors.border,
     width: '100%',
-    maxWidth: 400,
+    maxWidth: theme.layout.maxWidth,
   },
   statusTitle: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 12,
+    color: theme.colors.textPrimary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.semibold,
+    marginBottom: theme.spacing.lg,
   },
   statusText: {
-    color: '#94A3B8',
-    fontSize: 14,
-    marginBottom: 8,
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.sm,
+    marginBottom: theme.spacing.sm,
   },
 });

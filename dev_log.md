@@ -81,3 +81,26 @@
 
 ### Next Step
 **P005 — Supabase Auth Integration and AI/WebRTC Android Proof-of-Concept**
+
+---
+
+## [2026-10-10] P005 — Master Roadmap Lock + Design Tokens and Theme Foundation
+
+### Scope
+- Create `docs/MASTER_ROADMAP.md` locking the canonical sequence of tasks.
+- Implement the centralized PolyTalk design tokens (colors, spacing, radii, typography, layout) in React Native-compatible static objects.
+- Update the initial Expo Router foundation (`app/_layout.tsx` and `app/index.tsx`) to consume the shared tokens.
+- Document the design system usage in `docs/DESIGN_SYSTEM.md`.
+
+### Actions Taken
+- Formally locked the project's roadmap via `docs/MASTER_ROADMAP.md`, preserving the historical P003 conflict record and explicitly detailing future architecture tasks, UI components, backend integration, AI compatibility checks, and WebRTC integration.
+- Implemented static theme tokens under `src/theme/` (`colors.ts`, `spacing.ts`, `radii.ts`, `typography.ts`, `layout.ts`, `index.ts`), defining the "Dark Navy" theme with Cyan/Purple accents without requiring a heavy external styling library.
+- Refactored `app/_layout.tsx` and `app/index.tsx` to completely remove hardcoded hex values and raw pixels, replacing them with strongly-typed `theme` imports.
+- Drafted `docs/DESIGN_SYSTEM.md` dictating how UI components must consume these tokens going forward.
+
+### Verification
+- Both `npm run typecheck` and `npm run lint` pass successfully, confirming that the theme tokens are strictly typed and properly exported.
+- The initial route successfully resolves with the new theme integration.
+
+### Next Step
+**P006 — Typography, spacing, sizing and layout tokens** 
