@@ -129,3 +129,25 @@
 
 ### Next Step
 **P007 — Reusable buttons, inputs and form primitives**
+
+---
+
+## [2026-10-10] P007 — Reusable Buttons, Inputs and Form Primitives
+
+### Scope
+- Implement `Button` (`src/components/ui/Button.tsx`) supporting multiple semantic variants, sizes, and states (loading, disabled).
+- Implement `TextInput` (`src/components/ui/TextInput.tsx`) natively managing its own label, border states (focus/error), and helper text without duplicating wrapper logic.
+- Integrate these form primitives into an interactive showcase on the foundation screen (`app/index.tsx`).
+- Document the new components in `docs/UI_COMPONENTS.md`.
+
+### Actions Taken
+- **`Button.tsx`**: Constructed using `TouchableOpacity`. Mapped `variant` strings directly to the semantic design tokens established in P005 (primary, secondary, error). Created a robust internal mapping for sizes ensuring minimal touch target compliances.
+- **`TextInput.tsx`**: Abstracted the native `RNTextInput` with proper `onFocus`/`onBlur` tracking to swap border colors from subtle borders to primary (focus) or error (red). Handled layout for labels and errors consistently without adding unnecessary wrapper layers.
+- **`app/index.tsx`**: Refactored the previous layout to add a distinct "Interactive UI Showcase" block demonstrating controlled text entry, dynamic error conditions, and the suite of button variants along with a mocked loading interaction state.
+- **No external UI libraries** were installed. Kept strictly within the React Native primitive boundaries.
+
+### Verification
+- Both `npm run typecheck` and `npm run lint` execute cleanly with 0 errors.
+
+### Next Step
+**P008 — Cards, surfaces, dialogs, sheets and feedback components**

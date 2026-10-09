@@ -92,3 +92,55 @@ import { Screen } from '@/components/layout';
 - Use `Text` for all typography. Never use native `Text` directly.
 - Use `Box`, `Stack`, and `Row` to build component internals instead of heavy `StyleSheet.create` for simple margin/padding layout.
 - Use `Screen` at the root of every Expo Router route file (`app/**/*.tsx`).
+
+## 4. Forms and Inputs
+
+### `Button`
+Located in: `src/components/ui/Button.tsx`
+
+A highly reusable native button managing its own loading, disabled, and semantic color states.
+
+**Props:**
+- `label` (`string`): Text content for the button.
+- `variant` (`'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'`): Determines the visual semantic style. Defaults to `'primary'`.
+- `size` (`'sm' | 'md' | 'lg'`): Controls the height and typography scaling. Defaults to `'md'`.
+- `loading` (`boolean`): Renders an activity indicator and disables interaction.
+- `disabled` (`boolean`): Lowers opacity and disables interaction.
+- Inherits all `TouchableOpacityProps` (e.g. `onPress`).
+
+**Example:**
+```tsx
+import { Button } from '@/components/ui';
+
+<Button 
+  label="Submit Application" 
+  variant="primary" 
+  loading={isSubmitting} 
+  onPress={handleSubmit} 
+/>
+```
+
+### `TextInput`
+Located in: `src/components/ui/TextInput.tsx`
+
+A controlled text input primitive that strictly manages its own labels, error states, and helper text accessible wrappers without needing an extra `FormField` container for standard cases.
+
+**Props:**
+- `label` (`string`): The accessible label rendered above the input.
+- `error` (`string`): Validation error message. When present, the input border turns red and the error text is rendered below.
+- `helperText` (`string`): Subtle informational text rendered below the input (hidden if `error` is present).
+- Inherits all native `TextInputProps` (`value`, `onChangeText`, `secureTextEntry`, `keyboardType`, etc).
+
+**Example:**
+```tsx
+import { TextInput } from '@/components/ui';
+
+<TextInput 
+  label="Email Address"
+  placeholder="you@example.com"
+  value={email}
+  onChangeText={setEmail}
+  error={emailError}
+  autoCapitalize="none"
+/>
+```
