@@ -222,3 +222,13 @@ import { Badge } from '@/components/ui';
 <Badge label="New" variant="success" />
 <Badge dotOnly variant="error" />
 ```
+
+## 7. Keyboard and Safe Areas
+
+### `keyboardAware` in `Screen`
+Located in: `src/components/layout/Screen.tsx`
+
+To gracefully handle keyboard overlaps globally:
+- Pass `keyboardAware={true}` to `Screen`.
+- It wraps the children inside a `KeyboardAvoidingView` natively optimized per platform (uses `behavior="padding"` for iOS, leaving Android to fall back to `windowSoftInputMode="adjustResize"` internally).
+- Setting this ensures input forms at the bottom of views remain in focus appropriately without manual nested height hacking.

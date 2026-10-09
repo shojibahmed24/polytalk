@@ -175,3 +175,25 @@
 
 ### Next Step
 **P009 — Shared screen layouts, safe areas and keyboard handling**
+
+---
+
+## [2026-10-10] P009 — Shared Screen Layouts, Safe Areas & Keyboard Handling
+
+### Scope
+- Enforce Safe Area consistency.
+- Implement robust Keyboard Handling mechanism to keep text inputs visible when the soft keyboard is opened.
+- Document and update the development showcase.
+
+### Actions Taken
+- Verified that `react-native-safe-area-context` is standardly active and correctly nested through Expo Router's `<Stack>` layer. The `Screen` component correctly only handles `edges={['bottom', 'left', 'right']}`, ensuring top safe areas don't double-render against the native Stack Header.
+- Extended `Screen.tsx` with a `keyboardAware` prop. When true, it safely wraps children inside `KeyboardAvoidingView` natively optimized per platform (uses `behavior="padding"` on iOS and relies on `adjustResize` on Android) without duplicated scrolling layouts.
+- Exposed `keyboardShouldPersistTaps="handled"` on the `Screen` ScrollView configurations to natively support intuitive keyboard dismissal without overriding standard touch behaviors.
+- Added a full mock forms setup directly in the `ComponentShowcase.tsx` at the scroll bottom to functionally test keyboard avoidance.
+- Updated `app/index.tsx` to pass `keyboardAware={true}` for universal safe forms rendering.
+
+### Verification
+- Both `npm run typecheck` and `npm run lint` execute cleanly.
+
+### Next Step
+**P010 — Navigation shell and route conventions**

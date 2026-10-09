@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, ScrollView, ViewProps, StyleSheet, ScrollViewProps } from 'react-native';
+import { View, ScrollView, ViewProps, StyleSheet, ScrollViewProps, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView, Edge } from 'react-native-safe-area-context';
 import { theme } from '@/theme';
 
 export interface ScreenProps extends ViewProps {
   scrollable?: boolean;
+  keyboardAware?: boolean;
   edges?: Edge[];
   bg?: keyof typeof theme.colors;
   padded?: boolean;
@@ -14,6 +15,7 @@ export interface ScreenProps extends ViewProps {
 
 export function Screen({
   scrollable = false,
+  keyboardAware = false,
   edges = ['bottom', 'left', 'right'],
   bg = 'background',
   padded = true,
@@ -38,6 +40,7 @@ export function Screen({
         centerContent && { flexGrow: 1, justifyContent: 'center', alignItems: 'center' }
       ]}
       style={[styles.container, { backgroundColor: theme.colors[bg] }, style]}
+      keyboardShouldPersistTaps="handled"
       {...scrollViewProps}
     >
       {children}
@@ -48,15 +51,28 @@ export function Screen({
     </View>
   );
 
+  let wrappedContent = content;
+
+  if (keyboardAware) {
+    wrappedContent = (
+      <KeyboardAvoidingView 
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        {wrappedContent}
+      </KeyboardAvoidingView>
+    );
+  }
+
   if (edges.length > 0) {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors[bg] }]} edges={edges}>
-        {content}
+        {wrappedContent}
       </SafeAreaView>
     );
   }
 
-  return <>{content}</>;
+  return <>{wrappedContent}</>;
 }
 
 const styles = StyleSheet.create({
@@ -64,6 +80,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    flex: 1,
+  },
+  keyboardView: {
     flex: 1,
   },
 });

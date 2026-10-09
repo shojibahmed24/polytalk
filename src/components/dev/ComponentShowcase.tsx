@@ -156,6 +156,28 @@ export function ComponentShowcase() {
           <Box marginVertical="xl" />
         </Stack>
       </BottomSheet>
+      <Card variant="elevated">
+        <Text variant="title" color="textPrimary" style={{ marginBottom: theme.spacing.md }}>
+          Keyboard & Safe Area Test
+        </Text>
+        <Text variant="bodySmall" color="textSecondary" style={{ marginBottom: theme.spacing.lg }}>
+          Scroll down and focus these inputs. The screen should avoid the keyboard on iOS and resize on Android, keeping inputs visible.
+        </Text>
+        <Stack gap="md">
+          <TextInput 
+            label="Email Address" 
+            placeholder="test@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TextInput 
+            label="Access Code" 
+            placeholder="Enter code"
+            secureTextEntry
+          />
+          <Button label="Submit Verification" onPress={() => {}} />
+        </Stack>
+      </Card>
 
     </Stack>
   );
