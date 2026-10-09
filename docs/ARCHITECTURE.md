@@ -10,6 +10,19 @@ src/
  │    ├── ui/        # Reusable, accessible UI primitives (buttons, inputs, modals)
  │    └── layout/    # App shell, headers, navigation and layout components
  ├── features/       # Feature-specific screens, components, hooks, schemas and logic
+ │   ├── onboarding/ # Initial user setup and configuration
+ │   ├── auth/       # Authentication, login, and registration logic
+ │   ├── dashboard/  # Main home screen and navigation center
+ │   ├── tutor/      # General AI tutor interactions
+ │   ├── speaking/   # Voice recording and interaction
+ │   ├── roleplay/   # Scenario-based AI conversations
+ │   ├── vocabulary/ # Flashcards and word learning
+ │   ├── grammar/    # Grammar lessons and corrections
+ │   ├── translator/ # Real-time translation tools
+ │   ├── calls/      # Live WebRTC voice communication
+ │   ├── progress/   # Learning analytics and metrics
+ │   ├── profile/    # User settings and subscriptions
+ │   └── settings/   # App configuration and preferences
  ├── services/       # External service adapters (Supabase, Puter.js, Speech, Calls)
  ├── repositories/   # Typed data-access operations (Supabase DB interactors)
  ├── lib/            # Initialized clients and shared infrastructure (e.g. Supabase client)
