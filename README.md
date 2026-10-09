@@ -7,52 +7,51 @@ Android-first React Native application using Expo, TypeScript, and Expo Router.
 ### Feature-Based Structure
 The project follows a maintainable feature-based structure separating concerns:
 - `app/` - Expo Router routes
-- `src/screens/` - Screen layouts and compositions (Target: < 150 lines)
+- `src/features/` - Screen layouts and core features
 - `src/components/` - Reusable UI elements (Target: 30–120 lines)
 - `src/hooks/` - Custom React hooks
 - `src/services/` - External APIs, business logic, and integrations
 - `src/types/` - TypeScript interface and type definitions
 - `src/utils/` - Helper functions and utilities
-- `src/tests/` - Test suites
-- `src/config/` - App configuration and environment variables
+- `src/test/` - Test suites
+- `src/theme/` - App configuration and environment variables
 
 *Code Quality Note: Any file exceeding 200 lines requires immediate review for extraction.*
 
-### Premium Design System
-- **Base Theme**: Premium Dark Navy
-- **Accent Colors**: Cyan and Purple
+## Developer Guide (Windows & Android Focus)
 
-## S001–S110 Screen Registry
+### Prerequisites on Windows
+1. **Node.js**: v24+ recommended.
+2. **Git**: Ensure Git is installed and configured in your PowerShell/terminal.
+3. **Android Studio**: Required to run the Android Emulator. Ensure the Android SDK and standard environment variables (`ANDROID_HOME`) are configured.
+4. **Physical Android Device** (Optional but highly recommended): Must have USB debugging enabled and connected via USB or Wi-Fi.
 
-| ID | Screen Name | Implementation Status | UI Status | Integration Status | Test Status |
-|----|-------------|-----------------------|-----------|--------------------|-------------|
-| S001 | Splash / Loading | Pending | Pending | Pending | Pending |
-| S002 | Onboarding | Pending | Pending | Pending | Pending |
-| S003 | Authentication (Login/Register) | Pending | Pending | Pending | Pending |
-| S004 | Home Dashboard | Pending | Pending | Pending | Pending |
-| S005 | Language Selection | Pending | Pending | Pending | Pending |
-| S006 | Lesson Interface | Pending | Pending | Pending | Pending |
-| S007 | Speech Practice | Pending | Pending | Pending | Pending |
-| S008 | Pronunciation Feedback | Pending | Pending | Pending | Pending |
-| S009 | Live Call / Peer Connect | Pending | Pending | Pending | Pending |
-| S010 | Profile & Settings | Pending | Pending | Pending | Pending |
-| *S011-S110* | *Reserved for future features* | - | - | - | - |
+### Installation
+1. Clone the repository: `git clone https://github.com/shojibahmed24/polytalk.git`
+2. Run `npm install` (if using strict environments, you may need `npm install --ignore-scripts`).
+3. Setup environment variables by copying `.env.example` to `.env`.
 
-## Testing & Environment Strategy
+### Starting the Application
+- **Start Expo Metro Bundler**: `npm run start`
+- **Launch on Android Emulator / Device**: `npm run android`
+- **Note**: This is an Android-first application. Testing on iOS is secondary and requires a macOS build environment.
 
-### Expo Go vs. Development Builds
-- **Expo Go**: Will be used for rapid initial UI prototyping and layout building.
-- **Development Builds**: Mandatory for testing native modules (Speech Recognition, TTS, Live Calls). Expo Go will not support these hardware/native level integrations.
+### Verification & CI Checks
+We enforce strict linting and TypeScript checks. Run these before committing:
+- **Lint Code**: `npm run lint`
+- **Type Check**: `npm run typecheck`
 
-### Android Testing
-- **Android Studio (Emulator)**: Used for general layout verification across different screen sizes.
-- **Physical Device Testing**: Crucial for testing microphone inputs (speech recognition), audio outputs (TTS), and camera/audio (live calls).
+### Testing & Environment Strategy
 
-## Compatibility Boundaries
+**Expo Go vs. Development Builds**
+- **Expo Go**: Currently supported for the UI shell. This is a pre-compiled Expo client used for rapid UI iteration.
+- **Development Builds**: **Mandatory for later phases**. Once we add native audio (Speech Recognition, TTS, WebRTC), Expo Go will no longer suffice. We will require custom Development Builds using `npx expo run:android` which compiles the native code.
 
-- **Puter.js**: Needs verification for React Native compatibility (often relies on browser `window` object). May need a webview fallback or specific RN polyfills.
-- **Supabase**: Fully compatible with React Native using `@supabase/supabase-js` and `react-native-url-polyfill`.
-- **Speech Recognition**: Requires native modules (e.g., `@react-native-voice/voice` or `expo-speech`). Development build mandatory.
-- **Text-to-Speech (TTS)**: Can use `expo-speech` which works across platforms.
-- **Pronunciation Assessment**: Dependent on the external API (e.g., Azure Speech SDK). The JS SDK may require browser APIs, potentially necessitating a custom native module or webview.
-- **Live Calls**: Requires WebRTC (e.g., `react-native-webrtc`) or a service like Agora. Development build mandatory; permissions handling (camera/mic) is critical.
+### Known Environment Limitations
+- **No macOS Environment**: iOS testing cannot currently be verified beyond Expo Go.
+- **Puter.js SDK Compatibility**: Many JS AI SDKs assume a web browser environment. We must ensure it's compatible with React Native's Hermes engine.
+
+### GitHub Synchronization
+The canonical remote is `origin -> https://github.com/shojibahmed24/polytalk.git`.
+- **Branch Strategy**: Development targets the `main` branch.
+- **Secrets**: Never commit `.env` files. Ensure they remain safely inside `.gitignore`.
