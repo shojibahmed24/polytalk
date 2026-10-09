@@ -151,3 +151,27 @@
 
 ### Next Step
 **P008 — Cards, surfaces, dialogs, sheets and feedback components**
+
+---
+
+## [2026-10-10] P008 — Cards, Surfaces, Dialogs, Sheets and Feedback Components
+
+### Scope
+- Create `Card` component with `default`, `elevated`, and `outlined` variants. Support touchability.
+- Implement native `Divider` layout primitive.
+- Implement React Native `Modal` based `Dialog` and `BottomSheet` safely avoiding third-party gesture handler complexities until required.
+- Implement semantic inline feedback mechanisms: `AlertBanner`, `EmptyState`, and `LoadingState`.
+- Integrate all new primitives into a dedicated development showcase component (`ComponentShowcase.tsx`) and bind to the root application route.
+
+### Actions Taken
+- Built `Card.tsx` natively integrating the `theme.colors.surface` scales, handling optional `onPress` conditionally converting standard views into `TouchableOpacity` wrappers with `accessibilityRole="button"`.
+- Built `Dialog.tsx` as a standard React Native `Modal` centered vertically with a semi-transparent overlay using safe theme-driven paddings. Supported distinct primary, secondary, and destructive callback buttons.
+- Built `BottomSheet.tsx` using `Modal` `animationType="slide"` snapping to the bottom flex, fully respecting `SafeAreaView` bottom edges and supporting scrolling content natively.
+- Developed the stateless semantic feedback layouts (`AlertBanner`, `LoadingState`, `EmptyState`) utilizing existing layout structures (`Stack`).
+- Extracted `app/index.tsx` showcase logic into `src/components/dev/ComponentShowcase.tsx` to maintain clean application architecture while fulfilling presentation requirements.
+
+### Verification
+- Both `npm run typecheck` and `npm run lint` execute cleanly with 0 errors.
+
+### Next Step
+**P009 — Shared screen layouts, safe areas and keyboard handling**

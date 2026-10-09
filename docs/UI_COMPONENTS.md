@@ -144,3 +144,63 @@ import { TextInput } from '@/components/ui';
   autoCapitalize="none"
 />
 ```
+
+## 5. Cards & Surfaces
+
+### `Card`
+Located in: `src/components/ui/Card.tsx`
+
+Provides foundational surface elevation and visual chunking natively, using Flexbox layout automatically.
+
+**Props:**
+- `variant` (`'default' | 'elevated' | 'outlined'`): Semantic representation (default is flat `surface`, elevated adds `surfaceElevated`, outlined uses border).
+- `padding` (`keyof typeof theme.spacing`): Standardizes interior padding bounds. Defaults to `'lg'`.
+- `onPress` (`() => void`): If provided, automatically wraps the Card in a `TouchableOpacity` with proper accessibility roles.
+
+**Example:**
+```tsx
+import { Card } from '@/components/ui';
+
+<Card variant="elevated" onPress={() => console.log('Card tapped!')}>
+  <Text>Interactive Content Here</Text>
+</Card>
+```
+
+### `Divider`
+Located in: `src/components/layout/Divider.tsx`
+
+Provides a simple, theme-aware separator line (horizontal or vertical).
+
+**Props:**
+- `orientation` (`'horizontal' | 'vertical'`)
+- `thickness` (`number`): Defaults to `1`.
+- `color` (`keyof typeof theme.colors`): Defaults to `'border'`.
+
+
+## 6. Feedback & Modals
+
+### `Dialog`
+Located in: `src/components/feedback/Dialog.tsx`
+
+A React Native `Modal`-based dialog for presenting critical decisions to the user without breaking Z-indexing or using third-party modal libraries.
+
+**Props:**
+- `visible` (`boolean`)
+- `title` and `message`
+- `primaryActionLabel`, `secondaryActionLabel`, `destructiveActionLabel`
+- Callback triggers and loading state.
+
+### `BottomSheet`
+Located in: `src/components/feedback/BottomSheet.tsx`
+
+A bottom-anchored modal sheet utilizing React Native's `Modal` and `animationType="slide"` to avoid heavy React Native Gesture Handler dependencies before they are strictly needed. Includes safe area handling and scroll options.
+
+### `AlertBanner`
+Located in: `src/components/feedback/AlertBanner.tsx`
+
+An inline alert for forms or screens. Supports `success`, `error`, `warning`, and `info` color backgrounds natively mapped from the theme.
+
+### `EmptyState` & `LoadingState`
+Located in: `src/components/feedback/EmptyState.tsx`
+
+Consistent inline views for loading sequences or empty data fetch results natively utilizing the `ActivityIndicator` and primary layout bindings.
