@@ -1,0 +1,69 @@
+import React from 'react';
+import { View, ScrollView, ViewProps, StyleSheet, ScrollViewProps } from 'react-native';
+import { SafeAreaView, Edge } from 'react-native-safe-area-context';
+import { theme } from '@/theme';
+
+export interface ScreenProps extends ViewProps {
+  scrollable?: boolean;
+  edges?: Edge[];
+  bg?: keyof typeof theme.colors;
+  padded?: boolean;
+  centerContent?: boolean;
+  scrollViewProps?: ScrollViewProps;
+}
+
+export function Screen({
+  scrollable = false,
+  edges = ['bottom', 'left', 'right'],
+  bg = 'background',
+  padded = true,
+  centerContent = false,
+  style,
+  children,
+  scrollViewProps,
+  ...props
+}: ScreenProps) {
+  const containerStyle = [
+    styles.container,
+    { backgroundColor: theme.colors[bg] },
+    padded && { paddingHorizontal: theme.layout.screenPadding },
+    centerContent && { justifyContent: 'center' as const, alignItems: 'center' as const },
+    style,
+  ];
+
+  const content = scrollable ? (
+    <ScrollView 
+      contentContainerStyle={[
+        padded && { paddingHorizontal: theme.layout.screenPadding, paddingBottom: theme.layout.screenPadding },
+        centerContent && { flexGrow: 1, justifyContent: 'center', alignItems: 'center' }
+      ]}
+      style={[styles.container, { backgroundColor: theme.colors[bg] }, style]}
+      {...scrollViewProps}
+    >
+      {children}
+    </ScrollView>
+  ) : (
+    <View style={containerStyle} {...props}>
+      {children}
+    </View>
+  );
+
+  if (edges.length > 0) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors[bg] }]} edges={edges}>
+        {content}
+      </SafeAreaView>
+    );
+  }
+
+  return <>{content}</>;
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+  },
+});

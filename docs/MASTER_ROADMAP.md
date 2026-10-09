@@ -11,7 +11,7 @@ This document serves as the canonical sequence of tasks for the PolyTalk project
 - **P005** — Master roadmap lock and design tokens/theme foundation
 
 ## Phase 2: Core UI Components
-- **P006** — Typography, spacing, sizing and layout tokens
+- **P006** — Reusable Typography and Layout Components (Refined scope as typography/spacing tokens were completed in P005)
 - **P007** — Reusable buttons, inputs and form primitives
 - **P008** — Cards, surfaces, dialogs, sheets and feedback components
 - **P009** — Shared screen layouts, safe areas and keyboard handling

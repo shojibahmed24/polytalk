@@ -104,3 +104,28 @@
 
 ### Next Step
 **P006 — Typography, spacing, sizing and layout tokens** 
+
+---
+
+## [2026-10-10] P006 — Reusable Typography and Layout Components
+
+### Scope
+- Shifted scope from redefining tokens (completed in P005) to implementing the actual React Native components that consume them.
+- Create `Text`, `Box`, `Screen`, `Stack`, and `Row` reusable UI/layout primitives.
+- Integrate these components into the existing foundation screen (`app/index.tsx`) to prove viability.
+- Create `docs/UI_COMPONENTS.md` defining their boundaries, APIs, and proper usage.
+
+### Actions Taken
+- Implemented `Text` (`src/components/ui/Text.tsx`) enforcing strict typography variants and color semantic mappings.
+- Implemented `Box` (`src/components/layout/Box.tsx`) enforcing spacing and radii constraints without polluting components with `StyleSheet.create`.
+- Implemented `Screen` (`src/components/layout/Screen.tsx`) abstracting safe areas, global background logic, scrolling, and padding.
+- Added `Stack` and `Row` primitives for explicit flex compositions.
+- Refactored `app/index.tsx` entirely to use `Screen`, `Stack`, `Box`, and `Text` instead of primitive `View`/`RNText`.
+- Documented all component usage in `docs/UI_COMPONENTS.md`.
+- Updated `MASTER_ROADMAP.md` to reflect the refined P006 scope.
+
+### Verification
+- Both `npm run typecheck` and `npm run lint` execute cleanly with 0 errors.
+
+### Next Step
+**P007 — Reusable buttons, inputs and form primitives**
