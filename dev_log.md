@@ -59,3 +59,25 @@
 ### Next Step
 **P004 — Supabase Auth Integration and AI/WebRTC Proof-of-Concept**
 - Execute a strict proof-of-concept for the required SDKs (Supabase, Puter.js) in the Android Hermes environment.
+
+---
+
+## [2026-10-10] P004 — TypeScript Configuration and Linting
+
+### Scope
+- Audit existing package, TS, and ESLint configs.
+- Enforce strict TypeScript compilation settings.
+- Implement explicit ESLint rules targeting unused variables, explicit `any`, and React hook dependencies.
+- Verify Expo Router and React Native shell type safety.
+- Document the quality gates.
+
+### Actions Taken
+- Verified current dependencies (`eslint ^8.57.0`, `typescript ~6.0.3`).
+- Updated `tsconfig.json` to explicitly enable `strict`, `noImplicitAny`, `strictNullChecks`, and `noFallthroughCasesInSwitch`.
+- Updated `.eslintrc.js` to throw strict errors on `@typescript-eslint/no-unused-vars`, `@typescript-eslint/no-explicit-any`, and `react-hooks/rules-of-hooks`.
+- Removed `scripts/reset-project.js` which caused ESLint parsing issues since it was unused template boilerplate.
+- Created `docs/QUALITY_GATES.md` explicitly forbidding the blind suppression of TS/ESLint errors and documenting the pre-commit requirements.
+- Ran `npm run lint` and `npm run typecheck` which passed 100% cleanly.
+
+### Next Step
+**P005 — Supabase Auth Integration and AI/WebRTC Android Proof-of-Concept**
