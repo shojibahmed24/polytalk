@@ -247,3 +247,29 @@
 
 ### Next Step
 **P012 onward** — Implement the S001–S110 screen/state inventory (starting with Onboarding & Auth screens).
+
+---
+
+## [2026-10-10] P012 — PolyTalk Onboarding UI & First-Run Experience
+
+### Scope
+- Implement the actual S001 (Splash/Boot) routing logic.
+- Build the entire S002, S013, S014, S015 Onboarding UI Flow matching the established aesthetic.
+- Setup a temporary in-memory boot state that accurately captures first-run behavior without corrupting the app with unnecessary mock-database dependencies.
+- Make sure onboarding is separate from the standard `(tabs)` navigator to prevent accidental overlap or duplicate bottom-navigation during the welcome experience.
+
+### Actions Taken
+- **S001 Boot Routing**: Converted `app/index.tsx` into a smart initialization shell. It evaluates `bootState.hasCompletedOnboarding` and cleanly pushes the user to `(auth)/onboarding` or the product `(tabs)`.
+- **S013, S014, S015 Local State UI**: Built a fluid 3-step native wizard. 
+  - *Step 1*: Visual brand welcome with globe symbol.
+  - *Step 2*: Target language selector built utilizing standard React array maps, semantic cards, and strict validation (next button is disabled until a language is chosen). 
+  - *Step 3*: Final setup confirmation utilizing primary CTAs.
+- **Responsive Mastery**: Maintained `contentMaxWidth` wrapping, securing perfect desktop web column centering, while letting mobile Android layouts breathe naturally with full 100% width and safe-area paddings.
+- **Navigation Safety**: Removed `<Stack>` overlaps to guarantee onboarding runs on a fullscreen, non-tabbed surface that securely transitions the user back to standard app navigation upon completion.
+
+### Verification
+- `npm run typecheck` and `npm run lint` execute fully error-free.
+- Interactive paths (Skip, Continue, Back, Validations) were verified locally against the active Expo Daemon. 
+
+### Next Step
+**Authentication / S003 Sign-In UI** (or upcoming S016-S020 flow) or continuing to S004 Dashboard UI.

@@ -14,8 +14,8 @@ This registry tracks the status of all planned screens and major UI states (S001
 
 | ID | Screen / State Name | Intended Feature Module | Route / Owning Module | Implementation | Integration | Test | Dependencies / Blockers |
 |----|---------------------|-------------------------|-----------------------|----------------|-------------|------|--------------------------|
-| S001 | Splash / Boot | app | app/index.tsx | planned | planned | planned | Initialization logic |
-| S002 | Onboarding Flow | onboarding | app/(auth)/onboarding.tsx | planned | planned | planned | Design assets |
+| S001 | Splash / Boot | app | app/index.tsx | implemented | planned | planned | Initialization logic |
+| S002 | Onboarding Flow | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | Design assets |
 | S003 | Sign In / Register | auth | app/(auth)/login.tsx | planned | planned | planned | Supabase Auth |
 | S004 | Home / Dashboard | dashboard | app/(tabs)/index.tsx | implemented (scaffold) | planned | planned | User profile data |
 | S005 | Language Selection | settings | app/(app)/languages.tsx | planned | planned | planned | Supported language data |
@@ -26,9 +26,9 @@ This registry tracks the status of all planned screens and major UI states (S001
 | S010 | Learning Summary | progress | app/(app)/summary/[id].tsx | planned | planned | planned | Usage tracking metrics |
 | S011 | User Profile | profile | app/(app)/profile.tsx | planned | planned | planned | User details |
 | S012 | Settings | settings | app/(app)/settings.tsx | planned | planned | planned | Local storage / MMKV |
-| S013 | Onboarding Step 1 | onboarding | TBD | planned | planned | planned | TBD |
-| S014 | Onboarding Step 2 | onboarding | TBD | planned | planned | planned | TBD |
-| S015 | Onboarding Step 3 | onboarding | TBD | planned | planned | planned | TBD |
+| S013 | Onboarding Step 1 | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | TBD |
+| S014 | Onboarding Step 2 | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | TBD |
+| S015 | Onboarding Step 3 | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | TBD |
 | S016 | Auth State 1 | auth | TBD | planned | planned | planned | TBD |
 | S017 | Auth State 2 | auth | TBD | planned | planned | planned | TBD |
 | S018 | Auth State 3 | auth | TBD | planned | planned | planned | TBD |

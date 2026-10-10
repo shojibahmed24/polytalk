@@ -19,6 +19,8 @@ export default function RootLayout() {
             backgroundColor: theme.colors.background,
           },
         }}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="dev" options={{ title: 'Developer Tools', presentation: 'modal' }} />
       </Stack>

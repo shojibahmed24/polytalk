@@ -12,9 +12,9 @@ function TabIcon({ name, color }: { name: SFSymbol; color: string | ColorValue }
       <SymbolView 
         name={name} 
         size={24} 
-        tintColor={color as any} 
+        tintColor={color as string} 
         fallback={
-          <Text style={{ color: color as any, fontSize: 18, fontWeight: 'bold' }}>•</Text>
+          <Text style={{ color: color as string, fontSize: 18, fontWeight: 'bold' }}>•</Text>
         }
       />
     </View>
