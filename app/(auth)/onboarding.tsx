@@ -10,20 +10,12 @@ import { bootState } from '../index';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgLinearGradient, Stop, Ellipse, Polygon } from 'react-native-svg';
 
-const SUPPORTED_LANGUAGES = [
-  { id: 'es', code: 'ES', name: 'Spanish', flag: '🇪🇸' },
-  { id: 'fr', code: 'FR', name: 'French', flag: '🇫🇷' },
-  { id: 'ja', code: 'JA', name: 'Japanese', flag: '🇯🇵' },
-  { id: 'de', code: 'DE', name: 'German', flag: '🇩🇪' },
-];
-
 export default function OnboardingFlow() {
   const colors = useAppColors();
   const { isDark: isSystemDark, themeMode, setThemeMode } = React.useContext(ThemeContext);
   const toggleTheme = () => setThemeMode(themeMode === 'light' ? 'dark' : themeMode === 'dark' ? 'light' : isSystemDark ? 'light' : 'dark');
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
 
   const handleNext = () => {
     if (step < 3) setStep((prev) => (prev + 1) as 1 | 2 | 3);
@@ -143,57 +135,37 @@ export default function OnboardingFlow() {
     </View>
   );
 
-  // Step 2: Goal/Language Selection (S014)
+  // Step 2: AI Coach Intro (S014)
   const renderStep2 = () => (
     <LayoutStack gap="lg" style={styles.content}>
       <LayoutStack gap="sm">
-        <Text variant="title" color="textPrimary">What do you want to learn?</Text>
-        <Text variant="body" color="textSecondary">
-          Choose a language to begin your journey. You can always add more later.
+        <Text variant="display" color="textPrimary" style={{ fontSize: 28, lineHeight: 34 }}>Meet Your AI Coach</Text>
+        <Text variant="body" color="textSecondary" style={{ lineHeight: 22 }}>
+          PolyTalk uses advanced AI to give you real-time conversational practice and instant feedback.
         </Text>
       </LayoutStack>
 
-      <View style={styles.grid}>
-        {SUPPORTED_LANGUAGES.map((lang) => {
-          const isSelected = selectedLanguage === lang.id;
-          return (
-            <TouchableOpacity
-              key={lang.id}
-              activeOpacity={0.7}
-              onPress={() => setSelectedLanguage(lang.id)}
-              style={[
-                styles.languageCard,
-                { backgroundColor: colors.surface, borderColor: colors.border },
-                isSelected && { borderColor: colors.primary, backgroundColor: 'rgba(6, 182, 212, 0.05)' },
-              ]}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: isSelected }}
-              accessibilityLabel={`Learn ${lang.name}`}
-            >
-              <Box direction="row" align="center" justify="space-between" style={{ width: '100%' }}>
-                <Box direction="row" align="center" gap="sm">
-                  <View style={[styles.flagContainer, { backgroundColor: colors.surfaceElevated }]}>
-                    <Text variant="heading" style={styles.flagText}>{lang.flag}</Text>
-                  </View>
-                  <View>
-                    <Text 
-                      variant="body" 
-                      weight={isSelected ? 'bold' : 'medium'}
-                      color={isSelected ? 'primary' : 'textPrimary'}
-                    >
-                      {lang.name}
-                    </Text>
-                    <Text variant="caption" color="textSecondary">{lang.code}</Text>
-                  </View>
-                </Box>
-                {isSelected && (
-                  <Ionicons name="checkmark-circle" size={24} color={colors.primary} />
-                )}
-              </Box>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+      <LayoutStack gap="lg" style={{ marginTop: theme.spacing.xl }}>
+        <Box direction="row" align="center" gap="md" style={styles.featureRowInfo}>
+          <View style={[styles.featureIconWrapLarge, { backgroundColor: 'rgba(6,182,212,0.15)' }]}>
+            <MaterialIcons name="record-voice-over" size={28} color="#06B6D4" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text variant="heading" color="textPrimary">Speaking Practice</Text>
+            <Text variant="caption" color="textSecondary">Engage in natural voice conversations just like you would with a native speaker.</Text>
+          </View>
+        </Box>
+
+        <Box direction="row" align="center" gap="md" style={styles.featureRowInfo}>
+          <View style={[styles.featureIconWrapLarge, { backgroundColor: 'rgba(139,92,246,0.15)' }]}>
+            <MaterialIcons name="bolt" size={28} color="#8B5CF6" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text variant="heading" color="textPrimary">Instant Feedback</Text>
+            <Text variant="caption" color="textSecondary">Get immediate corrections on pronunciation and grammar to improve faster.</Text>
+          </View>
+        </Box>
+      </LayoutStack>
     </LayoutStack>
   );
 
@@ -208,13 +180,13 @@ export default function OnboardingFlow() {
       <LayoutStack gap="sm" align="center">
         <Text variant="title" color="textPrimary" align="center">You're All Set!</Text>
         <Text variant="body" color="textSecondary" align="center">
-          Your AI tutor is ready. Start speaking naturally and get instant pronunciation and grammar tips.
+          Your AI coach is ready. Create an account to select your language and start learning.
         </Text>
       </LayoutStack>
     </LayoutStack>
   );
 
-  const isNextDisabled = step === 2 && !selectedLanguage;
+  const isNextDisabled = false;
 
   return (
     <Screen bg="background" edges={['top', 'bottom', 'left', 'right']} padded={false}>
@@ -589,6 +561,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
+  },
+  featureIconWrapLarge: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  featureRowInfo: {
+    paddingVertical: theme.spacing.sm,
   },
   gradientButtonWrap: {
     width: '100%',
