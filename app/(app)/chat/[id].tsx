@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { 
   View, 
   StyleSheet, 
@@ -66,7 +66,7 @@ export default function ChatScreen() {
       const systemMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        text: 'AI provider is not connected yet. This is a local UI demonstration for PolyTalk. Real-time inference will be added in upcoming phases.',
+        text: `AI provider is not connected yet. This is a local UI demonstration for PolyTalk. Real-time inference for ${languageName} will be added in upcoming phases.`,
       };
       setMessages(prev => [...prev, systemMessage]);
     }, 600);
@@ -296,3 +296,4 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 });
+

@@ -5,6 +5,7 @@ import { Text } from '@/components/ui';
 import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from '@/utils/i18n';
 import { getTargetLanguage, saveTargetLanguage, getInterfaceLanguage, saveInterfaceLanguage } from '@/utils/languageStorage';
 import { TARGET_LANGUAGES, INTERFACE_LANGUAGES, REGION_FILTERS } from '@/constants/languages';
 
@@ -16,6 +17,7 @@ export default function LanguageSelectionScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isReady, setIsReady] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const { t, setLang } = useTranslation();
 
   useEffect(() => {
     async function loadLangs() {
@@ -112,8 +114,8 @@ export default function LanguageSelectionScreen() {
               <MaterialIcons name="arrow-back" size={24} color={st.onSurface} />
             </TouchableOpacity>
             <View style={styles.headerTitleCol}>
-              <Text style={{ fontSize: 22, fontWeight: '600', color: st.onSurface, letterSpacing: -0.5 }}>Choose Your Languages</Text>
-              <Text variant="label" style={{ color: st.onSurfaceVariant }}>Make PolyTalk yours.</Text>
+              <Text style={{ fontSize: 22, fontWeight: '600', color: st.onSurface, letterSpacing: -0.5 }}>{t('choose_your_languages')}</Text>
+              <Text variant="label" style={{ color: st.onSurfaceVariant }}>{t('make_polytalk_yours')}</Text>
             </View>
           </View>
           
@@ -133,11 +135,11 @@ export default function LanguageSelectionScreen() {
         <View style={styles.section}>
           <View style={styles.sectionTitleRow}>
             <View>
-              <Text variant="label" weight="bold" style={{ fontSize: 14, color: st.onSurface }}>App Interface</Text>
-              <Text variant="bodySmall" style={{ color: st.onSurfaceVariant }}>System menus & coach guidance</Text>
+              <Text variant="label" weight="bold" style={{ fontSize: 14, color: st.onSurface }}>{t('app_interface')}</Text>
+              <Text variant="bodySmall" style={{ color: st.onSurfaceVariant }}>{t('system_menus')}</Text>
             </View>
             <View style={[styles.defaultBadge, { backgroundColor: st.surfaceContainerHigh }]}>
-              <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary, textTransform: 'uppercase' }}>Default</Text>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary, textTransform: 'uppercase' }}>{t('default')}</Text>
             </View>
           </View>
           
@@ -148,7 +150,7 @@ export default function LanguageSelectionScreen() {
                 <TouchableOpacity 
                   key={idx}
                   activeOpacity={0.7}
-                  onPress={() => setSelectedInterface(lang)}
+                  onPress={() => { setSelectedInterface(lang); setLang(lang); }}
                   style={[
                     styles.chip,
                     { backgroundColor: isSelected ? st.primaryContainer : st.surfaceContainer },
@@ -168,8 +170,8 @@ export default function LanguageSelectionScreen() {
         {/* SECTION B: Target Language */}
         <View style={[styles.section, { marginTop: 24 }]}>
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ fontSize: 20, fontWeight: '600', color: st.onSurface }}>Target Language</Text>
-            <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 4 }}>Choose the tongue your synthetic tutor adapts to.</Text>
+            <Text style={{ fontSize: 20, fontWeight: '600', color: st.onSurface }}>{t('target_language')}</Text>
+            <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 4 }}>{t('choose_tongue')}</Text>
           </View>
           
           {/* Active Selection Summary Card */}
@@ -189,13 +191,13 @@ export default function LanguageSelectionScreen() {
                     </View>
                   </View>
                   <Text style={{ fontSize: 12, fontWeight: '600', color: st.onSurfaceVariant, marginTop: 2 }} numberOfLines={1}>
-                    Primary Target â€¢ {activeTargetData.dialect} Dialect
+                    {t('primary_target')} â€¢ {activeTargetData.dialect} Dialect
                   </Text>
                 </View>
               </View>
               <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
-                <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary, textTransform: 'uppercase' }}>AI Tutor</Text>
-                <Text style={{ fontSize: 13, fontWeight: '600', color: st.primary }}>Active</Text>
+                <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary, textTransform: 'uppercase' }}>{t('ai_tutor')}</Text>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: st.primary }}>{t('active')}</Text>
               </View>
             </View>
           </View>
@@ -204,7 +206,7 @@ export default function LanguageSelectionScreen() {
           <View style={styles.searchWrap}>
             <MaterialIcons name="search" size={20} color={st.onSurfaceVariant} style={styles.searchIcon} />
             <TextInput 
-              placeholder="Search languages & dialects..."
+              placeholder={t('search_placeholder')}
               placeholderTextColor={st.outline}
               style={[styles.searchInput, { backgroundColor: st.surfaceContainer, color: st.onSurface }]}
               value={searchQuery}
@@ -248,14 +250,14 @@ export default function LanguageSelectionScreen() {
             {searchQuery ? 'Search Results' : 'Popular & Recommended'}
           </Text>
           <Text style={{ fontSize: 10, fontWeight: '700', color: st.outline }}>
-            {filteredTargets.length} of {TARGET_LANGUAGES.length} Available
+            {filteredTargets.length} of {TARGET_LANGUAGES.length} {t('available')}
           </Text>
         </View>
 
         {/* SECTION C: Language Cards */}
         <View style={styles.languageList}>
           {filteredTargets.length === 0 && (
-            <Text style={{ textAlign: 'center', color: st.onSurfaceVariant, marginVertical: 20 }}>No languages found matching "{searchQuery}"</Text>
+            <Text style={{ textAlign: 'center', color: st.onSurfaceVariant, marginVertical: 20 }}>{t('no_languages_found')} "{searchQuery}"</Text>
           )}
           {filteredTargets.map((lang) => {
             const isSelected = selectedTarget === lang.id;
@@ -323,7 +325,7 @@ export default function LanguageSelectionScreen() {
               <ActivityIndicator color={isSystemDark ? '#090E1B' : '#FFFFFF'} />
             ) : (
               <>
-                <Text style={{ fontSize: 15, fontWeight: '600', color: isSystemDark ? '#090E1B' : '#FFFFFF', letterSpacing: 0.5 }}>Continue</Text>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: isSystemDark ? '#090E1B' : '#FFFFFF', letterSpacing: 0.5 }}>{t('continue')}</Text>
                 <MaterialIcons name="arrow-forward" size={20} color={isSystemDark ? '#090E1B' : '#FFFFFF'} style={{ marginLeft: 6 }} />
               </>
             )}

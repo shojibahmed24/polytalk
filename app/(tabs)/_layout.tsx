@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/utils/i18n';
 import { Tabs } from 'expo-router';
 
 import { Platform, View } from 'react-native';
@@ -14,6 +15,7 @@ function TabIcon({ name, color }: { name: React.ComponentProps<typeof MaterialIc
 }
 
 export default function TabLayout() {
+  const { t } = useTranslation();
   const { isDark: isSystemDark } = React.useContext(ThemeContext);
   
   const st = {
@@ -52,7 +54,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('home'),
           headerShown: false,
           tabBarIcon: ({ color }) => <TabIcon name="home" color={color as string} />,
         }}
@@ -60,21 +62,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="practice"
         options={{
-          title: 'Practice',
+          title: t('practice'),
           tabBarIcon: ({ color }) => <TabIcon name="play-circle-filled" color={color as string} />,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
-          title: 'Progress',
+          title: t('progress'),
           tabBarIcon: ({ color }) => <TabIcon name="bar-chart" color={color as string} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('profile'),
           tabBarIcon: ({ color }) => <TabIcon name="person" color={color as string} />,
         }}
       />
