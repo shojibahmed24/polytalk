@@ -1,5 +1,6 @@
 import { getInterfaceLanguage } from './languageStorage';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 
 const translations: Record<string, Record<string, string>> = {
   'English (US)': {
@@ -93,6 +94,19 @@ const translations: Record<string, Record<string, string>> = {
 export function useTranslation() {
   const [lang, setLang] = useState('English (US)');
 
+  useFocusEffect(
+    useCallback(() => {
+      getInterfaceLanguage().then(setLang);
+    }, [])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      getInterfaceLanguage().then(setLang);
+    }, [])
+  );
+  
+  // Keep standard useEffect for non-screen components
   useEffect(() => {
     getInterfaceLanguage().then(setLang);
   }, []);

@@ -9,6 +9,7 @@ import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getTargetLanguage } from '@/utils/languageStorage';
+import { useTranslation } from '@/utils/i18n';
 
 import { TARGET_LANGUAGES } from '@/constants/languages';
 import Svg, { Path, Circle } from 'react-native-svg';
@@ -18,6 +19,7 @@ import Svg, { Path, Circle } from 'react-native-svg';
 export default function HomeScreen() {
     const { isDark: isSystemDark } = React.useContext(ThemeContext);
   const [selectedTarget, setSelectedTarget] = useState('es');
+  const { t } = useTranslation();
 
 
   useFocusEffect(
@@ -65,9 +67,9 @@ export default function HomeScreen() {
         {/* Section 1: Compact Top Greeting & Profile Header */}
         <View style={styles.headerSection}>
           <View style={styles.greetingCol}>
-            <Text variant="bodySmall" weight="medium" style={{ color: st.onSurfaceVariant }}>Good morning,</Text>
+            <Text variant="bodySmall" weight="medium" style={{ color: st.onSurfaceVariant }}>{t('good_morning')}</Text>
             <Text style={{ fontSize: 28, fontWeight: '700', color: st.onSurface, marginTop: -2, letterSpacing: -0.5 }}>Shojib</Text>
-            <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 4, marginBottom: 8 }}>Ready for your next conversation?</Text>
+            <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 4, marginBottom: 8 }}>{t('ready_for_conversation')}</Text>
             
             <TouchableOpacity 
               activeOpacity={0.8} 
