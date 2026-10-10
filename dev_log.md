@@ -346,3 +346,28 @@
 
 ### Next Step
 **P016 onward** — Likely S006 AI Conversation, Tutor states, or further Dashboard interior workflows.
+
+---
+
+## [2026-10-10] P016 — AI Conversation UI (S006)
+
+### Scope
+- Implement S006: AI Conversation mapped to `app/(app)/chat/[id].tsx`.
+- Design a polished, mobile-first chat interface matching the PolyTalk premium UI design constraints.
+- Build a dedicated text composer equipped with real keyboard avoidance, safe area handling, and native-feeling interactivity.
+- Ensure the interaction properly mocks an offline state, safely warning the user about backend disconnects rather than fabricating artificial intelligence.
+
+### Actions Taken
+- **Dynamic Routing**: Wired the dynamic `chat/[id]` route into the internal `(app)` layer, allowing parameters (like language code) to flow smoothly into the UI title ("Spanish Tutor").
+- **Message Rendering Engine**: Developed a flexible message component array rendering user messages distinctly (`primary` cyan background) from assistant messages (`surfaceElevated` dark navy). 
+- **Composer Layout**: Built a multi-line auto-expanding `TextInput` nested at the base of the screen. Implemented the send icon (`arrow.up.circle.fill`) natively scaling colors based on interaction validity (disables when input is whitespace-only). 
+- **Voice Action Mock**: Mapped the microphone interaction (`mic.fill`) to an honest alert confirming voice interactions aren't live yet, maintaining UX integrity.
+- **Micro-interactions**: Added the `Animated.ScrollView` entrance (250ms fade + 12px upward translation) consistent with the overarching app animation logic. Fired `Keyboard.dismiss()` smoothly post-submission.
+- **Home Integration**: Updated the Home Dashboard (P014) `index.tsx` primary learning card (and quick action button) to `router.push('/(app)/chat/spanish')` connecting the workflows together. *(Locally tested this flow)*.
+
+### Verification
+- Viewport tested. Flexbox accurately anchors the composer to the keyboard while letting chat scroll freely on 320px displays.
+- Zero-error `typecheck` and `lint` outputs.
+
+### Next Step
+**P017 onward** — E.g. Grammar Explanation (S007) or Pronunciation Test (S008).

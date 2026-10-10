@@ -26,6 +26,12 @@ export default function AppLayout() {
           headerShown: false // Custom header in screen
         }} 
       />
+      <Stack.Screen 
+        name="chat/[id]" 
+        options={{ 
+          headerShown: false // Custom header inside screen
+        }} 
+      />
     </Stack>
   );
 }

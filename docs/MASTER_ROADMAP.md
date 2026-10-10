@@ -23,7 +23,8 @@ This document serves as the canonical sequence of tasks for the PolyTalk project
 - **P013** — Authentication UI: Sign In, Registration & Validation States (Completed)
 - **P014** — Premium Home Dashboard UI (S004) (Completed)
 - **P015** — Language Selection UI (S005) (Completed)
-- **P016 onward** — Implement the remaining S001–S110 screen/state inventory in small, feature-based increments.
+- **P016** — AI Conversation UI (S006) (Completed)
+- **P017 onward** — Implement the remaining S001–S110 screen/state inventory in small, feature-based increments.
   - Implement onboarding and authentication UI before integrating backend authentication.
   - Implement dashboard, AI tutor, speaking, pronunciation, roleplay, vocabulary, grammar, translator, calls, progress, profile, settings and error states in documented subphases.
   - Build functional local UI behavior where appropriate, but never represent local-only behavior as server-persisted or AI-powered.

@@ -76,7 +76,7 @@ export default function HomeScreen() {
           </Box>
 
           {/* B. Primary Learning Action */}
-          <TouchableOpacity activeOpacity={0.9} onPress={handleNotImplemented}>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => router.push('/(app)/chat/spanish')}>
             <View style={styles.primaryActionCard}>
               <Box direction="row" justify="space-between" align="flex-start">
                 <View style={styles.waveformIcon}>
@@ -96,7 +96,7 @@ export default function HomeScreen() {
               <Button 
                 label="Start practicing" 
                 variant="primary" 
-                onPress={handleNotImplemented}
+                onPress={() => router.push('/(app)/chat/spanish')}
                 style={styles.primaryActionBtn}
               />
             </View>
@@ -111,7 +111,7 @@ export default function HomeScreen() {
               <QuickActionCard 
                 title="Tutor"
                 icon="bubble.left.and.bubble.right.fill"
-                onPress={handleNotImplemented}
+                onPress={() => router.push('/(app)/chat/spanish')}
               />
               <QuickActionCard 
                 title="Translate"
