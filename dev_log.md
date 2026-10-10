@@ -411,3 +411,21 @@ P017 introduced an adaptive `useAppColors` hook, but left many screens and compo
 - **Onboarding Visuals**: Replaced empty dark circles with intentional PolyTalk branded UI (overlapping `text.bubble.fill` + `sparkles` for Step 1, and `checkmark.seal.fill` for Step 3).
 - **Languages View**: Improved language card contrast utilizing the active cyan token dynamically in both themes.
 - **Verification**: Typecheck passes, ESLint is clean (0 errors), and the web preview effectively toggles perfect Light/Dark modes while preserving deep tree readability on desktop and mobile bounds.
+
+---
+
+## [2026-10-10] Visual Defect Corrections: Icons, Cards, and Desktop Scale
+
+### Issue
+Post-repair testing revealed several remaining issues affecting web preview and layout composition:
+1. `SymbolView` icons (`text.bubble.fill`, `globe`, etc.) rendered as blank shapes or empty circles on the Web polyfill because they lacked guaranteed SVG fallbacks in `@expo/vector-icons` standard resolution.
+2. The Language Selection cards in onboarding (`S014`) were oversized, boxy (`aspectRatio: 1`), and lacked clear identification indicators (like ISO codes).
+3. Chat Screen (`app/(app)/chat/[id].tsx`) was entirely left behind during the earlier adaptive theme swap, so it rendered a dark header/composer on a light background. 
+4. The dashboard's main container constrained too aggressively (`maxWidth: 680`) which caused excessive horizontal whitespace on large desktop viewports.
+
+### Fix
+- **Universally Safe Icons**: Installed `@expo/vector-icons` explicitly and replaced `SymbolView` usages with `Ionicons` (e.g., `chatbubbles`, `sparkles`, `person-circle`) in Onboarding, Dashboard, and Chat. This guarantees proper rendering across Android, iOS, and Web.
+- **Onboarding Language Selection**: Refactored to a `100%` width, stacked layout with flag, language name, explicit ISO code (`ES`, `FR`), and a visible checkmark for the selected state.
+- **Chat UI Refactor**: Fully updated `app/(app)/chat/[id].tsx` to strip static `theme.colors` from `StyleSheet.create`. Hooked up `useAppColors` for dynamic headers, backgrounds, offline indicators, and message bubbles.
+- **Desktop Scale**: Relaxed the Dashboard's container `maxWidth` from `680` to `840` (`theme.layout.contentMaxWidth`). Also expanded `QuickActionCard` `maxWidth` from `160` to `240` so the cards naturally expand to fill the available tablet/desktop whitespace proportionally.
+- **Verification**: Typechecks pass completely (0 errors). `npm run lint` yields 0 warnings.

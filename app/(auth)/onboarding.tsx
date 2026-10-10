@@ -6,14 +6,14 @@ import { Text, Button } from '@/components/ui';
 import { theme } from '@/theme';
 import { useAppColors } from '@/theme/colors';
 import { bootState } from '../index';
-import { SymbolView } from 'expo-symbols';
+import { Ionicons } from '@expo/vector-icons';
 
 // Mock data for Language Selection (S014)
 const SUPPORTED_LANGUAGES = [
-  { id: 'es', name: 'Spanish', flag: '🇪🇸' },
-  { id: 'fr', name: 'French', flag: '🇫🇷' },
-  { id: 'ja', name: 'Japanese', flag: '🇯🇵' },
-  { id: 'de', name: 'German', flag: '🇩🇪' },
+  { id: 'es', code: 'ES', name: 'Spanish', flag: '🇪🇸' },
+  { id: 'fr', code: 'FR', name: 'French', flag: '🇫🇷' },
+  { id: 'ja', code: 'JA', name: 'Japanese', flag: '🇯🇵' },
+  { id: 'de', code: 'DE', name: 'German', flag: '🇩🇪' },
 ];
 
 export default function OnboardingFlow() {
@@ -40,10 +40,10 @@ export default function OnboardingFlow() {
       <Box marginVertical="xl" align="center">
         <View style={{ position: 'relative' }}>
           <View style={[styles.iconCircle, { backgroundColor: colors.surface, borderColor: colors.border }]} importantForAccessibility="no">
-            <SymbolView name="text.bubble.fill" size={48} tintColor={colors.primary} />
+            <Ionicons name="chatbubbles" size={44} color={colors.primary} />
           </View>
           <View style={[styles.sparkleBadge, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
-            <SymbolView name="sparkles" size={20} tintColor={colors.secondary} />
+            <Ionicons name="sparkles" size={20} color={colors.secondary} />
           </View>
         </View>
       </Box>
@@ -77,21 +77,33 @@ export default function OnboardingFlow() {
               onPress={() => setSelectedLanguage(lang.id)}
               style={[
                 styles.languageCard,
-                { backgroundColor: colors.surface, borderColor: 'transparent' },
-                isSelected && { borderColor: colors.primary, backgroundColor: colors.surfaceElevated },
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                isSelected && { borderColor: colors.primary, backgroundColor: 'rgba(6, 182, 212, 0.05)' },
               ]}
               accessibilityRole="radio"
               accessibilityState={{ checked: isSelected }}
               accessibilityLabel={`Learn ${lang.name}`}
             >
-              <Text variant="heading" style={styles.flagText}>{lang.flag}</Text>
-              <Text 
-                variant="body" 
-                weight={isSelected ? 'bold' : 'medium'}
-                color={isSelected ? 'textPrimary' : 'textSecondary'}
-              >
-                {lang.name}
-              </Text>
+              <Box direction="row" align="center" justify="space-between" style={{ width: '100%' }}>
+                <Box direction="row" align="center" gap="sm">
+                  <View style={[styles.flagContainer, { backgroundColor: colors.surfaceElevated }]}>
+                    <Text variant="heading" style={styles.flagText}>{lang.flag}</Text>
+                  </View>
+                  <View>
+                    <Text 
+                      variant="body" 
+                      weight={isSelected ? 'bold' : 'medium'}
+                      color={isSelected ? 'primary' : 'textPrimary'}
+                    >
+                      {lang.name}
+                    </Text>
+                    <Text variant="caption" color="textSecondary">{lang.code}</Text>
+                  </View>
+                </Box>
+                {isSelected && (
+                  <Ionicons name="checkmark-circle" size={24} color={colors.primary} />
+                )}
+              </Box>
             </TouchableOpacity>
           );
         })}
@@ -104,7 +116,7 @@ export default function OnboardingFlow() {
     <LayoutStack gap="xl" align="center" style={styles.content}>
       <Box marginVertical="xl" align="center">
         <View style={[styles.iconCircle, { backgroundColor: colors.surface, borderColor: colors.border }]} importantForAccessibility="no">
-          <SymbolView name="checkmark.seal.fill" size={48} tintColor={colors.primaryBright} />
+          <Ionicons name="checkmark-circle" size={48} color={colors.primaryBright} />
         </View>
       </Box>
       <LayoutStack gap="sm" align="center">
@@ -232,22 +244,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     gap: theme.spacing.md,
-    justifyContent: 'space-between',
     marginTop: theme.spacing.md,
   },
   languageCard: {
-    width: '47%',
-    aspectRatio: 1,
+    width: '100%',
     borderRadius: theme.radii.lg,
-    borderWidth: 2,
+    borderWidth: 1,
+    padding: theme.spacing.md,
+  },
+  flagContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: theme.spacing.sm,
   },
   flagText: {
-    marginBottom: theme.spacing.sm,
+    fontSize: 24,
+    lineHeight: 32,
   },
 });

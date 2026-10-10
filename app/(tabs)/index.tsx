@@ -5,7 +5,7 @@ import { Screen, Stack, Box } from '@/components/layout';
 import { Text, Card, Button } from '@/components/ui';
 import { theme } from '@/theme';
 import { useAppColors } from '@/theme/colors';
-import { SymbolView, SFSymbol } from 'expo-symbols';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeScreen() {
   const colors = useAppColors();
@@ -67,7 +67,7 @@ export default function HomeScreen() {
               accessibilityRole="button"
               activeOpacity={0.7}
             >
-              <SymbolView name="person.circle.fill" size={40} tintColor={colors.secondary} />
+              <Ionicons name="person-circle" size={40} color={colors.secondary} />
             </TouchableOpacity>
           </Box>
 
@@ -76,10 +76,10 @@ export default function HomeScreen() {
             <View style={[styles.primaryActionCard, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
               <Box direction="row" justify="space-between" align="flex-start">
                 <View style={styles.waveformIcon}>
-                  <SymbolView name="sparkles" size={32} tintColor={colors.primary} />
-                  <View style={[styles.violetDot, { backgroundColor: colors.secondary }]} />
+                  <Ionicons name="sparkles" size={32} color={colors.primary} />
+                  <View style={[styles.violetDot, { backgroundColor: colors.secondary, borderColor: colors.surfaceElevated }]} />
                 </View>
-                <SymbolView name="chevron.right" size={24} tintColor={colors.textSecondary} />
+                <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
               </Box>
               
               <Stack gap="xs" style={styles.primaryActionText}>
@@ -106,7 +106,7 @@ export default function HomeScreen() {
             <View style={styles.quickActionGrid}>
               <QuickActionCard 
                 title="Tutor"
-                icon="text.bubble.fill"
+                icon="chatbubbles"
                 onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never)}
               />
               <QuickActionCard 
@@ -116,7 +116,7 @@ export default function HomeScreen() {
               />
               <QuickActionCard 
                 title="Grammar"
-                icon="text.book.closed.fill"
+                icon="book"
                 onPress={() => router.push('/(app)/grammar' as never)}
               />
             </View>
@@ -130,7 +130,7 @@ export default function HomeScreen() {
             <Card variant="default" style={[styles.progressCard, { borderColor: colors.border }]}>
               <Box direction="row" align="center" gap="md">
                 <View style={[styles.progressIcon, { backgroundColor: colors.surfaceElevated }]}>
-                  <SymbolView name="chart.bar.fill" size={24} tintColor={colors.secondary} />
+                  <Ionicons name="bar-chart" size={24} color={colors.secondary} />
                 </View>
                 <Stack gap="xs" style={{ flex: 1 }}>
                   <Text variant="body" weight="semibold" color="textPrimary">Getting Started</Text>
@@ -157,7 +157,7 @@ export default function HomeScreen() {
   );
 }
 
-function QuickActionCard({ title, icon, onPress }: { title: string, icon: SFSymbol, onPress: () => void }) {
+function QuickActionCard({ title, icon, onPress }: { title: string, icon: keyof typeof Ionicons.glyphMap, onPress: () => void }) {
   const colors = useAppColors();
   
   return (
@@ -168,7 +168,7 @@ function QuickActionCard({ title, icon, onPress }: { title: string, icon: SFSymb
       accessibilityRole="button"
     >
       <View style={styles.quickActionIcon}>
-        <SymbolView name={icon} size={28} tintColor={colors.primary} />
+        <Ionicons name={icon} size={28} color={colors.primary} />
       </View>
       <Text variant="bodySmall" weight="semibold" color="textPrimary" align="center">
         {title}
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    maxWidth: 680,
+    maxWidth: 840,
   },
   header: {
     marginBottom: theme.spacing.md,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   quickActionCard: {
     flex: 1,
     minWidth: 100,
-    maxWidth: 160,
+    maxWidth: 240,
     backgroundColor: theme.colors.surface,
     borderRadius: 18,
     padding: theme.spacing.md,

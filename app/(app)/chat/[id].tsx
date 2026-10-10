@@ -12,7 +12,8 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { Screen, Stack as LayoutStack, Box } from '@/components/layout';
 import { Text } from '@/components/ui';
 import { theme } from '@/theme';
-import { SymbolView } from 'expo-symbols';
+import { useAppColors } from '@/theme/colors';
+import { Ionicons } from '@expo/vector-icons';
 
 type Message = {
   id: string;
@@ -21,6 +22,7 @@ type Message = {
 };
 
 export default function ChatScreen() {
+  const colors = useAppColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
@@ -81,7 +83,7 @@ export default function ChatScreen() {
       <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
         
         {/* Custom Header */}
-        <Box direction="row" align="center" style={styles.header}>
+        <Box direction="row" align="center" style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
           <TouchableOpacity 
             onPress={() => router.back()}
             style={styles.backButton}
@@ -89,14 +91,14 @@ export default function ChatScreen() {
             accessibilityLabel="Go back"
             activeOpacity={0.7}
           >
-            <SymbolView name="chevron.left" size={24} tintColor={theme.colors.textPrimary} />
+            <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
           <LayoutStack style={styles.headerCenter}>
             <Text variant="heading" color="textPrimary" align="center">
               {languageName} Tutor
             </Text>
             <Box direction="row" align="center" justify="center" gap="xs">
-              <View style={styles.offlineDot} />
+              <View style={[styles.offlineDot, { backgroundColor: colors.warning }]} />
               <Text variant="label" color="textSecondary" align="center">
                 Local Interface Mode
               </Text>
@@ -116,7 +118,7 @@ export default function ChatScreen() {
           {messages.length === 0 ? (
             <View style={styles.emptyState}>
               <View style={styles.emptyIcon}>
-                <SymbolView name="bubble.left.and.bubble.right.fill" size={48} tintColor={theme.colors.secondary} />
+                <Ionicons name="chatbubbles" size={48} color={colors.secondary} />
               </View>
               <Text variant="title" color="textPrimary" align="center">
                 Start the conversation
@@ -133,7 +135,7 @@ export default function ChatScreen() {
                   key={msg.id} 
                   style={[
                     styles.messageBubble, 
-                    isUser ? styles.messageUser : styles.messageAssistant
+                    [isUser ? styles.messageUser : styles.messageAssistant, { backgroundColor: isUser ? colors.primary : colors.surfaceElevated }]
                   ]}
                 >
                   <Text 
@@ -149,7 +151,7 @@ export default function ChatScreen() {
         </ScrollView>
 
         {/* Composer Area */}
-        <Box direction="row" align="flex-end" style={styles.composer}>
+        <Box direction="row" align="flex-end" style={[styles.composer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
           <TouchableOpacity 
             activeOpacity={0.7} 
             onPress={handleMicPress}
@@ -157,14 +159,14 @@ export default function ChatScreen() {
             accessibilityRole="button"
             accessibilityLabel="Voice input not implemented"
           >
-            <SymbolView name="mic.fill" size={24} tintColor={theme.colors.textSecondary} />
+            <Ionicons name="mic" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
           
-          <View style={styles.inputWrapper}>
+          <View style={[styles.inputWrapper, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <RNTextInput
-              style={styles.textInput}
+              style={[styles.textInput, { color: colors.textPrimary }]}
               placeholder="Type your message..."
-              placeholderTextColor={theme.colors.textSecondary}
+              placeholderTextColor={colors.textSecondary}
               value={inputText}
               onChangeText={setInputText}
               multiline
@@ -180,10 +182,10 @@ export default function ChatScreen() {
             accessibilityRole="button"
             accessibilityLabel="Send message"
           >
-            <SymbolView 
-              name="arrow.up.circle.fill" 
+            <Ionicons 
+              name="arrow-up-circle" 
               size={32} 
-              tintColor={inputText.trim() ? theme.colors.primary : theme.colors.disabled} 
+              color={inputText.trim() ? colors.primary : colors.disabled} 
             />
           </TouchableOpacity>
         </Box>
@@ -204,8 +206,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.layout.screenPadding,
     paddingVertical: theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-    backgroundColor: theme.colors.background,
   },
   backButton: {
     padding: theme.spacing.xs,
@@ -218,7 +218,6 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: theme.colors.warning,
   },
   headerPlaceholder: {
     width: 32,
@@ -258,12 +257,10 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   messageUser: {
-    backgroundColor: theme.colors.primary,
     alignSelf: 'flex-end',
     borderBottomRightRadius: 4,
   },
   messageAssistant: {
-    backgroundColor: theme.colors.surfaceElevated,
     alignSelf: 'flex-start',
     borderBottomLeftRadius: 4,
   },
@@ -271,8 +268,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-    backgroundColor: theme.colors.background,
   },
   micButton: {
     padding: theme.spacing.sm,
@@ -280,17 +275,14 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     flex: 1,
-    backgroundColor: theme.colors.surface,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: theme.colors.border,
     marginHorizontal: theme.spacing.xs,
     minHeight: 40,
     maxHeight: 120,
     justifyContent: 'center',
   },
   textInput: {
-    color: theme.colors.textPrimary,
     fontSize: theme.typography.sizes.md,
     paddingHorizontal: theme.spacing.md,
     paddingTop: 10,
