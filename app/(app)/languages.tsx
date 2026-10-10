@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { Screen, Stack, Box } from '@/components/layout';
 import { Text, Button } from '@/components/ui';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { SymbolView } from 'expo-symbols';
 
 const SUPPORTED_LANGUAGES = [
@@ -16,6 +17,7 @@ const SUPPORTED_LANGUAGES = [
 ];
 
 export default function LanguageSelectionScreen() {
+  const colors = useAppColors();
   const [selectedLang, setSelectedLang] = useState<string | null>('es'); // Pre-select a default
   const [isSaving, setIsSaving] = useState(false);
   
@@ -63,7 +65,7 @@ export default function LanguageSelectionScreen() {
             accessibilityLabel="Go back"
             activeOpacity={0.7}
           >
-            <SymbolView name="chevron.left" size={24} tintColor={theme.colors.textPrimary} />
+            <SymbolView name="chevron.left" size={24} tintColor={colors.textPrimary} />
           </TouchableOpacity>
           <Text variant="heading" color="textPrimary" style={styles.headerTitle}>
             Choose your language
@@ -92,12 +94,17 @@ export default function LanguageSelectionScreen() {
                   accessibilityState={{ checked: isSelected }}
                   style={[
                     styles.langCard,
-                    isSelected && styles.langCardSelected
+                    { backgroundColor: colors.surface, borderColor: colors.border },
+                    isSelected && { borderColor: colors.primary, backgroundColor: 'rgba(6, 182, 212, 0.05)' }
                   ]}
                 >
                   <Box direction="row" align="center" justify="space-between">
                     <Box direction="row" align="center" gap="md">
-                      <View style={[styles.flagContainer, isSelected && styles.flagContainerSelected]}>
+                      <View style={[
+                        styles.flagContainer, 
+                        { backgroundColor: colors.surfaceElevated },
+                        isSelected && { backgroundColor: 'rgba(6, 182, 212, 0.1)' }
+                      ]}>
                         <Text variant="heading" style={styles.flagText}>{lang.flag}</Text>
                       </View>
                       <Text 
@@ -111,7 +118,7 @@ export default function LanguageSelectionScreen() {
                     
                     {isSelected && (
                       <View style={styles.checkIcon}>
-                        <SymbolView name="checkmark.circle.fill" size={24} tintColor={theme.colors.primary} />
+                        <SymbolView name="checkmark.circle.fill" size={24} tintColor={colors.primary} />
                       </View>
                     )}
                   </Box>
@@ -121,7 +128,7 @@ export default function LanguageSelectionScreen() {
           </Stack>
         </ScrollView>
 
-        <Box style={styles.footer}>
+        <Box style={[styles.footer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
           <Button 
             label="Save Language" 
             variant="primary" 
@@ -170,26 +177,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   langCard: {
-    backgroundColor: theme.colors.surface,
     borderWidth: 1,
-    borderColor: theme.colors.border,
     borderRadius: 16,
     padding: theme.spacing.md,
-  },
-  langCardSelected: {
-    borderColor: theme.colors.primary,
-    backgroundColor: 'rgba(6, 182, 212, 0.05)', // Subtle cyan tint
   },
   flagContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: theme.colors.surfaceElevated,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  flagContainerSelected: {
-    backgroundColor: 'rgba(6, 182, 212, 0.1)',
   },
   flagText: {
     fontSize: 24,
@@ -203,7 +200,5 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.md,
     paddingBottom: theme.spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-    backgroundColor: theme.colors.background,
   },
 });

@@ -72,7 +72,7 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={theme.colors[getTextColor()]} />
+        <ActivityIndicator color={colors[getTextColor()]} />
       ) : (
         <Text 
           variant={size === 'sm' ? 'label' : 'body'} 

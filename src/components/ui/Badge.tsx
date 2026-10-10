@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ViewProps } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { Text } from './Text';
 
 export type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
@@ -18,9 +19,11 @@ export function Badge({
   style,
   ...props
 }: BadgeProps) {
+  const colors = useAppColors();
+
   const getBackgroundColor = () => {
-    if (variant === 'default') return theme.colors.surfaceElevated;
-    return theme.colors[variant];
+    if (variant === 'default') return colors.surfaceElevated;
+    return colors[variant];
   };
 
   const getTextColor = () => {

@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { Screen, Stack as LayoutStack, Box } from '@/components/layout';
 import { Text, Button } from '@/components/ui';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { bootState } from '../index';
 import { SymbolView } from 'expo-symbols';
 
@@ -16,6 +17,7 @@ const SUPPORTED_LANGUAGES = [
 ];
 
 export default function OnboardingFlow() {
+  const colors = useAppColors();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
 
@@ -36,8 +38,13 @@ export default function OnboardingFlow() {
   const renderStep1 = () => (
     <LayoutStack gap="xl" align="center" style={styles.content}>
       <Box marginVertical="xl" align="center">
-        <View style={styles.iconCircle} importantForAccessibility="no">
-          <SymbolView name="globe" size={48} tintColor={theme.colors.primary} />
+        <View style={{ position: 'relative' }}>
+          <View style={[styles.iconCircle, { backgroundColor: colors.surface, borderColor: colors.border }]} importantForAccessibility="no">
+            <SymbolView name="text.bubble.fill" size={48} tintColor={colors.primary} />
+          </View>
+          <View style={[styles.sparkleBadge, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
+            <SymbolView name="sparkles" size={20} tintColor={colors.secondary} />
+          </View>
         </View>
       </Box>
       <LayoutStack gap="sm" align="center">
@@ -70,7 +77,8 @@ export default function OnboardingFlow() {
               onPress={() => setSelectedLanguage(lang.id)}
               style={[
                 styles.languageCard,
-                isSelected && styles.languageCardSelected,
+                { backgroundColor: colors.surface, borderColor: 'transparent' },
+                isSelected && { borderColor: colors.primary, backgroundColor: colors.surfaceElevated },
               ]}
               accessibilityRole="radio"
               accessibilityState={{ checked: isSelected }}
@@ -95,8 +103,8 @@ export default function OnboardingFlow() {
   const renderStep3 = () => (
     <LayoutStack gap="xl" align="center" style={styles.content}>
       <Box marginVertical="xl" align="center">
-        <View style={styles.iconCircle} importantForAccessibility="no">
-          <SymbolView name="star.fill" size={48} tintColor={theme.colors.secondary} />
+        <View style={[styles.iconCircle, { backgroundColor: colors.surface, borderColor: colors.border }]} importantForAccessibility="no">
+          <SymbolView name="checkmark.seal.fill" size={48} tintColor={colors.primaryBright} />
         </View>
       </Box>
       <LayoutStack gap="sm" align="center">
@@ -125,7 +133,11 @@ export default function OnboardingFlow() {
             {[1, 2, 3].map((idx) => (
               <View 
                 key={idx} 
-                style={[styles.progressDot, step >= idx && styles.progressDotActive]} 
+                style={[
+                  styles.progressDot, 
+                  { backgroundColor: colors.disabled },
+                  step >= idx && { backgroundColor: colors.primary }
+                ]} 
                 importantForAccessibility="no"
               />
             ))}
@@ -191,10 +203,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: theme.colors.surfaceElevated,
-  },
-  progressDotActive: {
-    backgroundColor: theme.colors.primary,
   },
   mainArea: {
     flex: 1,
@@ -211,11 +219,17 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: theme.colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: theme.colors.border,
+  },
+  sparkleBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    borderRadius: 20,
+    padding: 8,
+    borderWidth: 1,
   },
   grid: {
     flexDirection: 'row',
@@ -227,17 +241,11 @@ const styles = StyleSheet.create({
   languageCard: {
     width: '47%',
     aspectRatio: 1,
-    backgroundColor: theme.colors.surface,
     borderRadius: theme.radii.lg,
     borderWidth: 2,
-    borderColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     padding: theme.spacing.sm,
-  },
-  languageCardSelected: {
-    borderColor: theme.colors.primary,
-    backgroundColor: theme.colors.surfaceElevated,
   },
   flagText: {
     marginBottom: theme.spacing.sm,

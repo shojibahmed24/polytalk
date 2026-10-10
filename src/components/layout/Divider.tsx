@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { theme } from '@/theme';
+import { useAppColors, Colors } from '@/theme/colors';
 
 export interface DividerProps extends ViewProps {
   orientation?: 'horizontal' | 'vertical';
   thickness?: number;
-  color?: keyof typeof theme.colors;
+  color?: keyof Colors;
 }
 
 export function Divider({
@@ -15,11 +15,13 @@ export function Divider({
   style,
   ...props
 }: DividerProps) {
+  const colors = useAppColors();
+
   return (
     <View
       style={[
         {
-          backgroundColor: theme.colors[color],
+          backgroundColor: colors[color],
           width: orientation === 'horizontal' ? '100%' : thickness,
           height: orientation === 'horizontal' ? thickness : '100%',
         },

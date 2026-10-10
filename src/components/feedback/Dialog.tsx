@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { Text, Button } from '@/components/ui';
 import { Box } from '@/components/layout';
 
@@ -33,6 +34,8 @@ export function Dialog({
   isActionLoading = false,
   children,
 }: DialogProps) {
+  const colors = useAppColors();
+
   return (
     <Modal
       visible={visible}
@@ -43,7 +46,7 @@ export function Dialog({
       <TouchableWithoutFeedback onPress={isActionLoading ? undefined : onDismiss}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
-            <View style={styles.dialogContainer} accessible={true} accessibilityRole="alert" accessibilityViewIsModal={true}>
+            <View style={[styles.dialogContainer, { backgroundColor: colors.surfaceElevated }]} accessible={true} accessibilityRole="alert" accessibilityViewIsModal={true}>
               <Text variant="title" color="textPrimary" style={styles.title}>
                 {title}
               </Text>
@@ -101,7 +104,6 @@ const styles = StyleSheet.create({
   dialogContainer: {
     width: '100%',
     maxWidth: theme.layout.maxWidth,
-    backgroundColor: theme.colors.surfaceElevated,
     borderRadius: theme.radii.lg,
     padding: theme.spacing.lg,
     shadowColor: '#000',

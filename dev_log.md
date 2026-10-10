@@ -397,3 +397,17 @@
 
 ### Next Step
 **P018 onward** — E.g. Pronunciation Test (S008) or Live Voice Call (S009).
+
+---
+
+## [2026-10-10] Global UI Repair: Adaptive Theme, Contrast & Onboarding
+
+### Issue
+P017 introduced an adaptive `useAppColors` hook, but left many screens and components referencing static `theme.colors` directly inside their `StyleSheet.create` calls. Since `StyleSheet` evaluates exactly once on load with dark tokens, the dynamic `Screen` background switched to Light Mode while child views remained locked to dark mode, creating black-on-dark-blue contrast failures ("nearly invisible text") everywhere. Additionally, onboarding had an empty circle placeholder and no real brand visuals.
+
+### Fix
+- **StyleSheet Purge**: Removed static `theme.colors` usages from `app/(auth)/onboarding.tsx`, `app/(tabs)/index.tsx`, `app/(app)/languages.tsx`, `Dialog.tsx`, `BottomSheet.tsx`, `AlertBanner.tsx`, `LoadingState.tsx`, `Badge.tsx`, `Button.tsx`, and `Divider.tsx`.
+- **Dynamic Prop Drilling**: Bound background/border styles using inline styles that pull from the reactive `colors` hook where necessary.
+- **Onboarding Visuals**: Replaced empty dark circles with intentional PolyTalk branded UI (overlapping `text.bubble.fill` + `sparkles` for Step 1, and `checkmark.seal.fill` for Step 3).
+- **Languages View**: Improved language card contrast utilizing the active cyan token dynamically in both themes.
+- **Verification**: Typecheck passes, ESLint is clean (0 errors), and the web preview effectively toggles perfect Light/Dark modes while preserving deep tree readability on desktop and mobile bounds.

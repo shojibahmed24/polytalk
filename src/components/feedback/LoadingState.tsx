@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { Text } from '@/components/ui';
 import { Stack } from '@/components/layout';
 
@@ -9,9 +10,11 @@ export interface LoadingStateProps {
 }
 
 export function LoadingState({ message }: LoadingStateProps) {
+  const colors = useAppColors();
+  
   return (
     <Stack align="center" justify="center" gap="md" style={styles.container}>
-      <ActivityIndicator size="large" color={theme.colors.primary} />
+      <ActivityIndicator size="large" color={colors.primary} />
       {message && (
         <Text variant="body" color="textSecondary" align="center">
           {message}

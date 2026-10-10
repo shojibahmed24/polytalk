@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, View, StyleSheet, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 
 export interface BottomSheetProps {
   visible: boolean;
@@ -16,6 +17,8 @@ export function BottomSheet({
   scrollable = false,
   children,
 }: BottomSheetProps) {
+  const colors = useAppColors();
+
   const content = scrollable ? (
     <ScrollView style={styles.scrollArea}>
       {children}
@@ -36,9 +39,9 @@ export function BottomSheet({
       <TouchableWithoutFeedback onPress={onDismiss}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
-            <View style={styles.sheetContainer} accessible={true} accessibilityViewIsModal={true} accessibilityRole="alert">
+            <View style={[styles.sheetContainer, { backgroundColor: colors.surface }]} accessible={true} accessibilityViewIsModal={true} accessibilityRole="alert">
               <SafeAreaView edges={['bottom']} style={styles.safeArea}>
-                <View style={styles.dragHandle} />
+                <View style={[styles.dragHandle, { backgroundColor: colors.border }]} />
                 {content}
               </SafeAreaView>
             </View>
@@ -56,7 +59,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheetContainer: {
-    backgroundColor: theme.colors.surface,
     borderTopLeftRadius: theme.radii.xl,
     borderTopRightRadius: theme.radii.xl,
     paddingTop: theme.spacing.sm,
@@ -74,7 +76,6 @@ const styles = StyleSheet.create({
   dragHandle: {
     width: 40,
     height: 4,
-    backgroundColor: theme.colors.border,
     borderRadius: 2,
     alignSelf: 'center',
     marginBottom: theme.spacing.md,

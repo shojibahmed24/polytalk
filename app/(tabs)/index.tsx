@@ -4,9 +4,11 @@ import { router } from 'expo-router';
 import { Screen, Stack, Box } from '@/components/layout';
 import { Text, Card, Button } from '@/components/ui';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { SymbolView, SFSymbol } from 'expo-symbols';
 
 export default function HomeScreen() {
+  const colors = useAppColors();
   const [fadeAnim] = useState(() => new Animated.Value(0));
   const [slideAnim] = useState(() => new Animated.Value(12));
 
@@ -65,19 +67,19 @@ export default function HomeScreen() {
               accessibilityRole="button"
               activeOpacity={0.7}
             >
-              <SymbolView name="person.circle.fill" size={40} tintColor={theme.colors.secondary} />
+              <SymbolView name="person.circle.fill" size={40} tintColor={colors.secondary} />
             </TouchableOpacity>
           </Box>
 
           {/* B. Primary Learning Action */}
           <TouchableOpacity activeOpacity={0.9} onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never)}>
-            <View style={styles.primaryActionCard}>
+            <View style={[styles.primaryActionCard, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
               <Box direction="row" justify="space-between" align="flex-start">
                 <View style={styles.waveformIcon}>
-                  <SymbolView name="sparkles" size={32} tintColor={theme.colors.primary} />
-                  <View style={styles.violetDot} />
+                  <SymbolView name="sparkles" size={32} tintColor={colors.primary} />
+                  <View style={[styles.violetDot, { backgroundColor: colors.secondary }]} />
                 </View>
-                <SymbolView name="chevron.right" size={24} tintColor={theme.colors.textSecondary} />
+                <SymbolView name="chevron.right" size={24} tintColor={colors.textSecondary} />
               </Box>
               
               <Stack gap="xs" style={styles.primaryActionText}>
@@ -125,10 +127,10 @@ export default function HomeScreen() {
             <Text variant="title" color="textPrimary" style={styles.sectionTitle}>
               Your Progress
             </Text>
-            <Card variant="default" style={styles.progressCard}>
+            <Card variant="default" style={[styles.progressCard, { borderColor: colors.border }]}>
               <Box direction="row" align="center" gap="md">
-                <View style={styles.progressIcon}>
-                  <SymbolView name="chart.bar.fill" size={24} tintColor={theme.colors.secondary} />
+                <View style={[styles.progressIcon, { backgroundColor: colors.surfaceElevated }]}>
+                  <SymbolView name="chart.bar.fill" size={24} tintColor={colors.secondary} />
                 </View>
                 <Stack gap="xs" style={{ flex: 1 }}>
                   <Text variant="body" weight="semibold" color="textPrimary">Getting Started</Text>
@@ -156,15 +158,17 @@ export default function HomeScreen() {
 }
 
 function QuickActionCard({ title, icon, onPress }: { title: string, icon: SFSymbol, onPress: () => void }) {
+  const colors = useAppColors();
+  
   return (
     <TouchableOpacity 
       activeOpacity={0.7} 
-      style={styles.quickActionCard} 
+      style={[styles.quickActionCard, { backgroundColor: colors.surface, borderColor: colors.border }]} 
       onPress={onPress}
       accessibilityRole="button"
     >
       <View style={styles.quickActionIcon}>
-        <SymbolView name={icon} size={28} tintColor={theme.colors.primary} />
+        <SymbolView name={icon} size={28} tintColor={colors.primary} />
       </View>
       <Text variant="bodySmall" weight="semibold" color="textPrimary" align="center">
         {title}

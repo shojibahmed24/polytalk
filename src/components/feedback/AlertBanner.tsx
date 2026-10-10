@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { Text } from '@/components/ui/Text';
 
 export type AlertVariant = 'success' | 'warning' | 'error' | 'info';
@@ -11,8 +12,10 @@ export interface AlertBannerProps {
 }
 
 export function AlertBanner({ variant = 'info', message }: AlertBannerProps) {
+  const colors = useAppColors();
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors[variant] }]}>
+    <View style={[styles.container, { backgroundColor: colors[variant] }]}>
       <Text variant="label" color="textPrimary">
         {message}
       </Text>
