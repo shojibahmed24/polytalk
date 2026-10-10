@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-tint": "#4cd7f6", "surface-container-high": "#252a38", "on-tertiary-container": "#6d2300", "background": "#0e1320", "surface-container-lowest": "#090e1b", "secondary-container": "#571bc1", "primary-fixed-dim": "#4cd7f6", "surface-container-low": "#161b29", "on-secondary": "#3c0091", "surface": "#0e1320", "on-secondary-container": "#c4abff", "on-secondary-fixed": "#23005c", "surface-bright": "#343948", "on-primary-fixed-variant": "#004e5c", "on-tertiary-fixed": "#370e00", "on-surface-variant": "#bcc9cd", "secondary-fixed-dim": "#d0bcff", "tertiary": "#ffb599", "secondary": "#d0bcff", "secondary-fixed": "#e9ddff", "primary-fixed": "#acedff", "primary": "#4cd7f6", "surface-dim": "#0e1320", "on-error": "#690005", "on-tertiary": "#5a1b00", "surface-variant": "#303443", "primary-container": "#06b6d4", "error-container": "#93000a", "outline-variant": "#3d494c", "outline": "#869397", "inverse-surface": "#dee2f5", "tertiary-fixed-dim": "#ffb599", "on-primary-container": "#00424f", "inverse-primary": "#00687a", "on-primary-fixed": "#001f26", "tertiary-container": "#fa8657", "on-surface": "#dee2f5", "on-secondary-fixed-variant": "#5516be", "surface-container-highest": "#303443", "surface-container": "#1a1f2d", "on-error-container": "#ffdad6", "on-primary": "#003640", "error": "#ffb4ab", "inverse-on-surface": "#2b303e", "on-background": "#dee2f5", "tertiary-fixed": "#ffdbce", "on-tertiary-fixed-variant": "#7f2b01" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xl": "2rem", "space-lg": "1.5rem", "gutter": "1rem", "margin": "1.25rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem" }, fontFamily: { "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-lg": ["Space Grotesk"], "label-sm": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Space Grotesk"], "headline-md": ["Space Grotesk"], "headline-sm": ["Space Grotesk"], "body-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "display-lg": ["Space Grotesk"], "display-lg-mobile": ["Space Grotesk"] }, fontSize: { "body-sm": ["13px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "400" }], "body-lg": ["18px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "400" }], "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" }], "label-sm": ["10px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "700" }], "headline-lg-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "600" }], "headline-md": ["22px", { lineHeight: "30px", letterSpacing: "-0.01em", fontWeight: "600" }], "headline-sm": ["18px", { lineHeight: "26px", letterSpacing: "0em", fontWeight: "600" }], "body-md": ["15px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }], "display-lg": ["44px", { lineHeight: "52px", letterSpacing: "-0.03em", fontWeight: "700" }], "display-lg-mobile": ["34px", { lineHeight: "42px", letterSpacing: "-0.02em", fontWeight: "700" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[22px]">translate</span></div><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">User Profile</h1></div><div class="flex items-center gap-space-sm"><a class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xl">
+<!-- Top Profile Identity Module -->
+<div class="relative w-full rounded-xl bg-surface-container-low p-space-md shadow-xl overflow-hidden mt-space-sm">
+<!-- Subtle Ambient Glow Overlay -->
+<div class="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-10 -left-10 w-36 h-36 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
+<div class="relative flex flex-col items-center text-center">
+<!-- Avatar with bioluminescent ring & online badge -->
+<div class="relative mb-space-sm">
+<div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-tr from-primary to-secondary shadow-lg shadow-primary/20">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="Close-up modern professional portrait of Alex Morgan, a friendly person with gentle smile, cinematic studio lighting with subtle teal and violet ambient rim glow, high detail, photorealistic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTmTtkhg_E9u6VYZF8RZX9yvQrkrBvEjOoeFbI69Bkcg4p3unu7J1LQjaKl1KpGkekJvso0iHjAyGPwelIM5oIJSx8yQEJAc2tJVfqFQEgfXk-Yi5vqUlc0fGa1j0UbNkx6tByN888XSUQsVWOaT4PlG2SD-gu1Z7m6RsEELzrTieWn39um0avR7AYliyqspiy8ptCJC0WmuPEMtR1jTcQTSuEM7AJdAP4VWroaRjj4D0vwW1sGq-X"/>
+</div>
+</div>
+<!-- Active Status Indicator -->
+<div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-surface-container-low flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+</div>
+<!-- Identity Metadata -->
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">Alex Morgan</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">alex.morgan@example.com</p>
+<!-- Pro Member Badge -->
+<div class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-surface-container-high text-primary mb-space-md shadow-sm">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary">PolyTalk Pro Member</span>
+</div>
+<!-- Action Pill -->
+<button class="w-full py-2.5 px-space-md rounded-full bg-surface-container-high hover:bg-surface-variant active:scale-[0.98] transition-all flex items-center justify-center gap-space-xs text-on-surface shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">edit</span>
+<span class="font-label-lg text-label-lg">Edit Profile</span>
+</button>
+</div>
+</div>
+<!-- Learning Overview Stats Grid (2x2) -->
+<div class="grid grid-cols-2 gap-space-sm mt-space-md">
+<!-- Stat 1: Streak -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col justify-between shadow-md">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Streak</span>
+<div class="w-7 h-7 rounded-lg bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">3-day</div>
+<div class="font-body-sm text-body-sm text-tertiary">Active streak</div>
+</div>
+</div>
+<!-- Stat 2: Total Time -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col justify-between shadow-md">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Time</span>
+<div class="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+</div>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">4.5 hrs</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Speaking practice</div>
+</div>
+</div>
+<!-- Stat 3: Sessions -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col justify-between shadow-md">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Sessions</span>
+<div class="w-7 h-7 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+</div>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">24</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Completed turns</div>
+</div>
+</div>
+<!-- Stat 4: Words Learned -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex flex-col justify-between shadow-md">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Lexicon</span>
+<div class="w-7 h-7 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</div>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">86</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Words mastered</div>
+</div>
+</div>
+</div>
+<!-- Weekly Learning Goal Card -->
+<div class="rounded-xl bg-surface-container-low p-space-md mt-space-md shadow-md">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">flag</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Weekly Goal</h3>
+</div>
+<span class="font-label-md text-label-md text-primary bg-primary/10 px-2 py-0.5 rounded-full">50%</span>
+</div>
+<!-- Progress Track -->
+<div class="w-full bg-surface-container-highest h-2.5 rounded-full overflow-hidden mb-space-xs">
+<div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full transition-all duration-500 shadow-sm shadow-primary/30" style="width: 50%;"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface">60 mins completed</span>
+<span class="font-label-sm text-label-sm">120 mins target</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+      60 minutes left to hit your goal this week! Keep it up.
+    </p>
+</div>
+<!-- My Languages Section -->
+<div class="mt-space-lg">
+<div class="flex items-center justify-between mb-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">My Languages</h3>
+<a class="font-label-md text-label-md text-primary hover:text-primary-fixed flex items-center gap-0.5" data-path="language-selection" href="#">
+        Manage
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+<!-- Active Target Language Card -->
+<div class="rounded-xl bg-surface-container-low p-space-md mb-space-xs shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center font-headline-sm text-headline-sm text-on-surface">
+            🇺🇸
+          </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface">Learning English (US)</span>
+<span class="px-2 py-0.2 bg-primary/15 text-primary rounded-full font-label-sm text-label-sm">Active</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Level: B2 Upper Intermediate</p>
+</div>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">work_outline</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Goal: Speak confidently at work</span>
+</div>
+</div>
+<!-- App Interface Language Sub-Card -->
+<div class="rounded-xl bg-surface-container-low px-space-md py-space-sm flex items-center justify-between shadow-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">translate</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface">App Interface Language</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Bengali (বাংলা) / English</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">swap_horiz</span>
+</div>
+</div>
+<!-- Achievements Section -->
+<div class="mt-space-lg">
+<div class="flex items-center justify-between mb-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Achievements</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">3 unlocked</span>
+</div>
+<div class="grid grid-cols-1 gap-space-xs">
+<!-- Achievement 1 -->
+<div class="rounded-xl bg-surface-container-low p-space-sm flex items-center gap-space-sm shadow-sm">
+<div class="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="min-w-0 flex-1">
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">First Conversation</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Completed 1st AI roleplay session</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+<!-- Achievement 2 -->
+<div class="rounded-xl bg-surface-container-low p-space-sm flex items-center gap-space-sm shadow-sm">
+<div class="w-10 h-10 rounded-xl bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div class="min-w-0 flex-1">
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">3-Day Streak</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Practiced 3 days in a row</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+<!-- Achievement 3 -->
+<div class="rounded-xl bg-surface-container-low p-space-sm flex items-center gap-space-sm shadow-sm">
+<div class="w-10 h-10 rounded-xl bg-secondary/20 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<div class="min-w-0 flex-1">
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">Vocabulary Explorer</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Saved 50+ new vocabulary words</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+</div>
+</div>
+<!-- Account and Preferences Navigation List -->
+<div class="mt-space-lg">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-sm">Preferences &amp; Account</h3>
+<div class="flex flex-col gap-1.5">
+<!-- Item 1: Language Preferences -->
+<a class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors shadow-sm" data-path="language-selection" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">language</span>
+</div>
+<div class="min-w-0">
+<div class="font-label-lg text-label-lg text-on-surface truncate">Language Preferences</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Accent, speed, and targets</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</a>
+<!-- Item 2: Learning Goals & Reminders -->
+<a class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors shadow-sm" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">alarm</span>
+</div>
+<div class="min-w-0">
+<div class="font-label-lg text-label-lg text-on-surface truncate">Learning Goals &amp; Reminders</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Daily schedule and milestones</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</a>
+<!-- Item 3: Notifications -->
+<a class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors shadow-sm" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</div>
+<div class="min-w-0">
+<div class="font-label-lg text-label-lg text-on-surface truncate">Notifications</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Push alerts, streak nudges</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</a>
+<!-- Item 4: Privacy & Security -->
+<a class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors shadow-sm" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div class="min-w-0">
+<div class="font-label-lg text-label-lg text-on-surface truncate">Privacy &amp; Security</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Microphone permissions &amp; data</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</a>
+<!-- Item 5: Help & Support -->
+<a class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors shadow-sm" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</div>
+<div class="min-w-0">
+<div class="font-label-lg text-label-lg text-on-surface truncate">Help &amp; Support</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">FAQ, AI feedback tutor guide</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</a>
+<!-- Item 6: App Settings (S012) -->
+<a class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors shadow-sm" data-path="settings" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</div>
+<div class="min-w-0">
+<div class="font-label-lg text-label-lg text-on-surface truncate">App Settings</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Audio engine, cache, downloads</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Sign Out Row -->
+<div class="mt-space-lg mb-space-md">
+<button class="w-full flex items-center justify-between p-space-sm rounded-xl bg-error-container/20 hover:bg-error-container/30 active:scale-[0.99] transition-all text-error shadow-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-error-container/40 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+</div>
+<span class="font-label-lg text-label-lg font-bold">Sign Out</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.35)]" data-active-classes="text-primary font-label-md"><div class="flex items-center justify-around h-16 px-gutter"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-0.5 text-on-surface-variant hover:text-on-surface transition-colors" data-path="home" href="#"><span class="material-symbols-outlined text-[24px]">forum</span><span class="font-label-sm text-label-sm">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-0.5 text-on-surface-variant hover:text-on-surface transition-colors" data-path="practice" href="#"><span class="material-symbols-outlined text-[24px]">mic</span><span class="font-label-sm text-label-sm">Practice</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-0.5 text-on-surface-variant hover:text-on-surface transition-colors" data-path="progress" href="#"><span class="material-symbols-outlined text-[24px]">insights</span><span class="font-label-sm text-label-sm">Progress</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-0.5 transition-colors text-primary font-label-md" data-path="user-profile" href="#"><span class="material-symbols-outlined text-[24px]">account_circle</span><span class="font-label-sm text-label-sm">Profile</span></a></div></nav></body></html>
