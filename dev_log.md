@@ -197,3 +197,27 @@
 
 ### Next Step
 **P010 — Navigation shell and route conventions**
+
+---
+
+## [2026-10-10] P010 — Navigation Shell, Route Map & Route Conventions
+
+### Scope
+- Correct the layout width constraints identified in the mobile UI audit, so that development previews display smoothly without overly restricting valid web layout behavior.
+- Build the master navigation root applying Expo Router tab patterns (`app/(tabs)/*`).
+- Map primary destinations into distinct, correctly named routes (Home, Learn, Translate, Profile) keeping true to S001-S110 conventions.
+- Make the interactive component showcase accessible as a non-production developer route (`app/dev.tsx`).
+
+### Actions Taken
+- Replaced the hard-coded `maxWidth: 400` that caused web previews to appear as very narrow strips. Introduced `contentMaxWidth: 840` in the typography/layout themes reserved strictly for inner fluid content areas, avoiding breakage of modal and tightly constrained cards while letting layouts breathe across iPads/desktops.
+- Integrated Expo Router `<Tabs>` inside a robust `app/_layout.tsx` root setup.
+- Generated tab screens: `app/(tabs)/index.tsx`, `app/(tabs)/learn.tsx`, `app/(tabs)/translate.tsx`, and `app/(tabs)/profile.tsx`, ensuring bottom safe-areas inherit natively from the tabs' built-in configurations.
+- Migrated the showcase from the default index to `app/dev.tsx`, presented modally to preserve testing velocity without cluttering future end-user paths.
+- Updated `SCREEN_REGISTRY.md` to map `S004` accurately to the new tabs architecture.
+
+### Verification
+- `npm run typecheck` and `npm run lint` execute completely error-free. 
+- Component showcase functions perfectly with responsive limits applied correctly.
+
+### Next Step
+**P011 — Theme, accessibility and responsive layout verification**

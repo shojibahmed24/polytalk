@@ -25,7 +25,7 @@ export function ComponentShowcase() {
   };
 
   return (
-    <Stack gap="xl" style={{ width: '100%', maxWidth: theme.layout.maxWidth }}>
+    <Stack gap="xl" style={{ width: '100%', maxWidth: theme.layout.contentMaxWidth }}>
       
       <Card variant="outlined">
         <Text variant="title" color="textPrimary" style={{ marginBottom: theme.spacing.md }}>

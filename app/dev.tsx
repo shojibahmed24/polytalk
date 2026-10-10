@@ -7,7 +7,7 @@ import { ComponentShowcase } from '@/components/dev/ComponentShowcase';
 export default function IndexScreen() {
   return (
     <Screen centerContent scrollable keyboardAware>
-      <Stack align="center" gap="sm" style={{ width: '100%', maxWidth: theme.layout.maxWidth, paddingVertical: theme.spacing.xl }}>
+      <Stack align="center" gap="sm" style={{ width: '100%', maxWidth: theme.layout.contentMaxWidth, paddingVertical: theme.spacing.xl }}>
         <Text variant="display" color="primary">PolyTalk</Text>
         
         <Box marginVertical="lg">
