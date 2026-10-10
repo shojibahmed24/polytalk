@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { View, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'react-native';
 import { router } from 'expo-router';
@@ -9,7 +9,7 @@ import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getTargetLanguage } from '@/utils/languageStorage';
-import { useTranslation } from '@/utils/i18n';
+
 import { TARGET_LANGUAGES } from '@/constants/languages';
 import Svg, { Path, Circle } from 'react-native-svg';
 
@@ -18,7 +18,7 @@ import Svg, { Path, Circle } from 'react-native-svg';
 export default function HomeScreen() {
     const { isDark: isSystemDark } = React.useContext(ThemeContext);
   const [selectedTarget, setSelectedTarget] = useState('es');
-  const { t } = useTranslation();
+
 
   useFocusEffect(
     useCallback(() => {
