@@ -51,7 +51,7 @@ export default function ProfileScreen() {
           </View>
           
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconBtn}>
+            <TouchableOpacity onPress={() => router.push('/(app)/settings' as never)} style={styles.iconBtn}>
               <MaterialIcons name="settings" size={24} color={st.onSurfaceVariant} />
             </TouchableOpacity>
             <View style={[styles.userAvatar, { backgroundColor: st.primary }]}>
