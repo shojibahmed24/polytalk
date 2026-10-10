@@ -42,52 +42,54 @@ export default function OnboardingFlow() {
     <View style={styles.step1Container}>
       
       {/* Mascot / Visual Composition */}
-      <View style={styles.visualContainer}>
-        {/* Decorative elements */}
-        <View style={[styles.floatingIcon, { top: '5%', left: '15%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
-           <Text style={{ fontSize: 16 }}>🇪🇸</Text>
-        </View>
-        <View style={[styles.floatingIcon, { top: '0%', right: '20%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
-           <Text style={{ fontSize: 16 }}>🇫🇷</Text>
-        </View>
-        <View style={[styles.floatingIcon, { bottom: '25%', left: '10%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
-           <Text style={{ fontSize: 16 }}>🇬🇧</Text>
-        </View>
-        <View style={[styles.floatingIcon, { bottom: '15%', right: '15%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
-           <Text style={{ fontSize: 16 }}>🇩🇪</Text>
-        </View>
-        <View style={[styles.floatingIcon, { top: '35%', right: '5%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
-           <Text style={{ fontSize: 16 }}>🇯🇵</Text>
-        </View>
-        
-        {/* Waveforms */}
-        <View style={[styles.waveform, { left: '5%', top: '40%' }]}>
-          <Ionicons name="stats-chart" size={24} color={colors.primary} style={{ transform: [{ rotate: '90deg' }] }} />
-        </View>
-        <View style={[styles.waveform, { right: '5%', top: '50%' }]}>
-          <Ionicons name="stats-chart" size={24} color={colors.secondary} style={{ transform: [{ rotate: '90deg' }] }} />
-        </View>
-
-        {/* Back Bubbles */}
-        <View style={[styles.heroBubble, { backgroundColor: '#06B6D4', left: '12%', top: '15%', transform: [{ rotate: '-10deg' }] }]}>
-          <Text style={styles.bubbleTextLarge}>A</Text>
-        </View>
-        <View style={[styles.heroBubble, { backgroundColor: '#8B5CF6', right: '12%', top: '25%', transform: [{ rotate: '10deg' }] }]}>
-          <Text style={styles.bubbleTextLarge}>文</Text>
-        </View>
-
-        {/* Mascot Center */}
-        <View style={[styles.mascotBase, { backgroundColor: colors.surface, borderColor: isLight ? '#FFFFFF' : colors.border, shadowColor: colors.primary }]}>
-          <LinearGradient
-            colors={[isLight ? '#F0F9FF' : colors.surfaceElevated, isLight ? '#E0F2FE' : colors.surface]}
-            style={StyleSheet.absoluteFill}
-          />
-          <View style={[styles.mascotFace, { backgroundColor: isLight ? '#0F172A' : '#000000' }]}>
-             {/* Eyes */}
-             <View style={styles.mascotEye} />
-             <View style={styles.mascotEye} />
+      <View style={styles.visualContainerWrapper}>
+        <View style={styles.visualContainer}>
+          {/* Decorative elements */}
+          <View style={[styles.floatingIcon, { top: '5%', left: '15%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+             <Text style={{ fontSize: 16 }}>🇪🇸</Text>
           </View>
-          <Ionicons name="headset" size={120} color={isLight ? '#CBD5E1' : '#475569'} style={styles.mascotHeadset} />
+          <View style={[styles.floatingIcon, { top: '0%', right: '20%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+             <Text style={{ fontSize: 16 }}>🇫🇷</Text>
+          </View>
+          <View style={[styles.floatingIcon, { bottom: '25%', left: '10%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+             <Text style={{ fontSize: 16 }}>🇬🇧</Text>
+          </View>
+          <View style={[styles.floatingIcon, { bottom: '15%', right: '15%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+             <Text style={{ fontSize: 16 }}>🇩🇪</Text>
+          </View>
+          <View style={[styles.floatingIcon, { top: '35%', right: '5%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+             <Text style={{ fontSize: 16 }}>🇯🇵</Text>
+          </View>
+          
+          {/* Waveforms */}
+          <View style={[styles.waveform, { left: '5%', top: '40%' }]}>
+            <Ionicons name="stats-chart" size={24} color={colors.primary} style={{ transform: [{ rotate: '90deg' }] }} />
+          </View>
+          <View style={[styles.waveform, { right: '5%', top: '50%' }]}>
+            <Ionicons name="stats-chart" size={24} color={colors.secondary} style={{ transform: [{ rotate: '90deg' }] }} />
+          </View>
+
+          {/* Back Bubbles */}
+          <View style={[styles.heroBubble, { backgroundColor: '#06B6D4', left: '12%', top: '15%', transform: [{ rotate: '-10deg' }] }]}>
+            <Text style={styles.bubbleTextLarge}>A</Text>
+          </View>
+          <View style={[styles.heroBubble, { backgroundColor: '#8B5CF6', right: '12%', top: '25%', transform: [{ rotate: '10deg' }] }]}>
+            <Text style={styles.bubbleTextLarge}>文</Text>
+          </View>
+
+          {/* Mascot Center */}
+          <View style={[styles.mascotBase, { backgroundColor: colors.surface, borderColor: isLight ? '#FFFFFF' : colors.border, shadowColor: colors.primary }]}>
+            <LinearGradient
+              colors={[isLight ? '#F0F9FF' : colors.surfaceElevated, isLight ? '#E0F2FE' : colors.surface]}
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={[styles.mascotFace, { backgroundColor: isLight ? '#0F172A' : '#000000' }]}>
+               {/* Eyes */}
+               <View style={styles.mascotEye} />
+               <View style={styles.mascotEye} />
+            </View>
+            <Ionicons name="headset" size={120} color={isLight ? '#CBD5E1' : '#475569'} style={styles.mascotHeadset} />
+          </View>
         </View>
       </View>
 
@@ -411,8 +413,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: theme.spacing.sm,
   },
+  visualContainerWrapper: {
+    width: '100%',
+    alignItems: 'center',
+  },
   visualContainer: {
     width: '100%',
+    maxWidth: 400,
     height: 260,
     position: 'relative',
     justifyContent: 'center',
