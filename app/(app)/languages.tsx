@@ -5,7 +5,7 @@ import { Screen, Stack, Box } from '@/components/layout';
 import { Text, Button } from '@/components/ui';
 import { theme } from '@/theme';
 import { useAppColors } from '@/theme/colors';
-import { SymbolView } from 'expo-symbols';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const SUPPORTED_LANGUAGES = [
   { id: 'es', name: 'Spanish', flag: '🇪🇸' },
@@ -18,7 +18,7 @@ const SUPPORTED_LANGUAGES = [
 
 export default function LanguageSelectionScreen() {
   const colors = useAppColors();
-  const [selectedLang, setSelectedLang] = useState<string | null>('es'); // Pre-select a default
+  const [selectedLang, setSelectedLang] = useState<string | null>('es'); 
   const [isSaving, setIsSaving] = useState(false);
   
   const [fadeAnim] = useState(() => new Animated.Value(0));
@@ -41,7 +41,6 @@ export default function LanguageSelectionScreen() {
 
   const handleSave = () => {
     setIsSaving(true);
-    // Simulate a local save delay
     setTimeout(() => {
       setIsSaving(false);
       if (router.canGoBack()) {
@@ -65,7 +64,7 @@ export default function LanguageSelectionScreen() {
             accessibilityLabel="Go back"
             activeOpacity={0.7}
           >
-            <SymbolView name="chevron.left" size={24} tintColor={colors.textPrimary} />
+            <MaterialIcons name="chevron-left" size={28} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text variant="heading" color="textPrimary" style={styles.headerTitle}>
             Choose your language
@@ -118,7 +117,7 @@ export default function LanguageSelectionScreen() {
                     
                     {isSelected && (
                       <View style={styles.checkIcon}>
-                        <SymbolView name="checkmark.circle.fill" size={24} tintColor={colors.primary} />
+                        <MaterialIcons name="check-circle" size={24} color={colors.primary} />
                       </View>
                     )}
                   </Box>
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   headerPlaceholder: {
-    width: 32, // Matches back button width approximately to center title
+    width: 32,
   },
   scrollContent: {
     paddingHorizontal: theme.layout.screenPadding,

@@ -52,7 +52,17 @@ export default function HomeScreen() {
           <View style={styles.greetingCol}>
             <Text variant="bodySmall" weight="medium" style={{ color: st.onSurfaceVariant }}>Good morning,</Text>
             <Text style={{ fontSize: 28, fontWeight: '700', color: st.onSurface, marginTop: -2, letterSpacing: -0.5 }}>Shojib</Text>
-            <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 4 }}>Ready for your next conversation?</Text>
+            <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 4, marginBottom: 8 }}>Ready for your next conversation?</Text>
+            
+            <TouchableOpacity 
+              activeOpacity={0.8} 
+              onPress={() => router.push('/(app)/languages' as never)}
+              style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', backgroundColor: st.surfaceContainerHigh, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, gap: 4 }}
+            >
+              <Text style={{ fontSize: 12 }}>🇪🇸</Text>
+              <Text variant="label" style={{ color: st.onSurface, fontSize: 12, fontWeight: '600' }}>Spanish</Text>
+              <MaterialIcons name="edit" size={12} color={st.onSurfaceVariant} style={{ marginLeft: 2 }} />
+            </TouchableOpacity>
           </View>
           
           <View style={styles.headerRight}>
@@ -243,7 +253,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 40,
+    paddingBottom: 100, // accommodate bottom nav
   },
   headerSection: {
     flexDirection: 'row',
