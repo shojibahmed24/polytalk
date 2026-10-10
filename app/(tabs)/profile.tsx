@@ -1,6 +1,7 @@
 import React from 'react';
 import { Screen, Stack } from '@/components/layout';
-import { Text, Card } from '@/components/ui';
+import { Text, Card, Button } from '@/components/ui';
+import { router } from 'expo-router';
 import { theme } from '@/theme';
 
 export default function ProfileScreen() {
@@ -15,6 +16,12 @@ export default function ProfileScreen() {
             </Text>
           </Stack>
         </Card>
+
+        <Button 
+          label="Change Language" 
+          variant="secondary"
+          onPress={() => router.push('/(app)/languages')}
+        />
       </Stack>
     </Screen>
   );

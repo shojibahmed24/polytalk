@@ -322,3 +322,27 @@
 
 ### Next Step
 **P015 onward** — Next screen in the inventory, potentially Language Selection (S005) or the initial AI Conversation Scaffold (S006).
+
+---
+
+## [2026-10-10] P015 — Language Selection UI (S005)
+
+### Scope
+- Expand the navigation stack to include the `(app)` feature layer.
+- Implement S005: Language Selection mapped to `app/(app)/languages.tsx`.
+- Execute a strict visual adherence to the exact PolyTalk theme tokens, reusing existing layout components.
+- Securely expose `languages.tsx` via the Profile tab to support isolated verification.
+
+### Actions Taken
+- **Routing Expansion**: Added `(app)` to the root `_layout.tsx` stack. Initialized `app/(app)/_layout.tsx` handling interior stack navigation securely (suppressing Expo's default stacked header shadow and wiring matching background theme colors).
+- **S005 Feature Build**: Constructed a beautiful grid-list interface containing the supported languages (`es`, `fr`, `ja`, etc.).
+- **Visual Micro-interactions**: The selected language card pulses with a subtle cyan tint (`rgba(6, 182, 212, 0.05)`) bordered beautifully in solid primary `#06B6D4`. Utilized `expo-symbols` for precise checkmark indication without inflating bundle assets.
+- **Form Controls & Motion**: Animated the layout entrance smoothly mirroring the P014 behavior (`Animated.ScrollView`). Handled the Save action state perfectly via the native `Button`'s `loading={true}` state bridging a seamless return `router.back()` upon fake network resolution.
+- **Integration**: Added an isolated "Change Language" testing button strictly onto the `profile` tab so developers can tap into the feature securely.
+
+### Verification
+- Viewport tested. Flexbox maintains responsive safe zones on 320px screens perfectly.
+- Clean 0-error `typecheck` and `lint`.
+
+### Next Step
+**P016 onward** — Likely S006 AI Conversation, Tutor states, or further Dashboard interior workflows.

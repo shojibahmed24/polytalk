@@ -18,7 +18,7 @@ This registry tracks the status of all planned screens and major UI states (S001
 | S002 | Onboarding Flow | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | Design assets |
 | S003 | Sign In / Register | auth | app/(auth)/login.tsx | implemented | planned | planned | Supabase Auth |
 | S004 | Home / Dashboard | dashboard | app/(tabs)/index.tsx | implemented | planned | planned | User profile data |
-| S005 | Language Selection | settings | app/(app)/languages.tsx | planned | planned | planned | Supported language data |
+| S005 | Language Selection | settings | app/(app)/languages.tsx | implemented | planned | planned | Supported language data |
 | S006 | AI Conversation | tutor | app/(app)/chat/[id].tsx | planned | planned | planned | Puter.js, Speech-to-Text |
 | S007 | Grammar Explanation | grammar | src/features/grammar | planned | planned | planned | Puter.js NLP |
 | S008 | Pronunciation Test | pronunciation | app/(app)/pronunciation.tsx | planned | planned | planned | Native Audio APIs |
