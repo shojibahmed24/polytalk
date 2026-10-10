@@ -137,36 +137,83 @@ export default function OnboardingFlow() {
 
   // Step 2: AI Coach Intro (S014)
   const renderStep2 = () => (
-    <LayoutStack gap="lg" style={styles.content}>
-      <LayoutStack gap="sm">
-        <Text variant="display" color="textPrimary" style={{ fontSize: 28, lineHeight: 34 }}>Meet Your AI Coach</Text>
-        <Text variant="body" color="textSecondary" style={{ lineHeight: 22 }}>
-          PolyTalk uses advanced AI to give you real-time conversational practice and instant feedback.
+    <View style={{ flex: 1, width: '100%' }}>
+      <View style={styles.orbVisualContainer}>
+        {isLight && (
+          <>
+            <View style={[styles.blurBlob, { left: -20, top: 20, backgroundColor: 'rgba(6,182,212,0.15)' }]} />
+            <View style={[styles.blurBlob, { right: -20, bottom: 20, backgroundColor: 'rgba(139,92,246,0.15)' }]} />
+          </>
+        )}
+
+        <View style={[styles.floatingBubble, { top: 10, left: -10, backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
+          <MaterialIcons name="person" size={14} color="#06B6D4" />
+          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>"Hello! How are you?"</Text>
+        </View>
+        <View style={[styles.floatingBubble, { bottom: 15, right: -10, backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
+          <MaterialIcons name="smart-toy" size={14} color="#8B5CF6" />
+          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>"I'm doing great!"</Text>
+        </View>
+
+        <View style={styles.orbShadow}>
+          <LinearGradient colors={['#06B6D4', '#571BC1', '#8B5CF6']} style={styles.orbRing}>
+            <View style={[styles.orbInner, { backgroundColor: isLight ? '#FFFFFF' : '#111A2B' }]}>
+              <LinearGradient colors={['#06B6D4', '#8B5CF6']} style={styles.orbCore}>
+                <Svg width="56" height="56" viewBox="0 0 80 80">
+                  <Ellipse cx="40" cy="38" fill="#FFFFFF" rx="28" ry="24" />
+                  <Polygon fill="#FFFFFF" points="32,54 44,52 35,62" />
+                  <Circle cx="33" cy="38" fill="#06B6D4" r="4.5" />
+                  <Circle cx="47" cy="38" fill="#8B5CF6" r="4.5" />
+                  <Path d="M37 45 Q40 48 43 45" stroke="#1A2438" strokeLinecap="round" strokeWidth="2" />
+                </Svg>
+              </LinearGradient>
+            </View>
+          </LinearGradient>
+        </View>
+      </View>
+
+      <LayoutStack gap="sm" align="center" style={{ marginTop: 20, marginBottom: 20 }}>
+        <Text variant="display" color="textPrimary" align="center" style={{ fontSize: 26, lineHeight: 32 }}>
+          Your personal{'\n'}
+          <Text style={{ color: colors.primary }}>AI language coach</Text>
+        </Text>
+        <Text variant="body" color="textSecondary" align="center" style={{ fontSize: 13, lineHeight: 20, maxWidth: 300 }}>
+          Practice real conversations, improve your pronunciation, and speak with confidence — anytime, anywhere.
         </Text>
       </LayoutStack>
 
-      <LayoutStack gap="lg" style={{ marginTop: theme.spacing.xl }}>
-        <Box direction="row" align="center" gap="md" style={styles.featureRowInfo}>
+      <LayoutStack gap="sm">
+        <View style={[styles.featureCardRow, { backgroundColor: colors.surfaceElevated, borderColor: 'rgba(6,182,212,0.2)' }]}>
           <View style={[styles.featureIconWrapLarge, { backgroundColor: 'rgba(6,182,212,0.15)' }]}>
-            <MaterialIcons name="record-voice-over" size={28} color="#06B6D4" />
+            <MaterialIcons name="chat" size={20} color="#06B6D4" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text variant="heading" color="textPrimary">Speaking Practice</Text>
-            <Text variant="caption" color="textSecondary">Engage in natural voice conversations just like you would with a native speaker.</Text>
+            <Text variant="heading" color="textPrimary" style={{ fontSize: 14 }}>Speak Naturally</Text>
+            <Text variant="caption" color="textSecondary">Practice everyday conversations with AI.</Text>
           </View>
-        </Box>
+        </View>
 
-        <Box direction="row" align="center" gap="md" style={styles.featureRowInfo}>
+        <View style={[styles.featureCardRow, { backgroundColor: colors.surfaceElevated, borderColor: 'rgba(139,92,246,0.2)' }]}>
           <View style={[styles.featureIconWrapLarge, { backgroundColor: 'rgba(139,92,246,0.15)' }]}>
-            <MaterialIcons name="bolt" size={28} color="#8B5CF6" />
+            <MaterialIcons name="graphic-eq" size={20} color="#8B5CF6" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text variant="heading" color="textPrimary">Instant Feedback</Text>
-            <Text variant="caption" color="textSecondary">Get immediate corrections on pronunciation and grammar to improve faster.</Text>
+            <Text variant="heading" color="textPrimary" style={{ fontSize: 14 }}>Instant Feedback</Text>
+            <Text variant="caption" color="textSecondary">Improve pronunciation and grammar as you learn.</Text>
           </View>
-        </Box>
+        </View>
+
+        <View style={[styles.featureCardRow, { backgroundColor: colors.surfaceElevated, borderColor: 'rgba(250,134,87,0.2)' }]}>
+          <View style={[styles.featureIconWrapLarge, { backgroundColor: 'rgba(250,134,87,0.15)' }]}>
+            <MaterialIcons name="bolt" size={20} color="#FA8657" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text variant="heading" color="textPrimary" style={{ fontSize: 14 }}>Learn at Your Pace</Text>
+            <Text variant="caption" color="textSecondary">Build confidence through personalized practice.</Text>
+          </View>
+        </View>
       </LayoutStack>
-    </LayoutStack>
+    </View>
   );
 
   // Step 3: Final confirmation (S015)
@@ -185,8 +232,6 @@ export default function OnboardingFlow() {
       </LayoutStack>
     </LayoutStack>
   );
-
-  const isNextDisabled = false;
 
   return (
     <Screen bg="background" edges={['top', 'bottom', 'left', 'right']} padded={false}>
@@ -299,13 +344,30 @@ export default function OnboardingFlow() {
               </TouchableOpacity>
             </View>
           ) : step === 2 ? (
-            <Button 
-              variant="primary" 
-              label="Continue" 
-              size="lg" 
-              onPress={handleNext} 
-              disabled={isNextDisabled}
-            />
+            <View>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleNext}
+                style={styles.gradientButtonWrap}
+              >
+                <LinearGradient
+                  colors={['#06B6D4', '#8B5CF6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.gradientButton}
+                >
+                  <Text variant="body" weight="bold" color="textInverse" style={{ marginRight: 8, fontSize: 16 }}>
+                    Continue
+                  </Text>
+                  <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
+                </LinearGradient>
+              </TouchableOpacity>
+              <Box marginVertical="md">
+                <Text variant="caption" color="textSecondary" align="center">
+                  Step 2 of 3 • Personalized AI Curriculum
+                </Text>
+              </Box>
+            </View>
           ) : (
             <Button 
               variant="primary" 
@@ -451,6 +513,80 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: theme.spacing.sm,
+  },
+  orbVisualContainer: {
+    width: '100%',
+    height: 270,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: theme.spacing.sm,
+  },
+  floatingBubble: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    zIndex: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  bubbleText: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  orbShadow: {
+    width: 128,
+    height: 128,
+    borderRadius: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#06B6D4',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.45,
+    shadowRadius: 40,
+    elevation: 10,
+    zIndex: 10,
+  },
+  orbRing: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 64,
+    padding: 4,
+  },
+  orbInner: {
+    flex: 1,
+    width: '100%',
+    borderRadius: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  orbCore: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  featureCardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 10,
+    borderRadius: 16,
+    borderWidth: 1,
   },
   blurBlob: {
     position: 'absolute',
