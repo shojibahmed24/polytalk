@@ -17,6 +17,8 @@ import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { TARGET_LANGUAGES } from '@/constants/languages';
+import { supabase } from '@/utils/supabase';
+import { requestAIResponse } from '@/services/ai';
 
 type Message = {
   id: string;
@@ -83,50 +85,174 @@ export default function AIChatScreen() {
     divider: isSystemDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
   };
 
-  const initialMessages: Message[] = [
-    {
-      id: 'msg_1',
-      role: 'assistant',
-      text: `Hi! Let's practice ordering food at a restaurant. What would you like to order today?`,
-      timestamp: '10:24 AM'
-    },
-    {
-      id: 'msg_2',
-      role: 'user',
-      text: 'I want a chicken burger and a orange juice.',
-      timestamp: '10:25 AM'
-    },
-    {
-      id: 'msg_3',
-      role: 'assistant',
-      text: `Great job! Your meaning is clear. A more natural way to say it is: "I'd like a chicken burger and an orange juice, please."`,
-      timestamp: '10:25 AM',
-      pedagogical: {
-        type: 'Grammar & Politeness Tip',
-        xp: 15,
-        originalHtml: 'want...a', // We will hardcode the exact representation for this UI replica
-        betterHtml: 'like...an',
-        explanation: 'Using "I want" can sound direct. "I\'d like" is polite. Also remember "an" before vowel sounds!'
+  
+
+  
+
+    const [messages, setMessages] = useState<Message[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
+
+  useEffect(() => {
+    async function loadOrCreateConversation() {
+      setIsLoading(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return; // Unauthenticated
+
+        let targetId = id;
+        
+        // If id is not a uuid, it might be a language name
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
+        
+        if (!isUUID) {
+          // Find or create an active conversation for this language
+          const targetLang = (id || 'spanish').toLowerCase();
+          const { data: existing } = await supabase
+            .from('conversations')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('target_language', targetLang)
+            .eq('status', 'active')
+            .limit(1)
+            .single();
+
+          if (existing) {
+            targetId = existing.id;
+          } else {
+            // Create new
+            const { data: newConv } = await supabase
+              .from('conversations')
+              .insert({
+                user_id: user.id,
+                target_language: targetLang,
+                difficulty: 'A1',
+                status: 'active'
+              })
+              .select('id')
+              .single();
+            if (newConv) targetId = newConv.id;
+          }
+        }
+        
+        if (targetId) {
+          setConversationId(targetId);
+          // Load messages
+          const { data: msgs } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('conversation_id', targetId)
+            .order('created_at', { ascending: true });
+          
+          if (msgs) {
+            setMessages(msgs.map(m => ({
+              id: m.id,
+              role: m.role,
+              text: m.content,
+              timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              pedagogical: m.pedagogical_type ? {
+                type: m.pedagogical_type,
+                xp: m.pedagogical_xp,
+                originalHtml: m.original_html,
+                betterHtml: m.better_html,
+                explanation: '' // Optional logic
+              } : undefined
+            })));
+          }
+        }
+      } catch (err) {
+        console.warn('Load conversation err:', err);
+      } finally {
+        setIsLoading(false);
       }
     }
-  ];
+    loadOrCreateConversation();
+  }, [id]);
 
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-    const newMsg: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      text: inputText.trim(),
-      timestamp: '10:26 AM'
-    };
-    setMessages(prev => [...prev, newMsg]);
+  const handleSend = async () => {
+    if (!inputText.trim() || isSending || !conversationId) return;
+    const textToSend = inputText.trim();
     setInputText('');
     Keyboard.dismiss();
-    
-    // Auto-scroll logic will be handled by onContentSizeChange in ScrollView
+    setIsSending(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setIsSending(false);
+      return;
+    }
+
+    // Insert user message locally
+    const tempId = Date.now().toString();
+    const newMsg: Message = {
+      id: tempId,
+      role: 'user',
+      text: textToSend,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    setMessages(prev => [...prev, newMsg]);
+
+    try {
+      // Persist user message to DB
+      const { data: insertedUserMsg } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: conversationId,
+          user_id: user.id,
+          role: 'user',
+          content: textToSend
+        })
+        .select('id')
+        .single();
+        
+      if (insertedUserMsg) {
+        setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: insertedUserMsg.id } : m));
+      }
+
+      // Request AI response
+      const aiRes = await requestAIResponse(conversationId, textToSend);
+      
+      if (aiRes.error) {
+        // Fallback for missing AI / error
+        setMessages(prev => [...prev, {
+          id: Date.now().toString() + '_err',
+          role: 'assistant',
+          text: aiRes.error || 'Unknown error',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }]);
+      } else {
+        // Valid response
+        const { data: insertedAiMsg } = await supabase
+          .from('messages')
+          .insert({
+            conversation_id: conversationId,
+            user_id: user.id, // technically assistant message owned by user for rls
+            role: 'assistant',
+            content: aiRes.reply,
+            pedagogical_type: aiRes.pedagogical?.type,
+            pedagogical_xp: aiRes.pedagogical?.xp,
+            original_html: aiRes.pedagogical?.originalHtml,
+            better_html: aiRes.pedagogical?.betterHtml
+          })
+          .select('id')
+          .single();
+
+        setMessages(prev => [...prev, {
+          id: insertedAiMsg?.id || Date.now().toString() + '_ai',
+          role: 'assistant',
+          text: aiRes.reply,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          pedagogical: aiRes.pedagogical
+        }]);
+      }
+    } catch (err) {
+      console.warn('Send error:', err);
+    } finally {
+      setIsSending(false);
+    }
   };
+
 
   const handleMic = () => {
     setIsListening(prev => !prev);
