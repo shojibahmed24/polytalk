@@ -295,7 +295,7 @@ export default function LiveCallScreen() {
 
         <TouchableOpacity 
           style={styles.endCallBtn} 
-          onPress={() => router.back()}
+          onPress={() => router.push('/(app)/summary' as never)}
         >
           <View style={[styles.endCallIconWrap, { backgroundColor: st.errorContainer }]}>
             <MaterialIcons name="call-end" size={28} color={st.onErrorContainer} />
