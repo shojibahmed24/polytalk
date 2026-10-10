@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, Stack as LayoutStack, Box } from '@/components/layout';
@@ -10,12 +10,31 @@ import { bootState } from '../index';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgLinearGradient, Stop, Ellipse, Polygon } from 'react-native-svg';
 
+
+const MULTILINGUAL_PHRASES = [
+  { text: "Hello! Learn a new language.", lang: "en" },
+  { text: "স্বাগতম! নতুন ভাষা শিখুন।", lang: "bn" },
+  { text: "नमस्ते! एक नई भाषा सीखें।", lang: "hi" },
+  { text: "こんにちは！新しい言語を学びましょう。", lang: "ja" },
+  { text: "你好！学习一门新语言。", lang: "zh" },
+  { text: "¡Hola! Aprende un nuevo idioma.", lang: "es" }
+];
+
 export default function OnboardingFlow() {
   const colors = useAppColors();
   const { isDark: isSystemDark, themeMode, setThemeMode } = React.useContext(ThemeContext);
   const toggleTheme = () => setThemeMode(themeMode === 'light' ? 'dark' : themeMode === 'dark' ? 'light' : isSystemDark ? 'light' : 'dark');
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % MULTILINGUAL_PHRASES.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
 
   const handleNext = () => {
     if (step < 3) setStep((prev) => (prev + 1) as 1 | 2 | 3);
@@ -53,15 +72,15 @@ export default function OnboardingFlow() {
             <Text style={styles.badgeCode}>EN</Text>
           </View>
           <View style={[styles.badge, { top: 24, right: 24 }]}>
-            <Text style={[styles.badgeText, { color: '#8B5CF6' }]}>Ã£Ââ€š</Text>
+            <Text style={[styles.badgeText, { color: '#8B5CF6' }]}>ã‚</Text>
             <Text style={styles.badgeCode}>JA</Text>
           </View>
           <View style={[styles.badge, { bottom: 20, left: 32 }]}>
-            <Text style={[styles.badgeText, { color: '#F97316' }]}>Ã¦â€“â€¡</Text>
+            <Text style={[styles.badgeText, { color: '#F97316' }]}>æ–‡</Text>
             <Text style={styles.badgeCode}>ZH</Text>
           </View>
           <View style={[styles.badge, { bottom: 16, right: 28 }]}>
-            <Text style={[styles.badgeText, { color: '#06B6D4' }]}>Ã‚Â¡Hola!</Text>
+            <Text style={[styles.badgeText, { color: '#06B6D4' }]}>Â¡Hola!</Text>
             <Text style={styles.badgeCode}>ES</Text>
           </View>
           {/* Orbital Rings */}
@@ -144,7 +163,7 @@ export default function OnboardingFlow() {
 
         <View style={[styles.floatingBubble, { top: 10, left: -10, backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
           <MaterialIcons name="person" size={14} color="#06B6D4" />
-          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>"Hello! How are you?"</Text>
+          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>{`"${MULTILINGUAL_PHRASES[phraseIndex].text}"`}</Text>
         </View>
         <View style={[styles.floatingBubble, { bottom: 15, right: -10, backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
           <MaterialIcons name="smart-toy" size={14} color="#8B5CF6" />
@@ -724,6 +743,7 @@ const styles = StyleSheet.create({
     padding: theme.spacing.sm,
   },
 });
+
 
 
 
