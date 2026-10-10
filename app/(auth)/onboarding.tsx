@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, Stack as LayoutStack, Box } from '@/components/layout';
 import { Text, Button } from '@/components/ui';
@@ -48,23 +48,22 @@ export default function OnboardingFlow() {
           )}
 
           {/* Floating Language Badges */}
-          <View style={[styles.badge, { top: 20, left: 30 }]}>
+          <View style={[styles.badge, { top: 16, left: 24 }]}>
             <Text style={styles.badgeText}>A</Text>
             <Text style={styles.badgeCode}>EN</Text>
           </View>
-          <View style={[styles.badge, { top: 30, right: 30 }]}>
-            <Text style={[styles.badgeText, { color: '#8B5CF6' }]}>あ</Text>
+          <View style={[styles.badge, { top: 24, right: 24 }]}>
+            <Text style={[styles.badgeText, { color: '#8B5CF6' }]}>ã‚</Text>
             <Text style={styles.badgeCode}>JA</Text>
           </View>
-          <View style={[styles.badge, { bottom: 30, left: 40 }]}>
-            <Text style={[styles.badgeText, { color: '#F97316' }]}>文</Text>
+          <View style={[styles.badge, { bottom: 20, left: 32 }]}>
+            <Text style={[styles.badgeText, { color: '#F97316' }]}>æ–‡</Text>
             <Text style={styles.badgeCode}>ZH</Text>
           </View>
-          <View style={[styles.badge, { bottom: 20, right: 35 }]}>
-            <Text style={[styles.badgeText, { color: '#06B6D4' }]}>¡Hola!</Text>
+          <View style={[styles.badge, { bottom: 16, right: 28 }]}>
+            <Text style={[styles.badgeText, { color: '#06B6D4' }]}>Â¡Hola!</Text>
             <Text style={styles.badgeCode}>ES</Text>
           </View>
-          
           {/* Orbital Rings */}
           <View style={[styles.orbitalRing, { width: 250, height: 250, borderColor: 'rgba(6,182,212,0.2)' }]} />
           <View style={[styles.orbitalRing, { width: 210, height: 210, borderColor: 'rgba(139,92,246,0.2)' }]} />
@@ -98,13 +97,10 @@ export default function OnboardingFlow() {
       {/* Typography */}
       <LayoutStack gap="xs" align="center" style={styles.textContainer}>
         <Text variant="display" color="textPrimary" align="center" style={styles.titleText}>
-          Speak a new language
-        </Text>
-        <Text variant="display" color="primary" align="center" style={styles.titleText}>
-          with confidence.
+          Speak a new language{'\n'}with <Text style={{ color: colors.primary }}>confidence.</Text>
         </Text>
         <View style={{ marginTop: theme.spacing.sm }}>
-          <Text variant="body" color="textSecondary" align="center" style={{ maxWidth: 300 }}>
+          <Text variant="body" color="textSecondary" align="center" style={{ maxWidth: 300, fontSize: 15, lineHeight: 24 }}>
             Practice naturally with your personal AI language coach.
           </Text>
         </View>
@@ -137,7 +133,7 @@ export default function OnboardingFlow() {
 
   // Step 2: AI Coach Intro (S014)
   const renderStep2 = () => (
-    <View style={{ flex: 1, width: '100%' }}>
+    <View style={{ width: '100%', paddingVertical: 16 }}>
       <View style={styles.orbVisualContainer}>
         {isLight && (
           <>
@@ -178,7 +174,7 @@ export default function OnboardingFlow() {
           <Text style={{ color: colors.primary }}>AI language coach</Text>
         </Text>
         <Text variant="body" color="textSecondary" align="center" style={{ fontSize: 13, lineHeight: 20, maxWidth: 300 }}>
-          Practice real conversations, improve your pronunciation, and speak with confidence — anytime, anywhere.
+          Practice real conversations, improve your pronunciation, and speak with confidence Ã¢â‚¬â€ anytime, anywhere.
         </Text>
       </LayoutStack>
 
@@ -283,11 +279,11 @@ export default function OnboardingFlow() {
         </Box>
 
         {/* Scrollable Content Area */}
-        <View style={styles.mainArea}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} showsVerticalScrollIndicator={false}>
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
-        </View>
+        </ScrollView>
 
         {/* Bottom Actions */}
         <Box style={styles.footer}>
@@ -496,7 +492,6 @@ const styles = StyleSheet.create({
 
   // New Step 1 Styles
   step1Container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: theme.spacing.xs,
@@ -673,8 +668,8 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.lg,
   },
   titleText: {
-    fontSize: 26,
-    lineHeight: 32,
+    fontSize: 34,
+    lineHeight: 40,
     fontWeight: '800',
   },
   featuresRow: {
@@ -729,4 +724,6 @@ const styles = StyleSheet.create({
     padding: theme.spacing.sm,
   },
 });
+
+
 
