@@ -1,3 +1,6 @@
+import React, { createContext, useContext, useState } from 'react';
+import { useColorScheme as useSystemColorScheme } from 'react-native';
+
 /**
  * PolyTalk Semantic Color Tokens
  * 
@@ -6,8 +9,6 @@
  * - Primary Accent: Cyan
  * - Secondary Accent: Purple
  */
-
-import { useColorScheme } from 'react-native';
 
 export const darkColors = {
   background: '#080D1A',
@@ -54,11 +55,6 @@ export const lightColors = {
 export const colors = darkColors as Record<keyof typeof darkColors, string>; // Backward compatibility for static usages
 
 export type Colors = Record<keyof typeof darkColors, string>;
-
-
-
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useColorScheme as useSystemColorScheme } from 'react-native';
 
 export type ThemeContextType = {
   themeMode: 'light' | 'dark' | 'system';
