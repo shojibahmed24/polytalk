@@ -53,15 +53,15 @@ export default function OnboardingFlow() {
             <Text style={styles.badgeCode}>EN</Text>
           </View>
           <View style={[styles.badge, { top: 24, right: 24 }]}>
-            <Text style={[styles.badgeText, { color: '#8B5CF6' }]}>ã‚</Text>
+            <Text style={[styles.badgeText, { color: '#8B5CF6' }]}>Ã£Ââ€š</Text>
             <Text style={styles.badgeCode}>JA</Text>
           </View>
           <View style={[styles.badge, { bottom: 20, left: 32 }]}>
-            <Text style={[styles.badgeText, { color: '#F97316' }]}>æ–‡</Text>
+            <Text style={[styles.badgeText, { color: '#F97316' }]}>Ã¦â€“â€¡</Text>
             <Text style={styles.badgeCode}>ZH</Text>
           </View>
           <View style={[styles.badge, { bottom: 16, right: 28 }]}>
-            <Text style={[styles.badgeText, { color: '#06B6D4' }]}>Â¡Hola!</Text>
+            <Text style={[styles.badgeText, { color: '#06B6D4' }]}>Ã‚Â¡Hola!</Text>
             <Text style={styles.badgeCode}>ES</Text>
           </View>
           {/* Orbital Rings */}
@@ -174,7 +174,7 @@ export default function OnboardingFlow() {
           <Text style={{ color: colors.primary }}>AI language coach</Text>
         </Text>
         <Text variant="body" color="textSecondary" align="center" style={{ fontSize: 13, lineHeight: 20, maxWidth: 300 }}>
-          Practice real conversations, improve your pronunciation, and speak with confidence Ã¢â‚¬â€ anytime, anywhere.
+          Practice real conversations, improve your pronunciation, and speak with confidence - anytime, anywhere.
         </Text>
       </LayoutStack>
 
@@ -279,7 +279,7 @@ export default function OnboardingFlow() {
         </Box>
 
         {/* Scrollable Content Area */}
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} showsVerticalScrollIndicator={false}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingVertical: 20 }} showsVerticalScrollIndicator={false}>
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
@@ -360,7 +360,7 @@ export default function OnboardingFlow() {
               </TouchableOpacity>
               <Box marginVertical="md">
                 <Text variant="caption" color="textSecondary" align="center">
-                  Step 2 of 3 • Personalized AI Curriculum
+                  Step 2 of 3 â€¢ Personalized AI Curriculum
                 </Text>
               </Box>
             </View>
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.xl,
   },
   footer: {
-    paddingBottom: theme.layout.screenPadding + 20,
+    paddingBottom: theme.layout.screenPadding,
   },
   dotsContainer: {
     marginBottom: theme.spacing.xl,
@@ -694,9 +694,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   featureIconWrapLarge: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -724,6 +724,7 @@ const styles = StyleSheet.create({
     padding: theme.spacing.sm,
   },
 });
+
 
 
 
