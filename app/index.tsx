@@ -30,5 +30,5 @@ export default function BootScreen() {
     return <Redirect href="/(auth)/onboarding" />;
   }
 
-  return <Redirect href="/(tabs)" />;
+  return <Redirect href="/(auth)/login" />;
 }

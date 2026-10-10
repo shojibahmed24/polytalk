@@ -12,12 +12,14 @@ export interface TextInputProps extends RNTextInputProps {
   label?: string;
   error?: string;
   helperText?: string;
+  rightAccessory?: React.ReactNode;
 }
 
 export function TextInput({
   label,
   error,
   helperText,
+  rightAccessory,
   style,
   onFocus,
   onBlur,
@@ -38,30 +40,38 @@ export function TextInput({
           {label}
         </Text>
       )}
-      <RNTextInput
-        accessibilityLabel={label}
-        aria-invalid={!!error}
-        accessibilityState={{ disabled: props.editable === false }}
-        style={[
-          styles.input,
-          {
-            borderColor: getBorderColor(),
-            color: theme.colors.textPrimary,
-          },
-          props.editable === false && styles.disabled,
-          style,
-        ]}
-        placeholderTextColor={theme.colors.textSecondary}
-        onFocus={(e) => {
-          setIsFocused(true);
-          onFocus?.(e);
-        }}
-        onBlur={(e) => {
-          setIsFocused(false);
-          onBlur?.(e);
-        }}
-        {...props}
-      />
+      <View style={styles.inputWrapper}>
+        <RNTextInput
+          accessibilityLabel={label}
+          aria-invalid={!!error}
+          accessibilityState={{ disabled: props.editable === false }}
+          style={[
+            styles.input,
+            {
+              borderColor: getBorderColor(),
+              color: theme.colors.textPrimary,
+              paddingRight: rightAccessory ? 48 : theme.spacing.md,
+            },
+            props.editable === false && styles.disabled,
+            style,
+          ]}
+          placeholderTextColor={theme.colors.textSecondary}
+          onFocus={(e) => {
+            setIsFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            onBlur?.(e);
+          }}
+          {...props}
+        />
+        {rightAccessory && (
+          <View style={styles.rightAccessory}>
+            {rightAccessory}
+          </View>
+        )}
+      </View>
       {error ? (
         <Text variant="caption" color="error" style={styles.footerText}>
           {error}
@@ -83,6 +93,10 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: theme.spacing.xs,
   },
+  inputWrapper: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
   input: {
     height: theme.layout.touchTargetMinHeight,
     backgroundColor: theme.colors.surface,
@@ -90,6 +104,13 @@ const styles = StyleSheet.create({
     borderRadius: theme.radii.md,
     paddingHorizontal: theme.spacing.md,
     fontSize: theme.typography.sizes.md,
+  },
+  rightAccessory: {
+    position: 'absolute',
+    right: theme.spacing.md,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   disabled: {
     opacity: 0.5,

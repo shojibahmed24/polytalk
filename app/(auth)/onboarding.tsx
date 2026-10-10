@@ -29,7 +29,7 @@ export default function OnboardingFlow() {
 
   const handleComplete = () => {
     bootState.hasCompletedOnboarding = true;
-    router.replace('/(tabs)');
+    router.replace('/(auth)/login');
   };
 
   // Step 1: Welcome & Value Prop (S013)

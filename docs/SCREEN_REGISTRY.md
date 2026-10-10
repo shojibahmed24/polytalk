@@ -16,7 +16,7 @@ This registry tracks the status of all planned screens and major UI states (S001
 |----|---------------------|-------------------------|-----------------------|----------------|-------------|------|--------------------------|
 | S001 | Splash / Boot | app | app/index.tsx | implemented | planned | planned | Initialization logic |
 | S002 | Onboarding Flow | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | Design assets |
-| S003 | Sign In / Register | auth | app/(auth)/login.tsx | planned | planned | planned | Supabase Auth |
+| S003 | Sign In / Register | auth | app/(auth)/login.tsx | implemented | planned | planned | Supabase Auth |
 | S004 | Home / Dashboard | dashboard | app/(tabs)/index.tsx | implemented (scaffold) | planned | planned | User profile data |
 | S005 | Language Selection | settings | app/(app)/languages.tsx | planned | planned | planned | Supported language data |
 | S006 | AI Conversation | tutor | app/(app)/chat/[id].tsx | planned | planned | planned | Puter.js, Speech-to-Text |
@@ -29,11 +29,11 @@ This registry tracks the status of all planned screens and major UI states (S001
 | S013 | Onboarding Step 1 | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | TBD |
 | S014 | Onboarding Step 2 | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | TBD |
 | S015 | Onboarding Step 3 | onboarding | app/(auth)/onboarding.tsx | implemented | planned | planned | TBD |
-| S016 | Auth State 1 | auth | TBD | planned | planned | planned | TBD |
-| S017 | Auth State 2 | auth | TBD | planned | planned | planned | TBD |
-| S018 | Auth State 3 | auth | TBD | planned | planned | planned | TBD |
-| S019 | Auth State 4 | auth | TBD | planned | planned | planned | TBD |
-| S020 | Auth State 5 | auth | TBD | planned | planned | planned | TBD |
+| S016 | Auth State 1 (Sign In) | auth | app/(auth)/login.tsx | implemented | planned | planned | TBD |
+| S017 | Auth State 2 (Register) | auth | app/(auth)/login.tsx | implemented | planned | planned | TBD |
+| S018 | Auth State 3 (Validation Errors) | auth | app/(auth)/login.tsx | implemented | planned | planned | TBD |
+| S019 | Auth State 4 (Password Toggle) | auth | app/(auth)/login.tsx | implemented | planned | planned | TBD |
+| S020 | Auth State 5 (Submission Mock) | auth | app/(auth)/login.tsx | implemented | planned | planned | TBD |
 | S021 | Dashboard View 1 | dashboard | TBD | planned | planned | planned | TBD |
 | S022 | Dashboard View 2 | dashboard | TBD | planned | planned | planned | TBD |
 | S023 | Dashboard View 3 | dashboard | TBD | planned | planned | planned | TBD |

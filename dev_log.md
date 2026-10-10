@@ -273,3 +273,27 @@
 
 ### Next Step
 **Authentication / S003 Sign-In UI** (or upcoming S016-S020 flow) or continuing to S004 Dashboard UI.
+
+---
+
+## [2026-10-10] P013 — Authentication UI: Sign In, Registration & Validation States
+
+### Scope
+- Implement S003 (Sign In / Register) and its granular states (S016-S020).
+- Build the core authentication views: Email/Password inputs, inline field validation, and password visibility toggle.
+- Create explicit boundaries to simulate authentication local state (without prematurely integrating Supabase).
+- Ensure smooth route handoff from the Onboarding flow (P012) into the Auth wall, providing a Developer escape hatch to test the app structure `(tabs)`.
+
+### Actions Taken
+- **Flexible `TextInput` Refactor**: Extended the core `TextInput.tsx` component to natively support `rightAccessory` nodes. This cleanly permitted an interactive eye toggle for password visibility without muddying the overarching component layout.
+- **S016, S017 Auth Routing Toggle**: Merged sign-in and registration seamlessly inside `app/(auth)/login.tsx` using local `mode` state. This prevents aggressive route pushes on simple form switches while keeping UX fluid.
+- **S018 Form Validation**: Baked in rigorous local validation criteria handling empty fields, malformed emails (`/\S+@\S+\.\S+/`), length restrictions (`< 6`), and strict password confirmations natively in React without external dependency bloat.
+- **S019, S020 States**: Embedded the password toggling natively. The "Submission" triggers a beautiful UI `Dialog` cleanly stating that backend integration is postponed (thus satisfying the requirement to *not* fake an auth login maliciously).
+
+### Verification
+- `npm run typecheck` returned perfect typing.
+- Validated on Web Preview (`http://localhost:8081`). The navigation successfully pushes from `onboarding.tsx` -> `login.tsx` post-wizard. 
+- The fallback `Dialog` overlays perfectly trapping focus on submit. 
+
+### Next Step
+**P014 onward** — Start bringing the authenticated feature set to life, likely starting with the **S004 Dashboard UI** or progressing down the feature screen inventory.
