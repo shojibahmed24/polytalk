@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { View, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'react-native';
 import { router } from 'expo-router';
 
@@ -7,12 +8,24 @@ import { Text } from '@/components/ui';
 import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { getTargetLanguage } from '@/utils/languageStorage';
+import { TARGET_LANGUAGES } from '@/constants/languages';
 import Svg, { Path, Circle } from 'react-native-svg';
 
 
 
 export default function HomeScreen() {
-  const { isDark: isSystemDark } = React.useContext(ThemeContext);
+    const { isDark: isSystemDark } = React.useContext(ThemeContext);
+  const [selectedTarget, setSelectedTarget] = useState('es');
+
+  useFocusEffect(
+    useCallback(() => {
+      getTargetLanguage().then(setSelectedTarget);
+    }, [])
+  );
+  
+  const activeLang = TARGET_LANGUAGES.find(l => l.id === selectedTarget) || TARGET_LANGUAGES[0];
+
   
 
   // Stitch Color Tokens Mapping
@@ -59,8 +72,8 @@ export default function HomeScreen() {
               onPress={() => router.push('/(app)/languages' as never)}
               style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', backgroundColor: st.surfaceContainerHigh, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, gap: 4 }}
             >
-              <Text style={{ fontSize: 12 }}>🇪🇸</Text>
-              <Text variant="label" style={{ color: st.onSurface, fontSize: 12, fontWeight: '600' }}>Spanish</Text>
+              <Text style={{ fontSize: 12 }}>{activeLang.flag}</Text>
+              <Text variant="label" style={{ color: st.onSurface, fontSize: 12, fontWeight: '600' }}>{activeLang.englishName}</Text>
               <MaterialIcons name="edit" size={12} color={st.onSurfaceVariant} style={{ marginLeft: 2 }} />
             </TouchableOpacity>
           </View>
