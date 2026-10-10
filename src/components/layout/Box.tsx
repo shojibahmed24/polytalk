@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ViewProps, ViewStyle } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 
 export interface BoxProps extends ViewProps {
   flex?: ViewStyle['flex'];
@@ -39,6 +40,8 @@ export function Box({
   style,
   ...props
 }: BoxProps) {
+  const colors = useAppColors();
+  
   const dynamicStyle: ViewStyle = {
     flex,
     flexDirection: direction,
@@ -51,10 +54,10 @@ export function Box({
     margin: margin ? theme.spacing[margin] : undefined,
     marginHorizontal: marginHorizontal ? theme.spacing[marginHorizontal] : undefined,
     marginVertical: marginVertical ? theme.spacing[marginVertical] : undefined,
-    backgroundColor: bg ? theme.colors[bg] : undefined,
+    backgroundColor: bg ? colors[bg] : undefined,
     borderRadius: radius ? theme.radii[radius] : undefined,
     borderWidth,
-    borderColor: borderColor ? theme.colors[borderColor] : undefined,
+    borderColor: borderColor ? colors[borderColor] : undefined,
   };
 
   return <View style={[dynamicStyle, style]} {...props} />;

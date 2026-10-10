@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, View, ViewProps, TouchableOpacityProps } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 
 export type CardVariant = 'default' | 'elevated' | 'outlined';
 
@@ -20,12 +21,13 @@ export function Card({
   children,
   ...props
 }: CardProps) {
+  const colors = useAppColors();
   const isOutlined = variant === 'outlined';
   
   const getBackgroundColor = () => {
     if (isOutlined) return 'transparent';
-    if (variant === 'elevated') return theme.colors.surfaceElevated;
-    return theme.colors.surface;
+    if (variant === 'elevated') return colors.surfaceElevated;
+    return colors.surface;
   };
 
   const dynamicStyle = {
@@ -33,7 +35,7 @@ export function Card({
     padding: theme.spacing[padding],
     borderRadius: theme.radii.lg,
     borderWidth: isOutlined ? 1 : 0,
-    borderColor: isOutlined ? theme.colors.border : 'transparent',
+    borderColor: isOutlined ? colors.border : 'transparent',
     opacity: disabled ? 0.6 : 1,
   };
 

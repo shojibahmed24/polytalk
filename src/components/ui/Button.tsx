@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, TouchableOpacityProps, ActivityIndicator, StyleSheet } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { Text } from './Text';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
@@ -22,18 +23,19 @@ export function Button({
   style,
   ...props
 }: ButtonProps) {
+  const colors = useAppColors();
   const isOutline = variant === 'outline';
   const isGhost = variant === 'ghost';
   
   const getBackgroundColor = () => {
     if (isOutline || isGhost) return 'transparent';
-    if (variant === 'destructive') return theme.colors.error;
-    if (variant === 'secondary') return theme.colors.secondary;
-    return theme.colors.primary;
+    if (variant === 'destructive') return colors.error;
+    if (variant === 'secondary') return colors.secondary;
+    return colors.primary;
   };
 
   const getBorderColor = () => {
-    if (isOutline) return theme.colors.border;
+    if (isOutline) return colors.border;
     return 'transparent';
   };
 

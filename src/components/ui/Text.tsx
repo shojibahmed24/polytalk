@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text as RNText, TextProps as RNTextProps, StyleSheet, TextStyle } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 
 export type TextVariant = 
   | 'display'
@@ -26,6 +27,7 @@ export function Text({
   style, 
   ...props 
 }: TextProps) {
+  const colors = useAppColors();
   const variantStyle = variantStyles[variant];
   const fontWeight = weight ? theme.typography.weights[weight] : variantStyle.fontWeight;
 
@@ -34,7 +36,7 @@ export function Text({
       style={[
         variantStyle,
         { 
-          color: theme.colors[color],
+          color: colors[color],
           textAlign: align,
           fontWeight,
         },

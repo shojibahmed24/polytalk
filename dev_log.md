@@ -371,3 +371,29 @@
 
 ### Next Step
 **P017 onward** — E.g. Grammar Explanation (S007) or Pronunciation Test (S008).
+
+---
+
+## [2026-10-10] P017 — Grammar Explanation & Adaptive Themes (S007)
+
+### Scope
+- Determine existing adaptive theme capability (there was none; static hex exports).
+- Safely introduce light theme tokens alongside existing dark ones.
+- Build a dynamic `useAppColors` React Hook linking `useColorScheme()` to the explicit PolyTalk palette.
+- Implement S007: Grammar Explanation at `app/(app)/grammar.tsx`.
+- Establish the new "Futuristic AI" visual directive (restrained pulsing glows, layered semantic surfaces, distinct grammar correction states).
+- Honest mocking of offline/pending AI processing with clear delays and explanatory messaging.
+
+### Actions Taken
+- **Theme Infrastructure**: Refactored `src/theme/colors.ts` to export `lightColors`, `darkColors`, and `useAppColors()`. Rewrote the TS definition dynamically (`Record<keyof typeof darkColors, string>`) so literal checking remains solid.
+- **Primitive Adaptation**: Retrofitted `Box.tsx`, `Screen.tsx`, `Text.tsx`, `Card.tsx`, `Button.tsx`, and `TextInput.tsx` to pull background and text colors from `useAppColors()` directly.
+- **S007 Implementation**: Designed an interactive sentence-analysis card that renders a pulsing cyan glow (`Animated.loop` + `blur(8px)`) behind the CTA when input is valid. Mocked a realistic 1200ms processing delay.
+- **Dashboard Wiring**: Swapped the unbuilt Vocabulary action in the `app/(tabs)/index.tsx` quick grid to point directly to `/(app)/grammar`.
+
+### Verification
+- Full typecheck and ESLint validations complete (0 errors). 
+- Tested live web preview. Light mode and Dark mode transitions successfully propagate down the tree without corrupting statically overridden screen borders (they gracefully inherit the dynamic core).
+- Extreme mobile layouts (320px) handled gracefully by Flexbox constraints.
+
+### Next Step
+**P018 onward** — E.g. Pronunciation Test (S008) or Live Voice Call (S009).

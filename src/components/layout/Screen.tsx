@@ -2,6 +2,7 @@ import React from 'react';
 import { View, ScrollView, ViewProps, StyleSheet, ScrollViewProps, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView, Edge } from 'react-native-safe-area-context';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 
 export interface ScreenProps extends ViewProps {
   scrollable?: boolean;
@@ -25,9 +26,11 @@ export function Screen({
   scrollViewProps,
   ...props
 }: ScreenProps) {
+  const colors = useAppColors();
+
   const containerStyle = [
     styles.container,
-    { backgroundColor: theme.colors[bg] },
+    { backgroundColor: colors[bg] },
     padded && { paddingHorizontal: theme.layout.screenPadding },
     centerContent && { justifyContent: 'center' as const, alignItems: 'center' as const },
     style,
@@ -39,7 +42,7 @@ export function Screen({
         padded && { paddingHorizontal: theme.layout.screenPadding, paddingBottom: theme.layout.screenPadding },
         centerContent && { flexGrow: 1, justifyContent: 'center', alignItems: 'center' }
       ]}
-      style={[styles.container, { backgroundColor: theme.colors[bg] }, style]}
+      style={[styles.container, { backgroundColor: colors[bg] }, style]}
       keyboardShouldPersistTaps="handled"
       {...scrollViewProps}
     >
@@ -66,7 +69,7 @@ export function Screen({
 
   if (edges.length > 0) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors[bg] }]} edges={edges}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors[bg] }]} edges={edges}>
         {wrappedContent}
       </SafeAreaView>
     );

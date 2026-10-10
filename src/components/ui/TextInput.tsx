@@ -6,6 +6,7 @@ import {
   View
 } from 'react-native';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 import { Text } from './Text';
 
 export interface TextInputProps extends RNTextInputProps {
@@ -26,11 +27,12 @@ export function TextInput({
   ...props
 }: TextInputProps) {
   const [isFocused, setIsFocused] = useState(false);
+  const colors = useAppColors();
 
   const getBorderColor = () => {
-    if (error) return theme.colors.error;
-    if (isFocused) return theme.colors.primary;
-    return theme.colors.border;
+    if (error) return colors.error;
+    if (isFocused) return colors.primary;
+    return colors.border;
   };
 
   return (
@@ -48,14 +50,15 @@ export function TextInput({
           style={[
             styles.input,
             {
+              backgroundColor: colors.surface,
               borderColor: getBorderColor(),
-              color: theme.colors.textPrimary,
+              color: colors.textPrimary,
               paddingRight: rightAccessory ? 48 : theme.spacing.md,
             },
             props.editable === false && styles.disabled,
             style,
           ]}
-          placeholderTextColor={theme.colors.textSecondary}
+          placeholderTextColor={colors.textSecondary}
           onFocus={(e) => {
             setIsFocused(true);
             onFocus?.(e);
@@ -99,7 +102,6 @@ const styles = StyleSheet.create({
   },
   input: {
     height: theme.layout.touchTargetMinHeight,
-    backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderRadius: theme.radii.md,
     paddingHorizontal: theme.spacing.md,

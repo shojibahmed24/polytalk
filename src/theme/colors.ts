@@ -7,34 +7,55 @@
  * - Secondary Accent: Purple
  */
 
-export const colors = {
-  // Backgrounds
+import { useColorScheme } from 'react-native';
+
+export const darkColors = {
   background: '#080D1A',
   surface: '#111A2E',
   surfaceElevated: '#17243B',
-
-  // Accents
   primary: '#06B6D4',
+  primaryBright: '#22D3EE',
   secondary: '#8B5CF6',
-
-  // Text
+  secondarySoft: '#A78BFA',
   textPrimary: '#F1F5F9',
   textSecondary: '#94A3B8',
-  textInverse: '#020617', // Kept for contrast on primary
-
-  // Borders & Dividers
+  textInverse: '#020617',
   border: '#26364F',
   divider: '#26364F',
-
-  // States
   disabled: '#475569',
   disabledText: '#94A3B8',
-
-  // Feedback & Status
   success: '#34D399',
   warning: '#FBBF24',
   error: '#FB7185',
   info: '#3B82F6',
 } as const;
 
-export type Colors = typeof colors;
+export const lightColors = {
+  background: '#F5F8FF',
+  surface: '#FFFFFF',
+  surfaceElevated: '#EEF4FF',
+  primary: '#06B6D4',
+  primaryBright: '#22D3EE',
+  secondary: '#8B5CF6',
+  secondarySoft: '#A78BFA',
+  textPrimary: '#0F172A',
+  textSecondary: '#475569',
+  textInverse: '#FFFFFF', 
+  border: '#D8E2F0',
+  divider: '#D8E2F0',
+  disabled: '#E2E8F0',
+  disabledText: '#94A3B8',
+  success: '#34D399',
+  warning: '#FBBF24',
+  error: '#FB7185',
+  info: '#3B82F6',
+} as const;
+
+export const colors = darkColors as Record<keyof typeof darkColors, string>; // Backward compatibility for static usages
+
+export type Colors = Record<keyof typeof darkColors, string>;
+
+export function useAppColors(): Colors {
+  const scheme = useColorScheme();
+  return (scheme === 'light' ? lightColors : darkColors) as Colors;
+}

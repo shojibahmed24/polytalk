@@ -3,12 +3,10 @@ import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { router } from 'expo-router';
 import { Screen, Stack, Box } from '@/components/layout';
 import { Text, Card, Button } from '@/components/ui';
-import { Dialog } from '@/components/feedback/Dialog';
 import { theme } from '@/theme';
 import { SymbolView, SFSymbol } from 'expo-symbols';
 
 export default function HomeScreen() {
-  const [showFeatureDialog, setShowFeatureDialog] = useState(false);
   const [fadeAnim] = useState(() => new Animated.Value(0));
   const [slideAnim] = useState(() => new Animated.Value(12));
 
@@ -26,10 +24,6 @@ export default function HomeScreen() {
       }),
     ]).start();
   }, [fadeAnim, slideAnim]);
-
-  const handleNotImplemented = () => {
-    setShowFeatureDialog(true);
-  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -76,7 +70,7 @@ export default function HomeScreen() {
           </Box>
 
           {/* B. Primary Learning Action */}
-          <TouchableOpacity activeOpacity={0.9} onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as any)}>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never)}>
             <View style={styles.primaryActionCard}>
               <Box direction="row" justify="space-between" align="flex-start">
                 <View style={styles.waveformIcon}>
@@ -96,7 +90,7 @@ export default function HomeScreen() {
               <Button 
                 label="Start practicing" 
                 variant="primary" 
-                onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as any)}
+                onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never)}
                 style={styles.primaryActionBtn}
               />
             </View>
@@ -111,7 +105,7 @@ export default function HomeScreen() {
               <QuickActionCard 
                 title="Tutor"
                 icon="text.bubble.fill"
-                onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as any)}
+                onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never)}
               />
               <QuickActionCard 
                 title="Translate"
@@ -119,9 +113,9 @@ export default function HomeScreen() {
                 onPress={() => router.push('/(tabs)/translate')}
               />
               <QuickActionCard 
-                title="Vocabulary"
-                icon="book.fill"
-                onPress={handleNotImplemented}
+                title="Grammar"
+                icon="text.book.closed.fill"
+                onPress={() => router.push('/(app)/grammar' as never)}
               />
             </View>
           </View>
@@ -157,15 +151,6 @@ export default function HomeScreen() {
           </Box>
         </Stack>
       </Animated.ScrollView>
-
-      <Dialog
-        visible={showFeatureDialog}
-        title="Coming Soon"
-        message="This feature is registered in the master roadmap (S006/S007) but is not yet implemented in the current build. Please check back later."
-        primaryActionLabel="Got it"
-        onPrimaryAction={() => setShowFeatureDialog(false)}
-        onDismiss={() => setShowFeatureDialog(false)}
-      />
     </Screen>
   );
 }

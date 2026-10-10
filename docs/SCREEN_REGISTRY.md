@@ -20,7 +20,7 @@ This registry tracks the status of all planned screens and major UI states (S001
 | S004 | Home / Dashboard | dashboard | app/(tabs)/index.tsx | implemented | planned | planned | User profile data |
 | S005 | Language Selection | settings | app/(app)/languages.tsx | implemented | planned | planned | Supported language data |
 | S006 | AI Conversation | tutor | app/(app)/chat/[id].tsx | implemented | planned | planned | Puter.js, Speech-to-Text |
-| S007 | Grammar Explanation | grammar | src/features/grammar | planned | planned | planned | Puter.js NLP |
+| S007 | Grammar Explanation | grammar | app/(app)/grammar.tsx | implemented | planned | planned | Puter.js NLP |
 | S008 | Pronunciation Test | pronunciation | app/(app)/pronunciation.tsx | planned | planned | planned | Native Audio APIs |
 | S009 | Live Voice Call | calls | app/(app)/call/[id].tsx | planned | planned | planned | WebRTC / Agora |
 | S010 | Learning Summary | progress | app/(app)/summary/[id].tsx | planned | planned | planned | Usage tracking metrics |

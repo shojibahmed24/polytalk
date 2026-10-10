@@ -1,21 +1,24 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { theme } from '@/theme';
+import { useAppColors } from '@/theme/colors';
 
 export default function AppLayout() {
+  const colors = useAppColors();
+
   return (
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: theme.colors.background,
+          backgroundColor: colors.background,
         },
-        headerTintColor: theme.colors.textPrimary,
+        headerTintColor: colors.textPrimary,
         headerTitleStyle: {
           fontWeight: theme.typography.weights.bold,
         },
         headerShadowVisible: false,
         contentStyle: {
-          backgroundColor: theme.colors.background,
+          backgroundColor: colors.background,
         },
       }}
     >
@@ -28,6 +31,12 @@ export default function AppLayout() {
       />
       <Stack.Screen 
         name="chat/[id]" 
+        options={{ 
+          headerShown: false // Custom header inside screen
+        }} 
+      />
+      <Stack.Screen 
+        name="grammar" 
         options={{ 
           headerShown: false // Custom header inside screen
         }} 
