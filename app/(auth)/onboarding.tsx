@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Screen, Stack as LayoutStack, Box } from '@/components/layout';
 import { Text, Button } from '@/components/ui';
 import { theme } from '@/theme';
 import { useAppColors } from '@/theme/colors';
-import { bootState } from '../index';
 import { Ionicons } from '@expo/vector-icons';
+import { bootState } from '../index';
+import { LinearGradient } from 'expo-linear-gradient';
 
-// Mock data for Language Selection (S014)
 const SUPPORTED_LANGUAGES = [
   { id: 'es', code: 'ES', name: 'Spanish', flag: '🇪🇸' },
   { id: 'fr', code: 'FR', name: 'French', flag: '🇫🇷' },
@@ -18,6 +18,7 @@ const SUPPORTED_LANGUAGES = [
 
 export default function OnboardingFlow() {
   const colors = useAppColors();
+  const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
 
@@ -34,27 +35,100 @@ export default function OnboardingFlow() {
     router.replace('/(auth)/login');
   };
 
+  const isLight = colors.background === '#FFFFFF' || colors.background === '#F8FAFC';
+
   // Step 1: Welcome & Value Prop (S013)
   const renderStep1 = () => (
-    <LayoutStack gap="xl" align="center" style={styles.content}>
-      <Box marginVertical="xl" align="center">
-        <View style={{ position: 'relative' }}>
-          <View style={[styles.iconCircle, { backgroundColor: colors.surface, borderColor: colors.border }]} importantForAccessibility="no">
-            <Ionicons name="chatbubbles" size={44} color={colors.primary} />
+    <View style={styles.step1Container}>
+      
+      {/* Mascot / Visual Composition */}
+      <View style={styles.visualContainer}>
+        {/* Decorative elements */}
+        <View style={[styles.floatingIcon, { top: '5%', left: '15%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+           <Text style={{ fontSize: 16 }}>🇪🇸</Text>
+        </View>
+        <View style={[styles.floatingIcon, { top: '0%', right: '20%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+           <Text style={{ fontSize: 16 }}>🇫🇷</Text>
+        </View>
+        <View style={[styles.floatingIcon, { bottom: '25%', left: '10%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+           <Text style={{ fontSize: 16 }}>🇬🇧</Text>
+        </View>
+        <View style={[styles.floatingIcon, { bottom: '15%', right: '15%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+           <Text style={{ fontSize: 16 }}>🇩🇪</Text>
+        </View>
+        <View style={[styles.floatingIcon, { top: '35%', right: '5%', backgroundColor: isLight ? 'rgba(255,255,255,0.7)' : colors.surfaceElevated }]}>
+           <Text style={{ fontSize: 16 }}>🇯🇵</Text>
+        </View>
+        
+        {/* Waveforms */}
+        <View style={[styles.waveform, { left: '5%', top: '40%' }]}>
+          <Ionicons name="stats-chart" size={24} color={colors.primary} style={{ transform: [{ rotate: '90deg' }] }} />
+        </View>
+        <View style={[styles.waveform, { right: '5%', top: '50%' }]}>
+          <Ionicons name="stats-chart" size={24} color={colors.secondary} style={{ transform: [{ rotate: '90deg' }] }} />
+        </View>
+
+        {/* Back Bubbles */}
+        <View style={[styles.heroBubble, { backgroundColor: '#06B6D4', left: '12%', top: '15%', transform: [{ rotate: '-10deg' }] }]}>
+          <Text style={styles.bubbleTextLarge}>A</Text>
+        </View>
+        <View style={[styles.heroBubble, { backgroundColor: '#8B5CF6', right: '12%', top: '25%', transform: [{ rotate: '10deg' }] }]}>
+          <Text style={styles.bubbleTextLarge}>文</Text>
+        </View>
+
+        {/* Mascot Center */}
+        <View style={[styles.mascotBase, { backgroundColor: colors.surface, borderColor: isLight ? '#FFFFFF' : colors.border, shadowColor: colors.primary }]}>
+          <LinearGradient
+            colors={[isLight ? '#F0F9FF' : colors.surfaceElevated, isLight ? '#E0F2FE' : colors.surface]}
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={[styles.mascotFace, { backgroundColor: isLight ? '#0F172A' : '#000000' }]}>
+             {/* Eyes */}
+             <View style={styles.mascotEye} />
+             <View style={styles.mascotEye} />
           </View>
-          <View style={[styles.sparkleBadge, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
-            <Ionicons name="sparkles" size={20} color={colors.secondary} />
+          <Ionicons name="headset" size={120} color={isLight ? '#CBD5E1' : '#475569'} style={styles.mascotHeadset} />
+        </View>
+      </View>
+
+      {/* Typography */}
+      <LayoutStack gap="xs" align="center" style={styles.textContainer}>
+        <Text variant="display" color="textPrimary" align="center" style={styles.titleText}>
+          Speak a new language
+        </Text>
+        <Text variant="display" color="primary" align="center" style={styles.titleText}>
+          with confidence.
+        </Text>
+        <View style={{ marginTop: theme.spacing.sm }}>
+          <Text variant="body" color="textSecondary" align="center">
+            Practice naturally with your personal AI language coach.
+          </Text>
+        </View>
+      </LayoutStack>
+
+      {/* Feature Cards */}
+      <Box direction="row" justify="space-between" align="stretch" style={styles.featuresRow}>
+        <View style={[styles.featureCard, { backgroundColor: colors.surface, shadowColor: isLight ? '#94A3B8' : 'transparent', borderWidth: isLight ? 0 : 1, borderColor: colors.border }]}>
+          <View style={[styles.featureIconWrap, { backgroundColor: isLight ? '#E0F2FE' : 'rgba(6,182,212,0.1)' }]}>
+            <Ionicons name="language" size={24} color="#06B6D4" />
           </View>
+          <Text variant="caption" weight="bold" color="textPrimary" align="center">Live{"\n"}translation</Text>
+        </View>
+        <View style={[styles.featureCard, { backgroundColor: colors.surface, shadowColor: isLight ? '#94A3B8' : 'transparent', borderWidth: isLight ? 0 : 1, borderColor: colors.border }]}>
+          <View style={[styles.featureIconWrap, { backgroundColor: isLight ? '#F3E8FF' : 'rgba(139,92,246,0.1)' }]}>
+            <Ionicons name="mic" size={24} color="#8B5CF6" />
+          </View>
+          <Text variant="caption" weight="bold" color="textPrimary" align="center">Speaking{"\n"}practice</Text>
+        </View>
+        <View style={[styles.featureCard, { backgroundColor: colors.surface, shadowColor: isLight ? '#94A3B8' : 'transparent', borderWidth: isLight ? 0 : 1, borderColor: colors.border }]}>
+          <View style={[styles.featureIconWrap, { backgroundColor: isLight ? '#FFEDD5' : 'rgba(249,115,22,0.1)' }]}>
+            <Ionicons name="book" size={24} color="#F97316" />
+          </View>
+          <Text variant="caption" weight="bold" color="textPrimary" align="center">Grammar{"\n"}tips</Text>
         </View>
       </Box>
-      <LayoutStack gap="sm" align="center">
-        <Text variant="display" color="primary" align="center">PolyTalk</Text>
-        <Text variant="title" color="textPrimary" align="center">Speak with Confidence</Text>
-      </LayoutStack>
-      <Text variant="body" color="textSecondary" align="center">
-        Master a new language through real-time AI conversations, instant translation, and personalized grammar feedback.
-      </Text>
-    </LayoutStack>
+
+    </View>
   );
 
   // Step 2: Goal/Language Selection (S014)
@@ -131,29 +205,36 @@ export default function OnboardingFlow() {
   const isNextDisabled = step === 2 && !selectedLanguage;
 
   return (
-    <Screen bg="background" padded>
-      <View style={styles.container}>
+    <Screen bg="background" edges={['top', 'bottom', 'left', 'right']} padded={false}>
+      {/* Background Gradient for Step 1 Light Mode */}
+      {step === 1 && isLight && (
+        <LinearGradient
+          colors={['#F5F8FF', '#FFFFFF']}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
+      
+      <View style={[styles.container, { paddingHorizontal: theme.layout.screenPadding }]}>
         
-        {/* Top Navigation / Progress */}
+        {/* Top Header / Logo / Navigation */}
         <Box direction="row" justify="space-between" align="center" style={styles.header}>
           {step > 1 ? (
             <Button variant="ghost" label="Back" size="sm" onPress={handleBack} />
           ) : (
             <View style={styles.spacer} />
           )}
-          <Box direction="row" gap="xs">
-            {[1, 2, 3].map((idx) => (
-              <View 
-                key={idx} 
-                style={[
-                  styles.progressDot, 
-                  { backgroundColor: colors.disabled },
-                  step >= idx && { backgroundColor: colors.primary }
-                ]} 
-                importantForAccessibility="no"
-              />
-            ))}
-          </Box>
+          
+          {/* Logo only on Step 1 */}
+          {step === 1 && (
+            <Box align="center">
+              <Box direction="row" align="center" gap="xs">
+                <Ionicons name="chatbubbles" size={24} color={colors.primary} />
+                <Text variant="title" weight="bold" color="textPrimary">PolyTalk</Text>
+              </Box>
+              <Text variant="caption" color="textSecondary" style={styles.logoSub}>AI LANGUAGE COACH</Text>
+            </Box>
+          )}
+
           <View style={styles.spacerRight}>
              {step < 3 && (
                <Button variant="ghost" label="Skip" size="sm" onPress={handleComplete} />
@@ -170,7 +251,52 @@ export default function OnboardingFlow() {
 
         {/* Bottom Actions */}
         <Box style={styles.footer}>
-          {step < 3 ? (
+          
+          {/* Progress Dots */}
+          <Box direction="row" justify="center" gap="sm" style={styles.dotsContainer}>
+            {[1, 2, 3].map((idx) => {
+              const isActive = step === idx;
+              return (
+                <View 
+                  key={idx} 
+                  style={[
+                    styles.progressDot, 
+                    { backgroundColor: isActive ? colors.primary : colors.disabled },
+                    isActive && styles.progressDotActive
+                  ]} 
+                  importantForAccessibility="no"
+                />
+              );
+            })}
+          </Box>
+
+          {step === 1 ? (
+            <View>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleNext}
+                style={styles.gradientButtonWrap}
+              >
+                <LinearGradient
+                  colors={['#06B6D4', '#8B5CF6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.gradientButton}
+                >
+                  <Text variant="body" weight="bold" color="textInverse" style={{ marginRight: 8 }}>
+                    Get started
+                  </Text>
+                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                </LinearGradient>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={handleComplete} style={styles.signInLink}>
+                <Text variant="bodySmall" color="textSecondary" align="center">
+                  Already have an account? <Text variant="bodySmall" weight="bold" color="primary">Sign in</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : step === 2 ? (
             <Button 
               variant="primary" 
               label="Continue" 
@@ -181,7 +307,7 @@ export default function OnboardingFlow() {
           ) : (
             <Button 
               variant="primary" 
-              label="Get Started" 
+              label="Start Learning" 
               size="lg" 
               onPress={handleComplete} 
             />
@@ -201,7 +327,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingVertical: theme.spacing.md,
-    height: 60,
+    minHeight: 60,
   },
   spacer: {
     width: 60,
@@ -211,10 +337,10 @@ const styles = StyleSheet.create({
     width: 60,
     alignItems: 'flex-end',
   },
-  progressDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  logoSub: {
+    fontSize: 10,
+    letterSpacing: 1.5,
+    marginTop: 2,
   },
   mainArea: {
     flex: 1,
@@ -224,9 +350,21 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.xl,
   },
   footer: {
-    paddingVertical: theme.spacing.xl,
-    paddingBottom: theme.layout.screenPadding,
+    paddingBottom: theme.layout.screenPadding + 20,
   },
+  dotsContainer: {
+    marginBottom: theme.spacing.xl,
+  },
+  progressDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  progressDotActive: {
+    width: 16,
+  },
+  
+  // Existing Step styles
   iconCircle: {
     width: 96,
     height: 96,
@@ -264,5 +402,143 @@ const styles = StyleSheet.create({
   flagText: {
     fontSize: 24,
     lineHeight: 32,
+  },
+
+  // New Step 1 Styles
+  step1Container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: theme.spacing.sm,
+  },
+  visualContainer: {
+    width: '100%',
+    height: 260,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  floatingIcon: {
+    position: 'absolute',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  waveform: {
+    position: 'absolute',
+    opacity: 0.6,
+  },
+  heroBubble: {
+    position: 'absolute',
+    width: 96,
+    height: 84,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  bubbleTextLarge: {
+    color: '#FFF',
+    fontSize: 36,
+    fontWeight: 'bold',
+  },
+  mascotBase: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 4,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.1,
+    shadowRadius: 24,
+    elevation: 8,
+    zIndex: 10,
+    overflow: 'hidden',
+  },
+  mascotFace: {
+    width: 72,
+    height: 48,
+    borderRadius: 24,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+    zIndex: 2,
+  },
+  mascotEye: {
+    width: 14,
+    height: 7,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+    borderBottomWidth: 0,
+    borderWidth: 3,
+    borderColor: '#06B6D4',
+    borderBottomColor: 'transparent',
+  },
+  mascotHeadset: {
+    position: 'absolute',
+    top: 6,
+    zIndex: 3,
+  },
+  textContainer: {
+    marginVertical: theme.spacing.lg,
+  },
+  titleText: {
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '800',
+  },
+  featuresRow: {
+    width: '100%',
+    paddingHorizontal: 0,
+    marginTop: theme.spacing.md,
+  },
+  featureCard: {
+    flex: 1,
+    marginHorizontal: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  featureIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  gradientButtonWrap: {
+    width: '100%',
+    borderRadius: 28,
+    overflow: 'hidden',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  gradientButton: {
+    flexDirection: 'row',
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.xl,
+  },
+  signInLink: {
+    marginTop: theme.spacing.lg,
+    padding: theme.spacing.sm,
   },
 });

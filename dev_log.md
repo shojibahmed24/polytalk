@@ -429,3 +429,24 @@ Post-repair testing revealed several remaining issues affecting web preview and 
 - **Chat UI Refactor**: Fully updated `app/(app)/chat/[id].tsx` to strip static `theme.colors` from `StyleSheet.create`. Hooked up `useAppColors` for dynamic headers, backgrounds, offline indicators, and message bubbles.
 - **Desktop Scale**: Relaxed the Dashboard's container `maxWidth` from `680` to `840` (`theme.layout.contentMaxWidth`). Also expanded `QuickActionCard` `maxWidth` from `160` to `240` so the cards naturally expand to fill the available tablet/desktop whitespace proportionally.
 - **Verification**: Typechecks pass completely (0 errors). `npm run lint` yields 0 warnings.
+
+---
+
+## [2026-10-10] P012 Onboarding UI Implementation (Design Reference 01)
+
+### Visual Implementation
+Implemented Step 1 of the Onboarding screen (`S013`) to strictly match the provided premium AI design reference.
+- Added a full-width background `LinearGradient` blending `#F5F8FF` to `#FFFFFF` in light mode for the subtle brand glow.
+- Created an intricate vector composite for the central AI Mascot, featuring a gradient-filled circular base, dual-colored overlapping chat bubbles (`A` and `文`), surrounding flags (`🇪🇸`, `🇫🇷`, `🇬🇧`, `🇩🇪`, `🇯🇵`), and subtle `stats-chart` waveforms to represent real-time voice translation.
+- Adopted the reference typography strictly: large dual-tone Display headings (`Speak a new language` in dark text, `with confidence.` in cyan).
+- Engineered the three core feature cards (Live translation, Speaking practice, Grammar tips) as a horizontal row with pastel-tinted icon wrappers and soft shadows that cleanly disable in dark mode to preserve contrast.
+- Replaced the standard footer button with a sleek `#06B6D4` to `#8B5CF6` gradient button containing a forward arrow icon, seamlessly integrating with the existing 3-step logical flow (clicking it correctly advances to Step 2, Language Selection).
+- Added an "Already have an account? Sign in" CTA under the main button that links straight into the authentication flow (`handleComplete`).
+
+### Adaptive Theme Support
+- Mapped all hardcoded bright colors to their dark-mode equivalents using `useAppColors` to prevent the UI from becoming unreadable or uncomfortably bright in a dark environment.
+- Specifically, the feature icon wrappers transition from solid pastel (`#E0F2FE`) in light mode to low-opacity (`rgba(..., 0.1)`) in dark mode, and shadows are swapped for 1px subtle borders.
+
+### Verification
+- Tested the exact routing logic to ensure `Continue`, `Back`, `Skip`, and `Get Started` function flawlessly across all three original steps without breaking state.
+- Checked `npm run typecheck` and `npm run lint` — both passing with 0 errors.
