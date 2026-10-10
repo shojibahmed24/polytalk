@@ -1,10 +1,11 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { theme } from '@/theme';
+import { ThemeProvider } from '@/theme/colors';
 
 export default function RootLayout() {
   return (
-    <>
+    <ThemeProvider>
       <StatusBar style="light" />
       <Stack
         screenOptions={{
@@ -25,6 +26,6 @@ export default function RootLayout() {
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
         <Stack.Screen name="dev" options={{ title: 'Developer Tools', presentation: 'modal' }} />
       </Stack>
-    </>
+    </ThemeProvider>
   );
 }

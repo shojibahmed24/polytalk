@@ -55,7 +55,37 @@ export const colors = darkColors as Record<keyof typeof darkColors, string>; // 
 
 export type Colors = Record<keyof typeof darkColors, string>;
 
+
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useColorScheme as useSystemColorScheme } from 'react-native';
+
+export type ThemeContextType = {
+  themeMode: 'light' | 'dark' | 'system';
+  setThemeMode: (mode: 'light' | 'dark' | 'system') => void;
+  isDark: boolean;
+};
+
+export const ThemeContext = createContext<ThemeContextType>({
+  themeMode: 'system',
+  setThemeMode: () => {},
+  isDark: true,
+});
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const systemScheme = useSystemColorScheme();
+  const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'system'>('system');
+
+  const isDark = themeMode === 'system' ? systemScheme === 'dark' : themeMode === 'dark';
+
+  return (
+    <ThemeContext.Provider value={{ themeMode, setThemeMode, isDark }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
 export function useAppColors(): Colors {
-  const scheme = useColorScheme();
-  return (scheme === 'light' ? lightColors : darkColors) as Colors;
+  const { isDark } = useContext(ThemeContext);
+  return (isDark ? darkColors : lightColors) as Colors;
 }

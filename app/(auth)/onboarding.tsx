@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Screen, Stack as LayoutStack, Box } from '@/components/layout';
 import { Text, Button } from '@/components/ui';
 import { theme } from '@/theme';
-import { useAppColors } from '@/theme/colors';
+import { useAppColors, ThemeContext } from '@/theme/colors';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { bootState } from '../index';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,6 +19,8 @@ const SUPPORTED_LANGUAGES = [
 
 export default function OnboardingFlow() {
   const colors = useAppColors();
+  const { isDark: isSystemDark, themeMode, setThemeMode } = React.useContext(ThemeContext);
+  const toggleTheme = () => setThemeMode(themeMode === 'light' ? 'dark' : themeMode === 'dark' ? 'light' : isSystemDark ? 'light' : 'dark');
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
@@ -251,7 +253,7 @@ export default function OnboardingFlow() {
 
           <Box direction="row" align="center" gap="sm">
             {step === 1 && (
-              <TouchableOpacity style={[styles.themeBtn, { backgroundColor: isLight ? '#F1F5F9' : '#1E293B' }]} activeOpacity={0.7}>
+              <TouchableOpacity onPress={toggleTheme} style={[styles.themeBtn, { backgroundColor: isLight ? '#F1F5F9' : '#1E293B' }]} activeOpacity={0.7}>
                 <MaterialIcons name={isLight ? "dark-mode" : "light-mode"} size={18} color={colors.textPrimary} />
               </TouchableOpacity>
             )}
@@ -609,3 +611,4 @@ const styles = StyleSheet.create({
     padding: theme.spacing.sm,
   },
 });
+
