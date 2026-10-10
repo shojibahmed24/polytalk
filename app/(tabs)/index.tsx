@@ -1,32 +1,293 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { router } from 'expo-router';
 import { Screen, Stack, Box } from '@/components/layout';
 import { Text, Card, Button } from '@/components/ui';
-import { router, Href } from 'expo-router';
+import { Dialog } from '@/components/feedback/Dialog';
 import { theme } from '@/theme';
+import { SymbolView, SFSymbol } from 'expo-symbols';
 
 export default function HomeScreen() {
-  return (
-    <Screen centerContent scrollable padded>
-      <Stack align="center" gap="lg" style={{ width: '100%', maxWidth: theme.layout.contentMaxWidth }}>
-        <Text variant="display" color="primary">PolyTalk Home</Text>
-        
-        <Card variant="elevated" style={{ width: '100%' }}>
-          <Stack gap="sm">
-            <Text variant="title">Welcome</Text>
-            <Text variant="body" color="textSecondary">
-              This is the Home tab scaffold (S002). The product functionality will be built here in future phases.
-            </Text>
-          </Stack>
-        </Card>
+  const [showFeatureDialog, setShowFeatureDialog] = useState(false);
+  const [fadeAnim] = useState(() => new Animated.Value(0));
+  const [slideAnim] = useState(() => new Animated.Value(12));
 
-        <Box marginVertical="xl" style={{ width: '100%' }}>
-          <Button 
-            label="Open Developer Showcase" 
-            variant="outline" 
-            onPress={() => router.push('/dev' as Href)} 
-          />
-        </Box>
-      </Stack>
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [fadeAnim, slideAnim]);
+
+  const handleNotImplemented = () => {
+    setShowFeatureDialog(true);
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  return (
+    <Screen bg="background" edges={['top', 'left', 'right']} style={styles.screen}>
+      <Animated.ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Stack gap="xl" style={styles.container}>
+          
+          {/* A. Top Header */}
+          <Box direction="row" justify="space-between" align="center" style={styles.header}>
+            <Stack gap="xs" style={{ flex: 1 }}>
+              <Text variant="label" color="textSecondary" weight="medium">
+                {getGreeting()}
+              </Text>
+              <Text variant="heading" color="textPrimary">
+                Ready to speak with confidence?
+              </Text>
+              <Text variant="bodySmall" color="textSecondary" style={styles.subtitle}>
+                Let's continue your language journey today.
+              </Text>
+            </Stack>
+            
+            <TouchableOpacity 
+              onPress={() => router.push('/(tabs)/profile')}
+              style={styles.avatarButton}
+              accessibilityLabel="Go to Profile"
+              accessibilityRole="button"
+              activeOpacity={0.7}
+            >
+              <SymbolView name="person.crop.circle.fill" size={40} tintColor={theme.colors.secondary} />
+            </TouchableOpacity>
+          </Box>
+
+          {/* B. Primary Learning Action */}
+          <TouchableOpacity activeOpacity={0.9} onPress={handleNotImplemented}>
+            <View style={styles.primaryActionCard}>
+              <Box direction="row" justify="space-between" align="flex-start">
+                <View style={styles.waveformIcon}>
+                  <SymbolView name="waveform.path" size={32} tintColor={theme.colors.primary} />
+                  <View style={styles.violetDot} />
+                </View>
+                <SymbolView name="chevron.right" size={24} tintColor={theme.colors.textSecondary} />
+              </Box>
+              
+              <Stack gap="xs" style={styles.primaryActionText}>
+                <Text variant="title" color="textPrimary">AI Conversation</Text>
+                <Text variant="body" color="textSecondary">
+                  Practice speaking naturally. Get instant pronunciation and grammar feedback.
+                </Text>
+              </Stack>
+              
+              <Button 
+                label="Start practicing" 
+                variant="primary" 
+                onPress={handleNotImplemented}
+                style={styles.primaryActionBtn}
+              />
+            </View>
+          </TouchableOpacity>
+
+          {/* C. Quick Actions */}
+          <View>
+            <Text variant="title" color="textPrimary" style={styles.sectionTitle}>
+              Quick Actions
+            </Text>
+            <View style={styles.quickActionGrid}>
+              <QuickActionCard 
+                title="Tutor"
+                icon="bubble.left.and.bubble.right.fill"
+                onPress={handleNotImplemented}
+              />
+              <QuickActionCard 
+                title="Translate"
+                icon="globe"
+                onPress={() => router.push('/(tabs)/translate')}
+              />
+              <QuickActionCard 
+                title="Vocabulary"
+                icon="character.book.closed.fill"
+                onPress={handleNotImplemented}
+              />
+            </View>
+          </View>
+
+          {/* D. Learning Progress Section */}
+          <View>
+            <Text variant="title" color="textPrimary" style={styles.sectionTitle}>
+              Your Progress
+            </Text>
+            <Card variant="default" style={styles.progressCard}>
+              <Box direction="row" align="center" gap="md">
+                <View style={styles.progressIcon}>
+                  <SymbolView name="chart.bar.fill" size={24} tintColor={theme.colors.textSecondary} />
+                </View>
+                <Stack gap="xs" style={{ flex: 1 }}>
+                  <Text variant="body" weight="semibold" color="textPrimary">Getting Started</Text>
+                  <Text variant="bodySmall" color="textSecondary">
+                    Your learning journey begins here. Complete your first conversation to track your progress.
+                  </Text>
+                </Stack>
+              </Box>
+            </Card>
+          </View>
+
+          {/* Dev Showcase Link */}
+          <Box align="center" marginVertical="lg">
+            <Button 
+              label="Developer Showcase" 
+              variant="ghost"
+              size="sm"
+              onPress={() => router.push('/dev')}
+            />
+          </Box>
+        </Stack>
+      </Animated.ScrollView>
+
+      <Dialog
+        visible={showFeatureDialog}
+        title="Coming Soon"
+        message="This feature is registered in the master roadmap (S006/S007) but is not yet implemented in the current build. Please check back later."
+        primaryActionLabel="Got it"
+        onPrimaryAction={() => setShowFeatureDialog(false)}
+        onDismiss={() => setShowFeatureDialog(false)}
+      />
     </Screen>
   );
 }
+
+function QuickActionCard({ title, icon, onPress }: { title: string, icon: SFSymbol, onPress: () => void }) {
+  return (
+    <TouchableOpacity 
+      activeOpacity={0.7} 
+      style={styles.quickActionCard} 
+      onPress={onPress}
+      accessibilityRole="button"
+    >
+      <View style={styles.quickActionIcon}>
+        <SymbolView name={icon} size={28} tintColor={theme.colors.primary} />
+      </View>
+      <Text variant="bodySmall" weight="semibold" color="textPrimary" align="center">
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: theme.layout.screenPadding,
+    paddingTop: theme.spacing.xl,
+    paddingBottom: theme.spacing.xxl,
+    alignItems: 'center',
+  },
+  container: {
+    width: '100%',
+    maxWidth: theme.layout.contentMaxWidth,
+  },
+  header: {
+    marginBottom: theme.spacing.md,
+  },
+  subtitle: {
+    marginTop: 2,
+  },
+  avatarButton: {
+    padding: theme.spacing.xs,
+    marginLeft: theme.spacing.md,
+  },
+  primaryActionCard: {
+    backgroundColor: theme.colors.surfaceElevated,
+    borderRadius: 20,
+    padding: theme.spacing.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  waveformIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: 'rgba(6, 182, 212, 0.1)', // Primary tint
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: theme.spacing.md,
+  },
+  violetDot: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: theme.colors.secondary,
+  },
+  primaryActionText: {
+    marginBottom: theme.spacing.lg,
+  },
+  primaryActionBtn: {
+    width: '100%',
+  },
+  sectionTitle: {
+    marginBottom: theme.spacing.md,
+  },
+  quickActionGrid: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+  },
+  quickActionCard: {
+    flex: 1,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 18,
+    padding: theme.spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    minHeight: 100,
+  },
+  quickActionIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(6, 182, 212, 0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: theme.spacing.sm,
+  },
+  progressCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderWidth: 1,
+    borderRadius: 18,
+  },
+  progressIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(148, 163, 184, 0.1)', // textSecondary tint
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

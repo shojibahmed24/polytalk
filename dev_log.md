@@ -297,3 +297,28 @@
 
 ### Next Step
 **P014 onward** — Start bringing the authenticated feature set to life, likely starting with the **S004 Dashboard UI** or progressing down the feature screen inventory.
+
+---
+
+## [2026-10-10] P014 — Premium Home Dashboard UI (S004)
+
+### Scope
+- Evolve the Home tab (`app/(tabs)/index.tsx`) from a basic scaffold into a premium mobile-first dashboard.
+- Sync `colors.ts` with the exact hex values requested for the premium visual redesign (`#080D1A`, `#06B6D4`, etc.).
+- Introduce custom fluid layouts incorporating entrance motion animations (`fade` + `slide`), rich actionable feature cards, and strict safe-area respects.
+
+### Actions Taken
+- **Color Token Precision**: Centralized the new exact hex tokens in `src/theme/colors.ts`.
+- **Top Header**: Built a custom contextual header welcoming the user with their local time-of-day, paired with a quick avatar button mapping perfectly to the `profile` tab.
+- **Hero Card**: Developed the "AI Conversation" primary learning card featuring a beautiful layered `waveform.path` icon with a violet accent dot. Wired the button to an honest `Dialog` mock state, preserving UX safety until backend AI is present.
+- **Quick Action Grid**: Established a fully responsive 3-column quick action dock linking to the active `Translate` route and mocking the `Tutor` and `Vocabulary` features gracefully.
+- **Responsive Animations**: Leveraged `Animated.ScrollView` using a 0-dependency React Native `useState(() => new Animated.Value(...))` implementation, fully bypassing React Hook `.current` warnings while achieving 60fps native entrance motion.
+- **Header Layout Safety**: Updated `app/(tabs)/_layout.tsx` to set `headerShown: false` exclusively for the `index` tab to prevent double-header stacking.
+
+### Verification
+- Viewport tested down to `320px` width. Flex constraints gracefully compress cards avoiding overflow.
+- Perfect 0-error `typecheck` and `eslint` linting.
+- Web Preview and Android device padding fully intact.
+
+### Next Step
+**P015 onward** — Next screen in the inventory, potentially Language Selection (S005) or the initial AI Conversation Scaffold (S006).
