@@ -36,7 +36,7 @@ export function BottomSheet({
       <TouchableWithoutFeedback onPress={onDismiss}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
-            <View style={styles.sheetContainer}>
+            <View style={styles.sheetContainer} accessible={true} accessibilityViewIsModal={true} accessibilityRole="alert">
               <SafeAreaView edges={['bottom']} style={styles.safeArea}>
                 <View style={styles.dragHandle} />
                 {content}

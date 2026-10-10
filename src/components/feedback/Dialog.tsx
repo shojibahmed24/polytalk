@@ -43,7 +43,7 @@ export function Dialog({
       <TouchableWithoutFeedback onPress={isActionLoading ? undefined : onDismiss}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
-            <View style={styles.dialogContainer}>
+            <View style={styles.dialogContainer} accessible={true} accessibilityRole="alert" accessibilityViewIsModal={true}>
               <Text variant="title" color="textPrimary" style={styles.title}>
                 {title}
               </Text>

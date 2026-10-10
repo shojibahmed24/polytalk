@@ -16,7 +16,7 @@ This document serves as the canonical sequence of tasks for the PolyTalk project
 - **P008** — Cards, surfaces, dialogs, sheets and feedback components
 - **P009** — Shared screen layouts, safe areas and keyboard handling
 - **P010** — Navigation shell and route conventions
-- **P011** — Theme, accessibility and responsive layout verification
+- **P011** — Theme, accessibility and responsive layout verification (Completed)
 
 ## Phase 3: Screen Inventory (S001–S110)
 - **P012 onward** — Implement the S001–S110 screen/state inventory in small, feature-based increments.

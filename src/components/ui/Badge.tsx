@@ -32,6 +32,8 @@ export function Badge({
   if (dotOnly) {
     return (
       <View
+        accessible={true}
+        accessibilityLabel={props.accessibilityLabel || `Status: ${variant}`}
         style={[
           styles.dot,
           { backgroundColor: getBackgroundColor() },

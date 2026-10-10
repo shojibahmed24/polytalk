@@ -39,6 +39,9 @@ export function TextInput({
         </Text>
       )}
       <RNTextInput
+        accessibilityLabel={label}
+        aria-invalid={!!error}
+        accessibilityState={{ disabled: props.editable === false }}
         style={[
           styles.input,
           {

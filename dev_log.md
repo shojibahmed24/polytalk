@@ -221,3 +221,29 @@
 
 ### Next Step
 **P011 — Theme, accessibility and responsive layout verification**
+
+---
+
+## [2026-10-10] P011 — Theme, Accessibility & Responsive Layout Verification
+
+### Scope
+- Verify design-system tokens and WCAG contrast rules across existing components.
+- Fix any identified accessibility gaps (Missing labels, modal roles, icon duplication).
+- Verify responsive layout on mobile vs web previews.
+- Complete the bottom tab navigation with an integrated icon system (without adding new packages).
+
+### Actions Taken
+- **Design System Contrast**: Verified that `primary` cyan buttons correctly inherit `textInverse` (dark `#020617`), delivering a robust 9:1 contrast ratio that exceeds WCAG AA and AAA requirements.
+- **Accessibility Fixes**:
+  - `Badge` (dot-only configuration) now correctly exposes an `accessibilityLabel` identifying its semantic status for screen readers.
+  - `TextInput` modernized its accessibility typing (swapping `accessibilityInvalid` for standard `aria-invalid`).
+  - `Dialog` and `BottomSheet` overlays were upgraded with `accessibilityViewIsModal={true}` and `accessibilityRole="alert"` to properly trap screen reader focus when open.
+  - Bottom tab `SymbolView` icons are explicitly hidden from screen readers via `accessibilityElementsHidden={true}` and `importantForAccessibility="no"` to avoid redundant announcements alongside the native tab text label.
+- **Navigation Polish**: Leveraged the existing `expo-symbols` package to inject native SFSymbols/Material icons (`house.fill`, `book.fill`, `globe`, `person.fill`) into the bottom bar, dramatically elevating the native feel without introducing third-party icon fonts.
+
+### Verification
+- `npm run typecheck` and `npm run lint` execute error-free. 
+- Responsiveness verified. The 840px web bounds look superb and natively adapt to phones.
+
+### Next Step
+**P012 onward** — Implement the S001–S110 screen/state inventory (starting with Onboarding & Auth screens).
