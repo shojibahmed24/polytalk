@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Tabs } from 'expo-router';
 import { theme } from '@/theme';
 import { Platform } from 'react-native';
@@ -14,7 +14,7 @@ function TabIcon({ name, color }: { name: SFSymbol; color: string | ColorValue }
         size={24} 
         tintColor={color as string} 
         fallback={
-          <Text style={{ color: color as string, fontSize: 18, fontWeight: 'bold' }}>•</Text>
+          <Text style={{ color: color as string, fontSize: 18, fontWeight: 'bold' }}>â€¢</Text>
         }
       />
     </View>
@@ -56,17 +56,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="learn"
+        name="practice"
         options={{
-          title: 'Learn',
-          tabBarIcon: ({ color }) => <TabIcon name="book.fill" color={color} />,
+          title: 'Practice',
+          tabBarIcon: ({ color }) => <TabIcon name="play.circle.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="translate"
+        name="progress"
         options={{
-          title: 'Translate',
-          tabBarIcon: ({ color }) => <TabIcon name="globe" color={color} />,
+          title: 'Progress',
+          tabBarIcon: ({ color }) => <TabIcon name="chart.bar.fill" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -79,3 +79,5 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+

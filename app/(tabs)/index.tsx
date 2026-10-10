@@ -1,285 +1,487 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'react-native';
 import { router } from 'expo-router';
-import { Screen, Stack, Box } from '@/components/layout';
-import { Text, Card, Button } from '@/components/ui';
-import { theme } from '@/theme';
-import { useAppColors } from '@/theme/colors';
-import { Ionicons } from '@expo/vector-icons';
+
+import { Text } from '@/components/ui';
+
+import { ThemeContext } from '@/theme/colors';
+import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Path, Circle } from 'react-native-svg';
+
+
 
 export default function HomeScreen() {
-  const colors = useAppColors();
-  const [fadeAnim] = useState(() => new Animated.Value(0));
-  const [slideAnim] = useState(() => new Animated.Value(12));
+  const { isDark: isSystemDark } = React.useContext(ThemeContext);
+  
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [fadeAnim, slideAnim]);
+  // Stitch Color Tokens Mapping
+  const st = {
+    surface: isSystemDark ? '#0E1320' : '#FFFFFF',
+    surfaceContainerLowest: isSystemDark ? '#090E1B' : '#FFFFFF',
+    surfaceContainerLow: isSystemDark ? '#161B29' : '#F9FAFB',
+    surfaceContainer: isSystemDark ? '#1A1F2D' : '#F3F4F6',
+    surfaceContainerHigh: isSystemDark ? '#252A38' : '#E5E7EB',
+    surfaceContainerHighest: isSystemDark ? '#303443' : '#D1D5DB',
+    onSurface: isSystemDark ? '#DEE2F5' : '#111827',
+    onSurfaceVariant: isSystemDark ? '#BCC9CD' : '#6B7280',
+    primary: isSystemDark ? '#4CD7F6' : '#06B6D4',
+    secondary: isSystemDark ? '#D0BCFF' : '#8B5CF6',
+    tertiary: isSystemDark ? '#FFB599' : '#F97316',
+    tertiaryContainer: isSystemDark ? '#FA8657' : '#FFEDD5',
+  };
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+  const handleStartConversation = () => {
+    router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never);
+  };
+
+  const handleGrammar = () => {
+    router.push('/(app)/grammar' as never);
+  };
+  
+  const handleProfile = () => {
+    router.push('/(tabs)/profile');
   };
 
   return (
-    <Screen bg="background" edges={['top', 'left', 'right']} style={styles.screen}>
-      <Animated.ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        style={{
-          opacity: fadeAnim,
-          transform: [{ translateY: slideAnim }],
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        <Stack gap="xl" style={styles.container}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: st.surface }}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        
+        {/* Section 1: Compact Top Greeting & Profile Header */}
+        <View style={styles.headerSection}>
+          <View style={styles.greetingCol}>
+            <Text variant="bodySmall" weight="medium" style={{ color: st.onSurfaceVariant }}>Good morning,</Text>
+            <Text style={{ fontSize: 28, fontWeight: '700', color: st.onSurface, marginTop: -2, letterSpacing: -0.5 }}>Shojib</Text>
+            <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 4 }}>Ready for your next conversation?</Text>
+          </View>
           
-          {/* A. Top Header */}
-          <Box direction="row" justify="space-between" align="center" style={styles.header}>
-            <Stack gap="xs" style={{ flex: 1 }}>
-              <Text variant="label" color="textSecondary" weight="medium">
-                {getGreeting()}
-              </Text>
-              <Text variant="heading" color="textPrimary">
-                Ready to speak with confidence?
-              </Text>
-              <Text variant="bodySmall" color="textSecondary" style={styles.subtitle}>
-                Let's continue your language journey today.
-              </Text>
-            </Stack>
-            
-            <TouchableOpacity 
-              onPress={() => router.push('/(tabs)/profile')}
-              style={styles.avatarButton}
-              accessibilityLabel="Go to Profile"
-              accessibilityRole="button"
-              activeOpacity={0.7}
-            >
-              <Ionicons name="person-circle" size={40} color={colors.secondary} />
+          <View style={styles.headerRight}>
+            {/* Notification Bell */}
+            <TouchableOpacity activeOpacity={0.7} style={[styles.notifBtn, { backgroundColor: st.surfaceContainer }]}>
+              <MaterialIcons name="notifications-none" size={20} color={st.onSurfaceVariant} />
+              <View style={[styles.notifBadge, { backgroundColor: st.tertiaryContainer }]} />
             </TouchableOpacity>
-          </Box>
-
-          {/* B. Primary Learning Action */}
-          <TouchableOpacity activeOpacity={0.9} onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never)}>
-            <View style={[styles.primaryActionCard, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
-              <Box direction="row" justify="space-between" align="flex-start">
-                <View style={styles.waveformIcon}>
-                  <Ionicons name="sparkles" size={32} color={colors.primary} />
-                  <View style={[styles.violetDot, { backgroundColor: colors.secondary, borderColor: colors.surfaceElevated }]} />
+            
+            {/* Profile Avatar */}
+            <TouchableOpacity activeOpacity={0.8} onPress={handleProfile}>
+              <LinearGradient
+                colors={[st.primary, st.secondary]}
+                start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                style={styles.avatarBorder}
+              >
+                <View style={[styles.avatarInner, { backgroundColor: st.surfaceContainerHigh }]}>
+                  {/* Using a placeholder avatar since local asset might not exist */}
+                  <Image 
+                    source={{ uri: 'https://i.pravatar.cc/150?img=11' }} 
+                    style={styles.avatarImg} 
+                  />
                 </View>
-                <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
-              </Box>
-              
-              <Stack gap="xs" style={styles.primaryActionText}>
-                <Text variant="title" color="textPrimary">AI Conversation</Text>
-                <Text variant="body" color="textSecondary">
-                  Practice speaking naturally. Get instant pronunciation and grammar feedback.
-                </Text>
-              </Stack>
-              
-              <Button 
-                label="Start practicing" 
-                variant="primary" 
-                onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never)}
-                style={styles.primaryActionBtn}
-              />
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Section 2: Signature AI Coach Card */}
+        <View style={[styles.heroCard, { backgroundColor: st.surfaceContainerLow, overflow: 'hidden' }]}>
+          {/* Ambient Glows */}
+          <View style={[styles.heroGlow1, { backgroundColor: st.primary, opacity: isSystemDark ? 0.15 : 0.08 }]} />
+          <View style={[styles.heroGlow2, { backgroundColor: st.secondary, opacity: isSystemDark ? 0.25 : 0.1 }]} />
+          
+          {/* Top Pill */}
+          <View style={styles.heroTop}>
+            <View style={[styles.aiCoachPill, { backgroundColor: st.surfaceContainerHigh }]}>
+              <View style={[styles.pulseDot, { backgroundColor: st.primary }]} />
+              <Text variant="caption" weight="bold" style={{ color: st.primary, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 10 }}>Your AI Coach</Text>
             </View>
+            <View style={styles.onlineStatus}>
+              <View style={[styles.onlineDot, { backgroundColor: st.primary }]} />
+              <Text variant="label" weight="medium" style={{ color: st.onSurfaceVariant, fontSize: 12 }}>Online</Text>
+            </View>
+          </View>
+
+          {/* Main Content */}
+          <View style={styles.heroMain}>
+            <View style={styles.heroTextCol}>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: st.onSurface, letterSpacing: -0.5 }}>Ready to speak?</Text>
+              <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 6, lineHeight: 20 }}>
+                Practice real conversations and build confidence, one gentle session at a time.
+              </Text>
+            </View>
+            
+            {/* AI Voice Sphere */}
+            <View style={styles.voiceSphereWrap}>
+              <View style={[styles.voiceSphereGlow, { backgroundColor: st.primary }]} />
+              <View style={[styles.voiceSphereInner, { backgroundColor: st.surfaceContainerLowest }]}>
+                <Svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                  <Circle cx="24" cy="24" r="18" stroke={st.primary} strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
+                  <Circle cx="24" cy="24" r="12" stroke={st.secondary} strokeWidth="2" />
+                  <Path d="M19 24C19 21.2386 21.2386 19 24 19C26.7614 19 29 21.2386 29 24V25C29 27.7614 26.7614 30 24 30C21.2386 30 19 27.7614 19 25V24Z" fill={st.primary} opacity="0.8" />
+                  <Path d="M24 33V36M20 36H28" stroke={st.primary} strokeWidth="2" strokeLinecap="round" />
+                </Svg>
+              </View>
+            </View>
+          </View>
+
+          {/* CTA */}
+          <TouchableOpacity activeOpacity={0.8} onPress={handleStartConversation} style={{ marginTop: 24 }}>
+            <LinearGradient
+              colors={[st.primary, st.secondary]}
+              start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+              style={styles.heroBtn}
+            >
+              <Text variant="body" weight="bold" style={{ color: '#FFFFFF' }}>Start a Conversation</Text>
+              <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" style={{ marginLeft: 8 }} />
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
+        {/* Section 3: Daily Learning Progress */}
+        <View style={styles.sectionHeader}>
+          <Text variant="title" weight="bold" style={{ color: st.onSurface }}>Your Progress</Text>
+          <TouchableOpacity>
+            <Text variant="label" weight="bold" style={{ color: st.primary }}>View details</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.progressCard, { backgroundColor: st.surfaceContainer }]}>
+          <View style={styles.progressRow}>
+            <View style={styles.progressLeft}>
+              {/* Circular SVG Ring */}
+              <View style={styles.progressRingWrap}>
+                <Svg width="48" height="48" viewBox="0 0 36 36" style={{ transform: [{ rotate: '-90deg' }] }}>
+                  <Path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={st.surfaceContainerHighest} strokeWidth="3.5" />
+                  <Path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={st.primary} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="53, 100" />
+                </Svg>
+                <View style={styles.progressPctWrap}>
+                  <Text style={{ fontSize: 12, fontWeight: 'bold', color: st.onSurface }}>53%</Text>
+                </View>
+              </View>
+              <View>
+                <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 14 }}>15 min daily goal</Text>
+                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, fontSize: 12 }}>8 of 15 min completed</Text>
+              </View>
+            </View>
+
+            {/* Streak Badge */}
+            <View style={[styles.streakBadge, { backgroundColor: isSystemDark ? 'rgba(250,134,87,0.15)' : '#FFEDD5' }]}>
+              <MaterialIcons name="local-fire-department" size={16} color={st.tertiaryContainer} />
+              <Text style={{ fontSize: 11, fontWeight: '700', color: st.tertiary, marginLeft: 4 }}>3-day streak</Text>
+            </View>
+          </View>
+          
+          {/* Linear Bar */}
+          <View style={[styles.linearBarBg, { backgroundColor: st.surfaceContainerHighest }]}>
+            <LinearGradient colors={[st.primary, st.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.linearBarFill, { width: '53%' }]} />
+          </View>
+        </View>
+
+        {/* Section 4: Practice Modes (Vertical List) */}
+        <View style={styles.sectionHeader}>
+          <Text variant="title" weight="bold" style={{ color: st.onSurface }}>Choose Your Practice</Text>
+          <Text variant="caption" weight="bold" style={{ color: st.onSurfaceVariant, textTransform: 'uppercase' }}>3 Modes</Text>
+        </View>
+
+        <View style={styles.modesList}>
+          {/* Mode 1 */}
+          <TouchableOpacity activeOpacity={0.8} onPress={handleStartConversation} style={[styles.modeCard, { backgroundColor: st.surfaceContainer }]}>
+            <View style={styles.modeCardLeft}>
+              <View style={[styles.modeIconWrap, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.1)' : '#E0F2FE' }]}>
+                <MaterialIcons name="forum" size={24} color={st.primary} />
+              </View>
+              <View style={styles.modeTextCol}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>AI Conversation</Text>
+                  <View style={[styles.modeTag, { backgroundColor: st.surfaceContainerHighest }]}>
+                    <Text style={{ fontSize: 9, fontWeight: '700', color: st.primary, textTransform: 'uppercase' }}>Interactive</Text>
+                  </View>
+                </View>
+                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>Speak naturally with your AI coach.</Text>
+              </View>
+            </View>
+            <MaterialIcons name="chevron-right" size={22} color={st.onSurfaceVariant} />
           </TouchableOpacity>
 
-          {/* C. Quick Actions */}
-          <View>
-            <Text variant="title" color="textPrimary" style={styles.sectionTitle}>
-              Quick Actions
-            </Text>
-            <View style={styles.quickActionGrid}>
-              <QuickActionCard 
-                title="Tutor"
-                icon="chatbubbles"
-                onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as never)}
-              />
-              <QuickActionCard 
-                title="Translate"
-                icon="globe"
-                onPress={() => router.push('/(tabs)/translate')}
-              />
-              <QuickActionCard 
-                title="Grammar"
-                icon="book"
-                onPress={() => router.push('/(app)/grammar' as never)}
-              />
-            </View>
-          </View>
-
-          {/* D. Learning Progress Section */}
-          <View>
-            <Text variant="title" color="textPrimary" style={styles.sectionTitle}>
-              Your Progress
-            </Text>
-            <Card variant="default" style={[styles.progressCard, { borderColor: colors.border }]}>
-              <Box direction="row" align="center" gap="md">
-                <View style={[styles.progressIcon, { backgroundColor: colors.surfaceElevated }]}>
-                  <Ionicons name="bar-chart" size={24} color={colors.secondary} />
+          {/* Mode 2 */}
+          <TouchableOpacity activeOpacity={0.8} style={[styles.modeCard, { backgroundColor: st.surfaceContainer }]}>
+            <View style={styles.modeCardLeft}>
+              <View style={[styles.modeIconWrap, { backgroundColor: isSystemDark ? 'rgba(208,188,255,0.15)' : '#F3E8FF' }]}>
+                <MaterialIcons name="graphic-eq" size={24} color={st.secondary} />
+              </View>
+              <View style={styles.modeTextCol}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>Pronunciation</Text>
                 </View>
-                <Stack gap="xs" style={{ flex: 1 }}>
-                  <Text variant="body" weight="semibold" color="textPrimary">Getting Started</Text>
-                  <Text variant="bodySmall" color="textSecondary">
-                    Your learning journey begins here. Complete your first conversation to track your progress.
-                  </Text>
-                </Stack>
-              </Box>
-            </Card>
-          </View>
+                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>Sound clearer and more confident.</Text>
+              </View>
+            </View>
+            <MaterialIcons name="chevron-right" size={22} color={st.onSurfaceVariant} />
+          </TouchableOpacity>
 
-          {/* Dev Showcase Link */}
-          <Box align="center" marginVertical="lg">
-            <Button 
-              label="Developer Showcase" 
-              variant="ghost"
-              size="sm"
-              onPress={() => router.push('/dev')}
-            />
-          </Box>
-        </Stack>
-      </Animated.ScrollView>
-    </Screen>
-  );
-}
+          {/* Mode 3 */}
+          <TouchableOpacity activeOpacity={0.8} onPress={handleGrammar} style={[styles.modeCard, { backgroundColor: st.surfaceContainer }]}>
+            <View style={styles.modeCardLeft}>
+              <View style={[styles.modeIconWrap, { backgroundColor: isSystemDark ? 'rgba(255,181,153,0.15)' : '#FFEDD5' }]}>
+                <MaterialIcons name="school" size={24} color={st.tertiary} />
+              </View>
+              <View style={styles.modeTextCol}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>Grammar & Vocab</Text>
+                </View>
+                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>Expand your language foundation.</Text>
+              </View>
+            </View>
+            <MaterialIcons name="chevron-right" size={22} color={st.onSurfaceVariant} />
+          </TouchableOpacity>
+        </View>
 
-function QuickActionCard({ title, icon, onPress }: { title: string, icon: keyof typeof Ionicons.glyphMap, onPress: () => void }) {
-  const colors = useAppColors();
-  
-  return (
-    <TouchableOpacity 
-      activeOpacity={0.7} 
-      style={[styles.quickActionCard, { backgroundColor: colors.surface, borderColor: colors.border }]} 
-      onPress={onPress}
-      accessibilityRole="button"
-    >
-      <View style={styles.quickActionIcon}>
-        <Ionicons name={icon} size={28} color={colors.primary} />
-      </View>
-      <Text variant="bodySmall" weight="semibold" color="textPrimary" align="center">
-        {title}
-      </Text>
-    </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 40,
+  },
+  headerSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  greetingCol: {
     flex: 1,
   },
-  scrollContent: {
-    paddingHorizontal: theme.layout.screenPadding,
-    paddingTop: theme.spacing.xl,
-    paddingBottom: theme.spacing.xxl,
+  headerRight: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
   },
-  container: {
-    width: '100%',
-    maxWidth: 840,
-  },
-  header: {
-    marginBottom: theme.spacing.md,
-  },
-  subtitle: {
-    marginTop: 2,
-  },
-  avatarButton: {
-    padding: theme.spacing.xs,
-    marginLeft: theme.spacing.md,
-  },
-  primaryActionCard: {
-    backgroundColor: theme.colors.surfaceElevated,
+  notifBtn: {
+    width: 40,
+    height: 40,
     borderRadius: 20,
-    padding: theme.spacing.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  waveformIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    backgroundColor: 'rgba(6, 182, 212, 0.1)', // Primary tint
-    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+    justifyContent: 'center',
   },
-  violetDot: {
+  notifBadge: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: 8,
+    right: 8,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  avatarBorder: {
+    padding: 2,
+    borderRadius: 22,
+  },
+  avatarInner: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+  },
+  heroCard: {
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  heroGlow1: {
+    position: 'absolute',
+    top: -50,
+    right: -50,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    transform: [{ scale: 2 }],
+  },
+  heroGlow2: {
+    position: 'absolute',
+    bottom: -40,
+    left: -40,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    transform: [{ scale: 2 }],
+  },
+  heroTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    zIndex: 10,
+  },
+  aiCoachPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+  },
+  pulseDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  onlineStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  onlineDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: theme.colors.secondary,
   },
-  primaryActionText: {
-    marginBottom: theme.spacing.lg,
-  },
-  primaryActionBtn: {
-    width: '100%',
-  },
-  sectionTitle: {
-    marginBottom: theme.spacing.md,
-  },
-  quickActionGrid: {
+  heroMain: {
     flexDirection: 'row',
-    gap: theme.spacing.md,
-    justifyContent: 'center',
-    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    zIndex: 10,
   },
-  quickActionCard: {
+  heroTextCol: {
     flex: 1,
-    minWidth: 100,
-    maxWidth: 240,
-    backgroundColor: theme.colors.surface,
-    borderRadius: 18,
-    padding: theme.spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    minHeight: 110,
+    paddingRight: 16,
   },
-  quickActionIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(6, 182, 212, 0.05)',
-    justifyContent: 'center',
+  voiceSphereWrap: {
+    width: 72,
+    height: 72,
     alignItems: 'center',
-    marginBottom: theme.spacing.sm,
+    justifyContent: 'center',
+  },
+  voiceSphereGlow: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    opacity: 0.2,
+  },
+  voiceSphereInner: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  heroBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 52,
+    borderRadius: 26,
+    zIndex: 10,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 32,
+    marginBottom: 16,
   },
   progressCard: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.border,
-    borderWidth: 1,
-    borderRadius: 18,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  progressIcon: {
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  progressLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  progressRingWrap: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(139, 92, 246, 0.1)', // Secondary (violet) tint
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
+  progressPctWrap: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  linearBarBg: {
+    width: '100%',
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  linearBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  modesList: {
+    flexDirection: 'column',
+    gap: 12,
+  },
+  modeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  modeCardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    flex: 1,
+  },
+  modeIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modeTextCol: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  modeTag: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  }
 });
+
+
