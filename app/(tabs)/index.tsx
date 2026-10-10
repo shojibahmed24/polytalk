@@ -71,16 +71,16 @@ export default function HomeScreen() {
               accessibilityRole="button"
               activeOpacity={0.7}
             >
-              <SymbolView name="person.crop.circle.fill" size={40} tintColor={theme.colors.secondary} />
+              <SymbolView name="person.circle.fill" size={40} tintColor={theme.colors.secondary} />
             </TouchableOpacity>
           </Box>
 
           {/* B. Primary Learning Action */}
-          <TouchableOpacity activeOpacity={0.9} onPress={() => router.push('/(app)/chat/spanish')}>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as any)}>
             <View style={styles.primaryActionCard}>
               <Box direction="row" justify="space-between" align="flex-start">
                 <View style={styles.waveformIcon}>
-                  <SymbolView name="waveform.path" size={32} tintColor={theme.colors.primary} />
+                  <SymbolView name="sparkles" size={32} tintColor={theme.colors.primary} />
                   <View style={styles.violetDot} />
                 </View>
                 <SymbolView name="chevron.right" size={24} tintColor={theme.colors.textSecondary} />
@@ -96,7 +96,7 @@ export default function HomeScreen() {
               <Button 
                 label="Start practicing" 
                 variant="primary" 
-                onPress={() => router.push('/(app)/chat/spanish')}
+                onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as any)}
                 style={styles.primaryActionBtn}
               />
             </View>
@@ -110,8 +110,8 @@ export default function HomeScreen() {
             <View style={styles.quickActionGrid}>
               <QuickActionCard 
                 title="Tutor"
-                icon="bubble.left.and.bubble.right.fill"
-                onPress={() => router.push('/(app)/chat/spanish')}
+                icon="text.bubble.fill"
+                onPress={() => router.push({ pathname: '/(app)/chat/[id]', params: { id: 'spanish' } } as any)}
               />
               <QuickActionCard 
                 title="Translate"
@@ -120,7 +120,7 @@ export default function HomeScreen() {
               />
               <QuickActionCard 
                 title="Vocabulary"
-                icon="character.book.closed.fill"
+                icon="book.fill"
                 onPress={handleNotImplemented}
               />
             </View>
@@ -134,7 +134,7 @@ export default function HomeScreen() {
             <Card variant="default" style={styles.progressCard}>
               <Box direction="row" align="center" gap="md">
                 <View style={styles.progressIcon}>
-                  <SymbolView name="chart.bar.fill" size={24} tintColor={theme.colors.textSecondary} />
+                  <SymbolView name="chart.bar.fill" size={24} tintColor={theme.colors.secondary} />
                 </View>
                 <Stack gap="xs" style={{ flex: 1 }}>
                   <Text variant="body" weight="semibold" color="textPrimary">Getting Started</Text>
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    maxWidth: theme.layout.contentMaxWidth,
+    maxWidth: 680,
   },
   header: {
     marginBottom: theme.spacing.md,
@@ -254,10 +254,13 @@ const styles = StyleSheet.create({
   quickActionGrid: {
     flexDirection: 'row',
     gap: theme.spacing.md,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
   },
   quickActionCard: {
     flex: 1,
+    minWidth: 100,
+    maxWidth: 160,
     backgroundColor: theme.colors.surface,
     borderRadius: 18,
     padding: theme.spacing.md,
@@ -265,7 +268,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: theme.colors.border,
-    minHeight: 100,
+    minHeight: 110,
   },
   quickActionIcon: {
     width: 44,
@@ -286,7 +289,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(148, 163, 184, 0.1)', // textSecondary tint
+    backgroundColor: 'rgba(139, 92, 246, 0.1)', // Secondary (violet) tint
     justifyContent: 'center',
     alignItems: 'center',
   },
