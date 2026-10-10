@@ -5,7 +5,7 @@ import { Screen, Stack as LayoutStack, Box } from '@/components/layout';
 import { Text, Button } from '@/components/ui';
 import { theme } from '@/theme';
 import { useAppColors, ThemeContext } from '@/theme/colors';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { bootState } from '../index';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgLinearGradient, Stop, Ellipse, Polygon } from 'react-native-svg';
@@ -13,11 +13,11 @@ import Svg, { Circle, Path, Defs, LinearGradient as SvgLinearGradient, Stop, Ell
 
 const MULTILINGUAL_PHRASES = [
   { text: "Hello! Learn a new language.", lang: "en" },
-  { text: "স্বাগতম! নতুন ভাষা শিখুন।", lang: "bn" },
-  { text: "नमस्ते! एक नई भाषा सीखें।", lang: "hi" },
-  { text: "こんにちは！新しい言語を学びましょう。", lang: "ja" },
-  { text: "你好！学习一门新语言。", lang: "zh" },
-  { text: "¡Hola! Aprende un nuevo idioma.", lang: "es" }
+  { text: "à¦¸à§à¦¬à¦¾à¦—à¦¤à¦®! à¦¨à¦¤à§à¦¨ à¦­à¦¾à¦·à¦¾ à¦¶à¦¿à¦–à§à¦¨à¥¤", lang: "bn" },
+  { text: "à¤¨à¤®à¤¸à¥à¤¤à¥‡! à¤à¤• à¤¨à¤ˆ à¤­à¤¾à¤·à¤¾ à¤¸à¥€à¤–à¥‡à¤‚à¥¤", lang: "hi" },
+  { text: "ã“ã‚“ã«ã¡ã¯ï¼æ–°ã—ã„è¨€èªžã‚’å­¦ã³ã¾ã—ã‚‡ã†ã€‚", lang: "ja" },
+  { text: "ä½ å¥½ï¼å­¦ä¹ ä¸€é—¨æ–°è¯­è¨€ã€‚", lang: "zh" },
+  { text: "Â¡Hola! Aprende un nuevo idioma.", lang: "es" }
 ];
 
 export default function OnboardingFlow() {
@@ -72,15 +72,15 @@ export default function OnboardingFlow() {
             <Text style={styles.badgeCode}>EN</Text>
           </View>
           <View style={[styles.badge, { top: 24, right: 24 }]}>
-            <Text style={[styles.badgeText, { color: '#8B5CF6' }]}>ã‚</Text>
+            <Text style={[styles.badgeText, { color: '#8B5CF6' }]}>Ã£Ââ€š</Text>
             <Text style={styles.badgeCode}>JA</Text>
           </View>
           <View style={[styles.badge, { bottom: 20, left: 32 }]}>
-            <Text style={[styles.badgeText, { color: '#F97316' }]}>æ–‡</Text>
+            <Text style={[styles.badgeText, { color: '#F97316' }]}>Ã¦â€“â€¡</Text>
             <Text style={styles.badgeCode}>ZH</Text>
           </View>
           <View style={[styles.badge, { bottom: 16, right: 28 }]}>
-            <Text style={[styles.badgeText, { color: '#06B6D4' }]}>Â¡Hola!</Text>
+            <Text style={[styles.badgeText, { color: '#06B6D4' }]}>Ã‚Â¡Hola!</Text>
             <Text style={styles.badgeCode}>ES</Text>
           </View>
           {/* Orbital Rings */}
@@ -233,19 +233,107 @@ export default function OnboardingFlow() {
 
   // Step 3: Final confirmation (S015)
   const renderStep3 = () => (
-    <LayoutStack gap="xl" align="center" style={styles.content}>
-      <Box marginVertical="xl" align="center">
-        <View style={[styles.iconCircle, { backgroundColor: colors.surface, borderColor: colors.border }]} importantForAccessibility="no">
-          <Ionicons name="checkmark-circle" size={48} color={colors.primaryBright} />
+    <View style={{ width: '100%', paddingVertical: 16 }}>
+      {/* Hero Celebratory Orb Container */}
+      <View style={styles.s015OrbContainer}>
+        {/* Concentric Rings */}
+        <View style={[StyleSheet.absoluteFill, styles.s015Ring1, { backgroundColor: 'rgba(6,182,212,0.05)' }]} />
+        <View style={[styles.s015Ring2, { backgroundColor: (isSystemDark ? '#161b29' : 'rgba(0,0,0,0.02)'), opacity: 0.4 }]} />
+        <View style={[styles.s015Ring3, { backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)'), opacity: 0.3 }]} />
+        <View style={[styles.s015CoreGlow, { backgroundColor: 'rgba(6,182,212,0.2)' }]} />
+
+        {/* Floating Greeting Chips */}
+        <View style={[styles.s015Chip, { top: 10, left: 0, transform: [{ rotate: '-6deg' }], backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)') }]}>
+          <View style={[styles.s015ChipDot, { backgroundColor: '#06B6D4' }]} />
+          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>Hello!</Text>
         </View>
-      </Box>
-      <LayoutStack gap="sm" align="center">
-        <Text variant="title" color="textPrimary" align="center">You're All Set!</Text>
-        <Text variant="body" color="textSecondary" align="center">
-          Your AI coach is ready. Create an account to select your language and start learning.
+        <View style={[styles.s015Chip, { top: 20, right: 0, transform: [{ rotate: '6deg' }], backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)') }]}>
+          <View style={[styles.s015ChipDot, { backgroundColor: '#FA8657' }]} />
+          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>à¦¸à§à¦¬à¦¾à¦—à¦¤à¦®!</Text>
+        </View>
+        <View style={[styles.s015Chip, { top: 120, right: -10, transform: [{ rotate: '-3deg' }], backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)') }]}>
+          <View style={[styles.s015ChipDot, { backgroundColor: '#8B5CF6' }]} />
+          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>ã“ã‚“ã«ã¡ã¯!</Text>
+        </View>
+        <View style={[styles.s015Chip, { bottom: 20, left: 10, transform: [{ rotate: '4deg' }], backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)') }]}>
+          <View style={[styles.s015ChipDot, { backgroundColor: '#06B6D4' }]} />
+          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>Â¡Hola!</Text>
+        </View>
+        <View style={[styles.s015Chip, { bottom: 25, right: 15, transform: [{ rotate: '-6deg' }], backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)') }]}>
+          <View style={[styles.s015ChipDot, { backgroundColor: '#FFB599' }]} />
+          <Text style={[styles.bubbleText, { color: colors.textPrimary }]}>à¤¨à¤®à¤¸à¥à¤¤à¥‡!</Text>
+        </View>
+
+        {/* Luminous AI Mascot Orb */}
+        <View style={styles.s015MascotWrap}>
+          <LinearGradient colors={['#06B6D4', '#06B6D4', '#8B5CF6']} style={styles.s015MascotBorder}>
+            <View style={[styles.s015MascotInner, { backgroundColor: isSystemDark ? 'rgba(9,14,27,0.8)' : 'rgba(255,255,255,0.9)' }]}>
+              {/* Eyes */}
+              <View style={{ flexDirection: 'row', gap: 16, zIndex: 10 }}>
+                <View style={styles.s015Eye}>
+                  <View style={styles.s015EyeGlint} />
+                </View>
+                <View style={styles.s015Eye}>
+                  <View style={styles.s015EyeGlint} />
+                </View>
+              </View>
+              {/* Smile */}
+              <LinearGradient colors={['#06B6D4', '#8B5CF6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.s015Smile} />
+              {/* Audio Bars */}
+              <View style={{ flexDirection: 'row', gap: 4, marginTop: 8, alignItems: 'center', zIndex: 10 }}>
+                <View style={[styles.s015AudioBar, { height: 6 }]} />
+                <View style={[styles.s015AudioBar, { height: 12, backgroundColor: '#8B5CF6' }]} />
+                <View style={[styles.s015AudioBar, { height: 4 }]} />
+              </View>
+            </View>
+          </LinearGradient>
+        </View>
+      </View>
+
+      {/* Main Heading Stack */}
+      <LayoutStack gap="xs" align="center" style={{ marginTop: 20 }}>
+        <Text variant="display" color="textPrimary" align="center" style={styles.titleText}>
+          You're All Set!
+        </Text>
+        <Text variant="body" color="textSecondary" align="center" style={{ fontSize: 15, lineHeight: 24, maxWidth: 318, marginTop: 4 }}>
+          Your personal AI language coach is ready. Start speaking, learning, and building confidence one conversation at a time.
         </Text>
       </LayoutStack>
-    </LayoutStack>
+
+      {/* Success Benefits */}
+      <View style={{ flexDirection: 'column', gap: 12, marginTop: 24, width: '100%' }}>
+        {/* Item 1 */}
+        <View style={[styles.s015BenefitItem, { backgroundColor: colors.surfaceElevated }]}>
+          <View style={[styles.s015BenefitIconWrap, { backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)') }]}>
+            <MaterialIcons name="chat-bubble" size={24} color="#06B6D4" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text variant="label" weight="semibold" color="textPrimary" style={{ fontSize: 14 }}>Speak with Confidence</Text>
+            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: 2 }}>Practice conversations at your own pace.</Text>
+          </View>
+        </View>
+        {/* Item 2 */}
+        <View style={[styles.s015BenefitItem, { backgroundColor: colors.surfaceElevated }]}>
+          <View style={[styles.s015BenefitIconWrap, { backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)') }]}>
+            <MaterialIcons name="auto-fix-high" size={24} color="#8B5CF6" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text variant="label" weight="semibold" color="textPrimary" style={{ fontSize: 14 }}>Get Instant Feedback</Text>
+            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: 2 }}>Improve pronunciation and grammar as you learn.</Text>
+          </View>
+        </View>
+        {/* Item 3 */}
+        <View style={[styles.s015BenefitItem, { backgroundColor: colors.surfaceElevated }]}>
+          <View style={[styles.s015BenefitIconWrap, { backgroundColor: (isSystemDark ? '#252a38' : 'rgba(0,0,0,0.06)') }]}>
+            <MaterialIcons name="trending-up" size={24} color="#FA8657" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text variant="label" weight="semibold" color="textPrimary" style={{ fontSize: 14 }}>Track Your Progress</Text>
+            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: 2 }}>Build better habits with every session.</Text>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 
   return (
@@ -379,17 +467,34 @@ export default function OnboardingFlow() {
               </TouchableOpacity>
               <Box marginVertical="md">
                 <Text variant="caption" color="textSecondary" align="center">
-                  Step 2 of 3 â€¢ Personalized AI Curriculum
+                  Step 2 of 3 Ã¢â‚¬Â¢ Personalized AI Curriculum
                 </Text>
               </Box>
             </View>
           ) : (
-            <Button 
-              variant="primary" 
-              label="Start Learning" 
-              size="lg" 
-              onPress={handleComplete} 
-            />
+            <View>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleComplete}
+                style={styles.gradientButtonWrap}
+              >
+                <LinearGradient
+                  colors={['#06B6D4', '#06B6D4', '#8B5CF6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.gradientButton}
+                >
+                  <Text variant="body" weight="bold" color="textInverse" style={{ marginRight: 8, fontSize: 16 }}>
+                    Start Learning
+                  </Text>
+                  <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
+                </LinearGradient>
+              </TouchableOpacity>
+              <View style={{ alignItems: 'center', marginTop: 12 }}>
+                <Text variant="bodySmall" color="textSecondary" weight="medium">Your language journey starts here.</Text>
+                <Text style={{ fontSize: 10, letterSpacing: 1.5, color: (isSystemDark ? '#869397' : '#707070'), textTransform: 'uppercase', marginTop: 4, fontWeight: 'bold' }}>Step 3 of 3 â€¢ Journey Begins</Text>
+              </View>
+            </View>
           )}
         </Box>
       </View>
@@ -738,11 +843,134 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  s015OrbContainer: {
+    width: '100%',
+    maxWidth: 310,
+    aspectRatio: 1,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    marginTop: theme.spacing.xs,
+  },
+  s015Ring1: {
+    borderRadius: 200,
+  },
+  s015Ring2: {
+    position: 'absolute',
+    top: 16, bottom: 16, left: 16, right: 16,
+    borderRadius: 200,
+  },
+  s015Ring3: {
+    position: 'absolute',
+    top: 36, bottom: 36, left: 36, right: 36,
+    borderRadius: 200,
+  },
+  s015CoreGlow: {
+    position: 'absolute',
+    top: 56, bottom: 56, left: 56, right: 56,
+    borderRadius: 200,
+  },
+  s015Chip: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+    zIndex: 20,
+  },
+  s015ChipDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  s015MascotWrap: {
+    width: 144,
+    height: 144,
+    borderRadius: 72,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#06B6D4',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 36,
+    elevation: 10,
+    zIndex: 10,
+  },
+  s015MascotBorder: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 72,
+    padding: 4,
+  },
+  s015MascotInner: {
+    flex: 1,
+    width: '100%',
+    borderRadius: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  s015Eye: {
+    width: 14,
+    height: 20,
+    borderRadius: 7,
+    backgroundColor: '#06B6D4',
+    shadowColor: '#06B6D4',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  s015EyeGlint: {
+    width: 4,
+    height: 6,
+    borderRadius: 2,
+    backgroundColor: '#FFFFFF',
+    marginTop: 2,
+    marginLeft: 2,
+  },
+  s015Smile: {
+    width: 28,
+    height: 8,
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+    marginTop: 10,
+    zIndex: 10,
+  },
+  s015AudioBar: {
+    width: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(6,182,212,0.7)',
+  },
+  s015BenefitItem: {
+    width: '100%',
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  s015BenefitIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   signInLink: {
     marginTop: theme.spacing.md,
     padding: theme.spacing.sm,
   },
 });
+
+
 
 
 
