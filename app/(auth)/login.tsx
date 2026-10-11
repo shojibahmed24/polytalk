@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Switch, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Switch, ScrollView, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { Screen, Box } from '@/components/layout';
 import { Text, TextInput } from '@/components/ui';
@@ -9,6 +9,14 @@ import { useAppColors, ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
+import { supabase } from '@/utils/supabase';
+import { PuterConnectModal } from '@/components/PuterConnectModal';
+import { 
+  startPuterBrowserAuth, 
+  loginOrRegisterWithPuter, 
+  getStoredPuterToken, 
+  PuterProfile 
+} from '@/services/puter';
 
 type AuthMode = 'signIn' | 'register';
 
@@ -21,6 +29,8 @@ export default function AuthScreen() {
   
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPuterAuthLoading, setIsPuterAuthLoading] = useState(false);
+  const [isPuterModalOpen, setIsPuterModalOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string }>({});
 
@@ -51,13 +61,68 @@ export default function AuthScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      if (mode === 'signIn') {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          setErrors({ email: error.message });
+        } else {
+          router.replace('/(tabs)');
+        }
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: name } }
+        });
+        if (error) {
+          setErrors({ email: error.message });
+        } else {
+          router.replace('/(tabs)');
+        }
+      }
+    } catch (err: any) {
+      setErrors({ email: err.message || 'Authentication error' });
+    } finally {
       setIsLoading(false);
-      setShowDialog(true);
-    }, 1000);
+    }
+  };
+
+  const handlePuterAuth = async () => {
+    setIsPuterAuthLoading(true);
+    try {
+      const res = await startPuterBrowserAuth(null);
+      if (res.success && res.token && res.user) {
+        const loginRes = await loginOrRegisterWithPuter(res.token, res.user);
+        if (loginRes.success) {
+          router.replace('/(tabs)');
+          return;
+        } else {
+          setErrors({ email: loginRes.error || 'Puter login failed.' });
+        }
+      } else {
+        setIsPuterModalOpen(true);
+      }
+    } catch {
+      setIsPuterModalOpen(true);
+    } finally {
+      setIsPuterAuthLoading(false);
+    }
+  };
+
+  const handlePuterConnectedFromModal = async (profile: PuterProfile) => {
+    const token = await getStoredPuterToken(null);
+    if (token) {
+      const loginRes = await loginOrRegisterWithPuter(token, profile);
+      if (loginRes.success) {
+        router.replace('/(tabs)');
+      } else {
+        setErrors({ email: loginRes.error || 'Puter login failed.' });
+      }
+    }
   };
 
   const handleOAuth = () => {
@@ -242,6 +307,38 @@ export default function AuthScreen() {
 
           {/* OAuth Buttons */}
           <View style={styles.oauthContainer}>
+            {/* Continue with Puter Button */}
+            <TouchableOpacity 
+              activeOpacity={0.8} 
+              onPress={handlePuterAuth}
+              disabled={isPuterAuthLoading}
+              style={[
+                styles.oauthBtn, 
+                styles.puterBtn,
+                { 
+                  backgroundColor: isSystemDark ? '#083344' : '#ECFEFF',
+                  borderColor: '#06B6D4',
+                  borderWidth: 1.5,
+                }
+              ]}
+            >
+              {isPuterAuthLoading ? (
+                <ActivityIndicator size="small" color="#06B6D4" />
+              ) : (
+                <>
+                  <MaterialIcons name="auto-awesome" size={20} color="#06B6D4" />
+                  <Text variant="label" weight="bold" color="textPrimary" style={{ fontSize: 16 }}>
+                    Continue with Puter
+                  </Text>
+                  <View style={styles.puterBadge}>
+                    <Text variant="caption" weight="bold" style={{ color: '#0891B2', fontSize: 11 }}>
+                      Free AI
+                    </Text>
+                  </View>
+                </>
+              )}
+            </TouchableOpacity>
+
             <TouchableOpacity 
               activeOpacity={0.8} 
               onPress={handleOAuth}
@@ -303,6 +400,13 @@ export default function AuthScreen() {
         primaryActionLabel="Got it"
         onPrimaryAction={() => setShowDialog(false)}
         onDismiss={() => setShowDialog(false)}
+      />
+
+      <PuterConnectModal
+        visible={isPuterModalOpen}
+        onClose={() => setIsPuterModalOpen(false)}
+        onConnected={handlePuterConnectedFromModal}
+        isDark={isSystemDark}
       />
     </Screen>
   );
@@ -409,6 +513,16 @@ const styles = StyleSheet.create({
     gap: 12,
     height: 48,
     borderRadius: 12,
+  },
+  puterBtn: {
+    marginBottom: 4,
+  },
+  puterBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    backgroundColor: 'rgba(6, 182, 212, 0.15)',
+    marginLeft: 4,
   },
   trustCard: {
     flexDirection: 'row',

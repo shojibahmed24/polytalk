@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import { supabase } from '../utils/supabase';
 
 export interface PuterProfile {
   username: string;
@@ -192,6 +193,62 @@ export async function startPuterBrowserAuth(
     success: false,
     error: 'Authentication timed out. You can also connect directly with your Puter Auth Token from puter.com/dashboard.',
   };
+}
+
+/**
+ * Automatically authenticates or registers a PolyTalk Supabase user using their Puter identity.
+ * Binds the user's Puter token to their PolyTalk Supabase account so all AI charges are billed to their Puter account.
+ */
+export async function loginOrRegisterWithPuter(
+  token: string,
+  profile: PuterProfile
+): Promise<{ success: boolean; user?: any; error?: string }> {
+  try {
+    const cleanUsername = (profile.username || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const puterEmail = `${cleanUsername}@puter.com`;
+    const puterPassword = `Puter_${profile.uuid || cleanUsername}_PolyTalk!`;
+
+    // Try signing in
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email: puterEmail,
+      password: puterPassword,
+    });
+
+    let authenticatedUser = signInData?.user;
+
+    if (signInError || !authenticatedUser) {
+      // User doesn't exist yet, register them
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: puterEmail,
+        password: puterPassword,
+        options: {
+          data: {
+            full_name: profile.username,
+            username: profile.username,
+            puter_user_id: profile.uuid,
+          },
+        },
+      });
+
+      if (signUpError) {
+        return { success: false, error: signUpError.message };
+      }
+
+      authenticatedUser = signUpData.user;
+    }
+
+    if (authenticatedUser) {
+      // Save Puter token for this user
+      await savePuterToken(authenticatedUser.id, token);
+      await savePuterToken(null, token); // Default fallback
+      return { success: true, user: authenticatedUser };
+    }
+
+    return { success: false, error: 'Could not establish PolyTalk session.' };
+  } catch (err: any) {
+    console.warn('loginOrRegisterWithPuter failed:', err);
+    return { success: false, error: err.message || 'Login with Puter failed.' };
+  }
 }
 
 export interface PuterChatMessage {
