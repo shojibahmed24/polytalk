@@ -1,10 +1,45 @@
-import React from 'react';
-import { Stack } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Stack, Redirect } from 'expo-router';
+import { View, ActivityIndicator } from 'react-native';
 import { theme } from '@/theme';
 import { useAppColors } from '@/theme/colors';
+import { getCurrentUserProfile } from '@/utils/userProfile';
 
 export default function AppLayout() {
   const colors = useAppColors();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function checkAuth() {
+      try {
+        const profile = await getCurrentUserProfile();
+        if (isMounted) {
+          setIsAuthenticated(!!profile);
+        }
+      } catch {
+        if (isMounted) {
+          setIsAuthenticated(false);
+        }
+      }
+    }
+    checkAuth();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (isAuthenticated === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
   return (
     <Stack

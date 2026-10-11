@@ -1,6 +1,8 @@
 import React from 'react';
 import { useTranslation } from '@/utils/i18n';
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
+import { ActivityIndicator } from 'react-native';
+import { getCurrentUserProfile } from '@/utils/userProfile';
 
 import { Platform, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -17,7 +19,28 @@ function TabIcon({ name, color }: { name: React.ComponentProps<typeof MaterialIc
 export default function TabLayout() {
   const { t } = useTranslation();
   const { isDark: isSystemDark } = React.useContext(ThemeContext);
-  
+  const [isAuthenticated, setIsAuthenticated] = React.useState<boolean | null>(null);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    async function checkAuth() {
+      try {
+        const profile = await getCurrentUserProfile();
+        if (isMounted) {
+          setIsAuthenticated(!!profile);
+        }
+      } catch {
+        if (isMounted) {
+          setIsAuthenticated(false);
+        }
+      }
+    }
+    checkAuth();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const st = {
     surfaceElevated: isSystemDark ? '#1A1F2D' : '#FFFFFF',
     border: isSystemDark ? '#303443' : '#E5E7EB',
@@ -26,6 +49,18 @@ export default function TabLayout() {
     background: isSystemDark ? '#0E1320' : '#F8F9FC',
     textPrimary: isSystemDark ? '#DEE2F5' : '#111827',
   };
+
+  if (isAuthenticated === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: st.background }}>
+        <ActivityIndicator size="large" color={st.primary} />
+      </View>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
   return (
     <Tabs
