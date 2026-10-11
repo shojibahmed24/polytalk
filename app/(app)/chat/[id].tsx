@@ -10,7 +10,8 @@ import {
   KeyboardAvoidingView, 
   Platform, 
   SafeAreaView,
-  ActivityIndicator
+  ActivityIndicator,
+  Modal
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Text } from '@/components/ui';
@@ -70,6 +71,8 @@ export default function AIChatScreen() {
   const [translatedMessages, setTranslatedMessages] = useState<Record<string, string>>({});
   const [translatingId, setTranslatingId] = useState<string | null>(null);
   const [isVoiceInputUsed, setIsVoiceInputUsed] = useState(false);
+  const [detailedSuggestions, setDetailedSuggestions] = useState<Array<{ target: string; native: string; phonetic: string }>>([]);
+  const [selectedWordDetail, setSelectedWordDetail] = useState<{ word: string; meaning: string; phonetic?: string } | null>(null);
 
   // User auth state
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -106,7 +109,8 @@ export default function AIChatScreen() {
   const [sessionSettings, setSessionSettings] = useState<SessionSettings>({
     targetLanguage: languageName,
     nativeLanguage: 'Bengali',
-    proficiencyLevel: 'A2-B1',
+    proficiencyLevel: 'A1',
+    learningMode: 'bilingual_tutor',
     conversationTopic: 'Restaurant',
     aiCharacter: 'Waiter / Server',
     voiceRate: 1.0,
@@ -146,8 +150,8 @@ export default function AIChatScreen() {
         uid,
         activeScenario.id,
         languageName,
-        'A2-B1',
-        { nativeLanguage: nativeLang }
+        'A1',
+        { nativeLanguage: nativeLang, learningMode: 'bilingual_tutor' }
       );
       setSession(activeSession);
       setSessionSettings(activeSession.settings);
@@ -156,8 +160,22 @@ export default function AIChatScreen() {
       const msgs = await coachService.getSessionMessages(activeSession.id);
       setMessages(msgs);
 
-      if (activeScenario.suggested_responses?.length > 0) {
-        setSuggestedReplies(activeScenario.suggested_responses);
+      // Setup initial detailed suggestions
+      const isBilingual = (activeSession.settings.learningMode || 'bilingual_tutor') === 'bilingual_tutor';
+      if (isBilingual) {
+        setDetailedSuggestions([
+          { target: "¡Hola!", native: "হ্যালো", phonetic: "ওলা" },
+          { target: "Quiero un café", native: "আমি একটি কফি চাই", phonetic: "কিয়েরো উন কাফে" },
+          { target: "Un libro, por favor", native: "একটি বই, দয়া করে", phonetic: "উন লিব্রো, পর ফাভোর" }
+        ]);
+        setSuggestedReplies(["¡Hola!", "Quiero un café", "Un libro, por favor"]);
+      } else {
+        setDetailedSuggestions([
+          { target: "¿Puedo ver el menú?", native: "আমি কি মেনু দেখতে পারি?", phonetic: "পুয়েদো বের এল মেনু?" },
+          { target: "Un café con leche, por favor", native: "এক কাপ দুধ কফি, দয়া করে", phonetic: "উন কাফে কন লেচে, পর ফাভোর" },
+          { target: "Gracias, estoy listo", native: "ধন্যবাদ, আমি প্রস্তুত", phonetic: "গ্রাসিয়াস, এস্তই লিস্তো" }
+        ]);
+        setSuggestedReplies(["¿Puedo ver el menú?", "Un café con leche, por favor", "Gracias, estoy listo"]);
       }
 
       // Load user vocabulary
@@ -173,6 +191,34 @@ export default function AIChatScreen() {
       setIsLoadingSession(false);
     }
   }, [id, languageName]);
+
+  const handleSwitchLearningMode = async (newMode: 'bilingual_tutor' | 'dual_immersion') => {
+    const updated = { ...sessionSettings, learningMode: newMode };
+    setSessionSettings(updated);
+    if (session) {
+      try {
+        await supabase
+          .from('coach_sessions')
+          .update({ settings: updated })
+          .eq('id', session.id);
+      } catch {}
+    }
+    if (newMode === 'bilingual_tutor') {
+      setDetailedSuggestions([
+        { target: "¡Hola!", native: "হ্যালো", phonetic: "ওলা" },
+        { target: "Quiero un café", native: "আমি একটি কফি চাই", phonetic: "কিয়েরো উন কাফে" },
+        { target: "Un libro, por favor", native: "একটি বই, দয়া করে", phonetic: "উন লিব্রো, পর ফাভোর" }
+      ]);
+      setSuggestedReplies(["¡Hola!", "Quiero un café", "Un libro, por favor"]);
+    } else {
+      setDetailedSuggestions([
+        { target: "¿Puedo ver el menú?", native: "আমি কি মেনু দেখতে পারি?", phonetic: "পুয়েদো বের এল মেনু?" },
+        { target: "Un café con leche, por favor", native: "এক কাপ দুধ কফি, দয়া করে", phonetic: "উন কাফে কন লেচে, পর ফাভোর" },
+        { target: "Gracias, estoy listo", native: "ধন্যবাদ, আমি প্রস্তুত", phonetic: "গ্রাসিয়াস, এস্তই লিস্তো" }
+      ]);
+      setSuggestedReplies(["¿Puedo ver el menú?", "Un café con leche, por favor", "Gracias, estoy listo"]);
+    }
+  };
 
   useEffect(() => {
     initializeSession();
@@ -250,7 +296,10 @@ export default function AIChatScreen() {
         response.aiMessage,
       ]);
 
-      if (response.suggestedResponses && response.suggestedResponses.length > 0) {
+      if (response.suggestedResponsesDetailed && response.suggestedResponsesDetailed.length > 0) {
+        setDetailedSuggestions(response.suggestedResponsesDetailed);
+        setSuggestedReplies(response.suggestedResponsesDetailed.map(d => d.target));
+      } else if (response.suggestedResponses && response.suggestedResponses.length > 0) {
         setSuggestedReplies(response.suggestedResponses);
       }
 
@@ -417,25 +466,50 @@ export default function AIChatScreen() {
             onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
           >
             {/* Scenario Banner */}
-            <View style={[styles.scenarioBanner, { backgroundColor: st.surfaceContainerLow }]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
-                <View style={[styles.scenarioIconWrap, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.1)' : '#E0F2FE' }]}>
-                  <MaterialIcons name="restaurant" size={20} color={st.primary} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary, textTransform: 'uppercase', letterSpacing: 0.5 }}>ROLEPLAY SCENARIO</Text>
-                    <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: st.primary, opacity: 0.4 }} />
-                    <Text style={{ fontSize: 10, color: st.onSurfaceVariant }}>Level: {scenario?.proficiency_levels?.join('-') || 'A2-B1'}</Text>
+            <View style={[styles.scenarioBanner, { backgroundColor: st.surfaceContainerLow, flexDirection: 'column' }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+                  <View style={[styles.scenarioIconWrap, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.1)' : '#E0F2FE' }]}>
+                    <MaterialIcons name="restaurant" size={20} color={st.primary} />
                   </View>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: st.onSurface, marginTop: 2 }}>
-                    {scenario?.title || 'Ordering at a Diner & Bistro'}
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary, textTransform: 'uppercase', letterSpacing: 0.5 }}>ROLEPLAY SCENARIO</Text>
+                      <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: st.primary, opacity: 0.4 }} />
+                      <Text style={{ fontSize: 10, color: st.onSurfaceVariant }}>Level: {sessionSettings.proficiencyLevel || 'A1'}</Text>
+                    </View>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: st.onSurface, marginTop: 2 }}>
+                      {scenario?.title || 'Ordering at a Diner & Bistro'}
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity onPress={() => setIsScenarioModalOpen(true)} style={[styles.scenarioInfoBtn, { backgroundColor: st.surfaceContainer }]} accessibilityLabel="Scenario Info">
+                  <MaterialIcons name="info" size={18} color={st.onSurfaceVariant} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Mode Indicator & Quick Switcher */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: isSystemDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', width: '100%' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
+                  <MaterialIcons
+                    name={sessionSettings.learningMode === 'dual_immersion' ? 'forum' : 'school'}
+                    size={16}
+                    color={st.primary}
+                  />
+                  <Text style={{ fontSize: 12, fontWeight: '700', color: st.onSurface }}>
+                    {sessionSettings.learningMode === 'dual_immersion'
+                      ? 'Dual Immersion (দ্বিভাষিক কথপোকথন)'
+                      : 'Bilingual Tutor (শিক্ষক মোড)'}
                   </Text>
                 </View>
+                <TouchableOpacity
+                  onPress={() => handleSwitchLearningMode(sessionSettings.learningMode === 'dual_immersion' ? 'bilingual_tutor' : 'dual_immersion')}
+                  style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: st.surfaceContainerHighest, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, gap: 4 }}
+                >
+                  <MaterialIcons name="swap-horiz" size={14} color={st.primary} />
+                  <Text style={{ fontSize: 11, fontWeight: '600', color: st.primary }}>মোড পরিবর্তন</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={() => setIsScenarioModalOpen(true)} style={[styles.scenarioInfoBtn, { backgroundColor: st.surfaceContainer }]} accessibilityLabel="Scenario Info">
-                <MaterialIcons name="info" size={18} color={st.onSurfaceVariant} />
-              </TouchableOpacity>
             </View>
 
             {/* Timeline */}
@@ -527,13 +601,48 @@ export default function AIChatScreen() {
                           {msg.content}
                         </Text>
 
-                        {/* Inline Translated Text */}
-                        {translation && (
+                        {/* Pronunciation Guide */}
+                        {msg.pronunciation_guide && (
+                          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: isSystemDark ? 'rgba(76,215,246,0.12)' : '#E0F2FE', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, marginTop: 8, gap: 6, borderWidth: 1, borderColor: isSystemDark ? 'rgba(76,215,246,0.2)' : '#BAE6FD' }}>
+                            <MaterialIcons name="record-voice-over" size={14} color={st.primary} />
+                            <Text style={{ fontSize: 12, fontWeight: '600', color: st.primary, flex: 1 }}>
+                              উচ্চারণ: {msg.pronunciation_guide}
+                            </Text>
+                          </View>
+                        )}
+
+                        {/* Meaning / Translation */}
+                        {(msg.translation || translation) && (
                           <View style={[styles.translationWrap, { backgroundColor: st.surfaceContainerHigh }]}>
                             <MaterialIcons name="translate" size={14} color={st.primary} />
                             <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginLeft: 6, flex: 1 }}>
-                              {translation}
+                              বাংলা অর্থ: {msg.translation || translation}
                             </Text>
+                          </View>
+                        )}
+
+                        {/* Interactive Word Breakdown */}
+                        {msg.bilingual_vocabulary && msg.bilingual_vocabulary.length > 0 && (
+                          <View style={{ marginTop: 8 }}>
+                            <Text style={{ fontSize: 11, fontWeight: '700', color: st.onSurfaceVariant, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                              নতুন শব্দার্থ (ট্যাপ করে শুনুন ও সেভ করুন):
+                            </Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                              {msg.bilingual_vocabulary.map((vocab, vIdx) => (
+                                <TouchableOpacity
+                                  key={vIdx}
+                                  onPress={() => setSelectedWordDetail(vocab)}
+                                  style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: st.surfaceContainerHigh, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 8, gap: 4, borderWidth: 1, borderColor: isSystemDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}
+                                >
+                                  <Text style={{ fontSize: 12, fontWeight: '700', color: st.onSurface }}>{vocab.word}</Text>
+                                  <Text style={{ fontSize: 12, color: st.primary }}>: {vocab.meaning}</Text>
+                                  {vocab.phonetic ? (
+                                    <Text style={{ fontSize: 11, color: st.onSurfaceVariant }}> ({vocab.phonetic})</Text>
+                                  ) : null}
+                                  <MaterialIcons name="volume-up" size={12} color={st.primary} />
+                                </TouchableOpacity>
+                              ))}
+                            </ScrollView>
                           </View>
                         )}
                         
@@ -647,21 +756,44 @@ export default function AIChatScreen() {
             
             {/* Suggested Responses Chips */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsList}>
-              {suggestedReplies.map((sugg, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  disabled={isSending}
-                  onPress={() => handleSend(sugg)}
-                  style={[
-                    styles.suggestionChip, 
-                    { backgroundColor: st.surfaceContainerHigh },
-                    isSending && { opacity: 0.5 }
-                  ]}
-                  accessibilityRole="button"
-                >
-                  <Text style={{ fontSize: 13, color: st.onSurface }}>"{sugg}"</Text>
-                </TouchableOpacity>
-              ))}
+              {detailedSuggestions.length > 0 ? (
+                detailedSuggestions.map((sugg, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    disabled={isSending}
+                    onPress={() => handleSend(sugg.target)}
+                    style={[
+                      styles.suggestionChip, 
+                      { backgroundColor: st.surfaceContainerHigh, paddingVertical: 6, paddingHorizontal: 12 },
+                      isSending && { opacity: 0.5 }
+                    ]}
+                    accessibilityRole="button"
+                  >
+                    <Text style={{ fontSize: 13, fontWeight: '700', color: st.onSurface }}>"{sugg.target}"</Text>
+                    {sugg.native ? (
+                      <Text style={{ fontSize: 11, color: st.primary, marginTop: 2 }}>
+                        {sugg.native} {sugg.phonetic ? `• ${sugg.phonetic}` : ''}
+                      </Text>
+                    ) : null}
+                  </TouchableOpacity>
+                ))
+              ) : (
+                suggestedReplies.map((sugg, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    disabled={isSending}
+                    onPress={() => handleSend(sugg)}
+                    style={[
+                      styles.suggestionChip, 
+                      { backgroundColor: st.surfaceContainerHigh },
+                      isSending && { opacity: 0.5 }
+                    ]}
+                    accessibilityRole="button"
+                  >
+                    <Text style={{ fontSize: 13, color: st.onSurface }}>"{sugg}"</Text>
+                  </TouchableOpacity>
+                ))
+              )}
             </ScrollView>
 
             {/* Input Row */}
@@ -778,6 +910,65 @@ export default function AIChatScreen() {
           userId={currentUserId}
           isDark={isSystemDark}
         />
+
+        {/* Word Detail Inspection Modal */}
+        <Modal
+          visible={!!selectedWordDetail}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setSelectedWordDetail(null)}
+        >
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+            <View style={{ width: '100%', maxWidth: 360, backgroundColor: st.surfaceContainer, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: st.surfaceContainerHighest }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ fontSize: 22, fontWeight: '700', color: st.onSurface }}>{selectedWordDetail?.word}</Text>
+                <TouchableOpacity onPress={() => setSelectedWordDetail(null)} style={{ padding: 4 }}>
+                  <MaterialIcons name="close" size={20} color={st.onSurfaceVariant} />
+                </TouchableOpacity>
+              </View>
+              
+              <Text style={{ fontSize: 16, fontWeight: '600', color: st.primary, marginTop: 8 }}>
+                বাংলা অর্থ: {selectedWordDetail?.meaning}
+              </Text>
+              
+              {selectedWordDetail?.phonetic ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
+                  <MaterialIcons name="record-voice-over" size={14} color={st.onSurfaceVariant} />
+                  <Text style={{ fontSize: 13, color: st.onSurfaceVariant }}>
+                    উচ্চারণ: {selectedWordDetail?.phonetic}
+                  </Text>
+                </View>
+              ) : null}
+
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (selectedWordDetail) {
+                      speechService.speak(selectedWordDetail.word, { language: sessionSettings.targetLanguage });
+                    }
+                  }}
+                  style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: st.primary, paddingVertical: 10, borderRadius: 10, gap: 6 }}
+                >
+                  <MaterialIcons name="volume-up" size={18} color="#090E1B" />
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: '#090E1B' }}>উচ্চারণ শুনুন</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    if (selectedWordDetail) {
+                      handleSaveWord(selectedWordDetail.word, selectedWordDetail.meaning, selectedWordDetail.word);
+                      setSelectedWordDetail(null);
+                    }
+                  }}
+                  style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: st.surfaceContainerHigh, paddingVertical: 10, borderRadius: 10, gap: 6, borderWidth: 1, borderColor: st.primary }}
+                >
+                  <MaterialIcons name="bookmark-add" size={18} color={st.primary} />
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: st.onSurface }}>সেভ করুন</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </SafeAreaView>
   );

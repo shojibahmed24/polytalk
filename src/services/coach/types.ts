@@ -13,6 +13,7 @@ export const SessionSettingsSchema = z.object({
   targetLanguage: z.string().default('English'),
   nativeLanguage: z.string().default('Bengali'),
   proficiencyLevel: z.string().default('A2-B1'),
+  learningMode: z.enum(['bilingual_tutor', 'dual_immersion']).default('bilingual_tutor'),
   conversationTopic: z.string().default('Restaurant'),
   aiCharacter: z.string().default('Waiter / Server'),
   voiceRate: z.number().min(0.5).max(1.5).default(1.0),
@@ -73,12 +74,15 @@ export interface CoachMessage {
   translation?: string | null;
   correction?: string | null;
   explanation?: string | null;
+  pronunciation_guide?: string | null;
+  bilingual_vocabulary?: Array<{ word: string; meaning: string; phonetic: string }>;
   pronunciation_score?: number | null;
   pronunciation_details?: PronunciationScoreDetails | null;
   provider_metadata?: Record<string, any>;
   idempotency_key?: string | null;
   created_at: string;
   suggested_replies?: string[];
+  suggested_replies_detailed?: Array<{ target: string; native: string; phonetic: string }>;
   isSending?: boolean;
   isError?: boolean;
 }
@@ -108,6 +112,7 @@ export interface SendMessageResponse {
   userMessage: CoachMessage;
   aiMessage: CoachMessage;
   suggestedResponses: string[];
+  suggestedResponsesDetailed?: Array<{ target: string; native: string; phonetic: string }>;
   sessionStats?: Partial<CoachSessionStats>;
   error?: string;
 }

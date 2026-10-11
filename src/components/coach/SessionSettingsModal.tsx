@@ -25,6 +25,10 @@ export function SessionSettingsModal({ visible, settings, onSave, onClose, isDar
     border: isDark ? '#303443' : '#E5E7EB',
   };
 
+  const handleModeSelect = (mode: 'bilingual_tutor' | 'dual_immersion') => {
+    setLocalSettings(prev => ({ ...prev, learningMode: mode }));
+  };
+
   const handleLevelSelect = (level: string) => {
     setLocalSettings(prev => ({ ...prev, proficiencyLevel: level }));
   };
@@ -58,6 +62,70 @@ export function SessionSettingsModal({ visible, settings, onSave, onClose, isDar
           </View>
 
           <ScrollView style={{ maxHeight: 460 }} showsVerticalScrollIndicator={false}>
+            {/* Learning Mode Selection */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: st.text }]}>Learning Mode (শেখার মোড)</Text>
+              <View style={{ gap: 8, marginTop: 4 }}>
+                <TouchableOpacity
+                  onPress={() => handleModeSelect('bilingual_tutor')}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: 12,
+                    borderRadius: 12,
+                    backgroundColor: (localSettings.learningMode || 'bilingual_tutor') === 'bilingual_tutor'
+                      ? (isDark ? 'rgba(76,215,246,0.18)' : '#E0F2FE')
+                      : st.surfaceHigh,
+                    borderWidth: 1.5,
+                    borderColor: (localSettings.learningMode || 'bilingual_tutor') === 'bilingual_tutor' ? st.primary : 'transparent',
+                    gap: 12
+                  }}
+                >
+                  <MaterialIcons name="school" size={24} color={st.primary} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: st.text }}>
+                      Bilingual Tutor Mode (শিক্ষক মোড)
+                    </Text>
+                    <Text style={{ fontSize: 12, color: st.subText, marginTop: 2 }}>
+                      AI বাংলায় বুঝিয়ে স্প্যানিশ শব্দ ও নিয়ম শেখাবে
+                    </Text>
+                  </View>
+                  {(localSettings.learningMode || 'bilingual_tutor') === 'bilingual_tutor' && (
+                    <MaterialIcons name="check-circle" size={20} color={st.primary} />
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => handleModeSelect('dual_immersion')}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: 12,
+                    borderRadius: 12,
+                    backgroundColor: localSettings.learningMode === 'dual_immersion'
+                      ? (isDark ? 'rgba(76,215,246,0.18)' : '#E0F2FE')
+                      : st.surfaceHigh,
+                    borderWidth: 1.5,
+                    borderColor: localSettings.learningMode === 'dual_immersion' ? st.primary : 'transparent',
+                    gap: 12
+                  }}
+                >
+                  <MaterialIcons name="forum" size={24} color={st.primary} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: st.text }}>
+                      Dual Immersion Mode (দ্বিভাষিক কথোপকথন)
+                    </Text>
+                    <Text style={{ fontSize: 12, color: st.subText, marginTop: 2 }}>
+                      AI স্প্যানিশে কথা বলবে + সাথে বাংলা অর্থ ও উচ্চারণ দেবে
+                    </Text>
+                  </View>
+                  {localSettings.learningMode === 'dual_immersion' && (
+                    <MaterialIcons name="check-circle" size={20} color={st.primary} />
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+
             {/* CEFR Level Selection */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: st.text }]}>Proficiency Level</Text>

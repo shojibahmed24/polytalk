@@ -134,3 +134,69 @@ test('Idempotency lock prevents concurrent duplicate submission', () => {
   inFlight.delete(key);
   assert.equal(inFlight.has(key), false);
 });
+
+// 5. Test Bilingual Tutor Mode Tag Parsing
+test('Parses bilingual tutor tags for pronunciation, translation, vocabulary, and detailed suggestions', () => {
+  const tutorOutput = `¡Hola! স্প্যানিশ শেখার ক্লাসে স্বাগতম। স্প্যানিশে হ্যালো বলতে বলে ¡Hola! (ওলা)। আর 'বই'-কে বলে libro (লিব্রো)।
+[PRONUNCIATION: ওলা! • লিব্রো • কাফে]
+[TRANSLATION: হ্যালো! স্প্যানিশ ক্লাসে স্বাগতম।]
+[VOCABULARY: Hola="হ্যালো|ওলা" | libro="বই|লিব্রো"]
+[SUGGESTIONS: "¡Hola! | হ্যালো | ওলা" | "Quiero un café | আমি একটি কফি চাই | কিয়েরো উন কাফে" | "Un libro, por favor | একটি বই, দয়া করে | উন লিব্রো, পর ফাভোর"]`;
+
+  let clean = tutorOutput;
+  let pronunciation = null;
+  let translation = null;
+  const vocab = [];
+  const detailedSuggestions = [];
+
+  const pronMatch = clean.match(/\[PRONUNCIATION:\s*([^\]]+)\]/i);
+  if (pronMatch) {
+    clean = clean.replace(pronMatch[0], '').trim();
+    pronunciation = pronMatch[1].trim();
+  }
+
+  const transMatch = clean.match(/\[TRANSLATION:\s*([^\]]+)\]/i);
+  if (transMatch) {
+    clean = clean.replace(transMatch[0], '').trim();
+    translation = transMatch[1].trim();
+  }
+
+  const vocabMatch = clean.match(/\[VOCABULARY:\s*([^\]]+)\]/i);
+  if (vocabMatch) {
+    clean = clean.replace(vocabMatch[0], '').trim();
+    const matches = Array.from(vocabMatch[1].matchAll(/([a-zA-Z\u00C0-\u024F\u0980-\u09FF\s]+)\s*=\s*"([^"]+)"/g));
+    for (const kv of matches) {
+      const word = kv[1].trim();
+      const [meaning, phonetic] = kv[2].split('|').map(s => s.trim());
+      if (word && meaning) {
+        vocab.push({ word, meaning, phonetic });
+      }
+    }
+  }
+
+  const sugMatch = clean.match(/\[SUGGESTIONS:\s*([^\]]+)\]/i);
+  if (sugMatch) {
+    clean = clean.replace(sugMatch[0], '').trim();
+    const matches = Array.from(sugMatch[1].matchAll(/"([^"]+)"/g)).map(m => m[1]);
+    for (const opt of matches) {
+      const parts = opt.split('|').map(s => s.trim());
+      if (parts.length >= 3) {
+        detailedSuggestions.push({ target: parts[0], native: parts[1], phonetic: parts[2] });
+      }
+    }
+  }
+
+  assert.equal(pronunciation, 'ওলা! • লিব্রো • কাফে');
+  assert.equal(translation, 'হ্যালো! স্প্যানিশ ক্লাসে স্বাগতম।');
+  assert.equal(vocab.length, 2);
+  assert.equal(vocab[0].word, 'Hola');
+  assert.equal(vocab[0].meaning, 'হ্যালো');
+  assert.equal(vocab[1].word, 'libro');
+  assert.equal(vocab[1].meaning, 'বই');
+  assert.equal(detailedSuggestions.length, 3);
+  assert.equal(detailedSuggestions[0].target, '¡Hola!');
+  assert.equal(detailedSuggestions[0].native, 'হ্যালো');
+  assert.equal(detailedSuggestions[1].target, 'Quiero un café');
+  assert.equal(detailedSuggestions[1].native, 'আমি একটি কফি চাই');
+});
+
