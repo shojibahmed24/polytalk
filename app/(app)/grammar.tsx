@@ -17,12 +17,33 @@ import { Text } from '@/components/ui';
 import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { requestGrammarCorrection, GrammarCorrectionResult } from '@/services/ai';
+import { PuterConnectModal } from '@/components/PuterConnectModal';
+import { getStoredPuterToken } from '@/services/puter';
+import { supabase } from '@/utils/supabase';
 
 export default function GrammarScreen() {
   const { isDark: isSystemDark } = React.useContext(ThemeContext);
   const [inputText, setInputText] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [isPuterConnected, setIsPuterConnected] = useState(false);
+  const [isPuterModalOpen, setIsPuterModalOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [correctionResult, setCorrectionResult] = useState<GrammarCorrectionResult | null>(null);
+
+  useEffect(() => {
+    async function checkPuter() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const uid = user?.id || null;
+        setCurrentUserId(uid);
+        const token = await getStoredPuterToken(uid);
+        setIsPuterConnected(!!token);
+      } catch {}
+    }
+    checkPuter();
+  }, []);
   
   const scrollViewRef = useRef<ScrollView>(null);
   
@@ -38,17 +59,37 @@ export default function GrammarScreen() {
     ).start();
   }, [pulseAnim]);
 
-  const handleCheck = () => {
-    if (!inputText.trim()) return;
+  const handleCheck = async () => {
+    if (!inputText.trim() || isChecking) return;
+    if (!isPuterConnected) {
+      setIsPuterModalOpen(true);
+      return;
+    }
     Keyboard.dismiss();
     setIsChecking(true);
-    setTimeout(() => {
+
+    try {
+      const res = await requestGrammarCorrection(inputText.trim(), {
+        targetLanguage: 'English',
+        interfaceLanguage: 'English',
+        userId: currentUserId,
+      });
+
+      if (res.needsPuterAuth) {
+        setIsPuterConnected(false);
+        setIsPuterModalOpen(true);
+      } else {
+        setCorrectionResult(res);
+        setShowFeedback(true);
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 150);
+      }
+    } catch (e) {
+      console.warn('Grammar check failed:', e);
+    } finally {
       setIsChecking(false);
-      setShowFeedback(true);
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }, 600);
+    }
   };
 
   const handleInsert = (phrase: string) => {
@@ -211,15 +252,9 @@ export default function GrammarScreen() {
                 </TouchableOpacity>
               </View>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
-                <Text style={{ fontSize: 16, color: st.onSurface, lineHeight: 24 }}>"I </Text>
-                <View style={[styles.errorHighlight, { backgroundColor: isSystemDark ? 'rgba(147,0,10,0.3)' : 'rgba(225,29,72,0.1)', borderBottomColor: st.tertiary }]}>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: st.tertiary }}>want</Text>
-                </View>
-                <Text style={{ fontSize: 16, color: st.onSurface, lineHeight: 24 }}> a chicken burger and </Text>
-                <View style={[styles.errorHighlight, { backgroundColor: isSystemDark ? 'rgba(147,0,10,0.3)' : 'rgba(225,29,72,0.1)', borderBottomColor: st.tertiary }]}>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: st.tertiary }}>a</Text>
-                </View>
-                <Text style={{ fontSize: 16, color: st.onSurface, lineHeight: 24 }}> orange juice."</Text>
+                <Text style={{ fontSize: 16, color: st.onSurface, lineHeight: 24 }}>
+                  "{correctionResult ? correctionResult.original : 'I want a chicken burger and a orange juice.'}"
+                </Text>
               </View>
             </View>
 
@@ -240,13 +275,9 @@ export default function GrammarScreen() {
                 <Text style={{ fontSize: 11, fontWeight: '600', color: st.secondary }}>Level B2+</Text>
               </View>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
-                <Text style={{ fontSize: 16, color: st.onSurface, lineHeight: 24 }}>"</Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: st.primary, textShadowColor: isSystemDark ? 'rgba(76,215,246,0.35)' : 'rgba(6,182,212,0.35)', textShadowRadius: 10 }}>I'd like</Text>
-                <Text style={{ fontSize: 16, color: st.onSurface, lineHeight: 24 }}> a chicken burger and </Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: st.primary, textShadowColor: isSystemDark ? 'rgba(76,215,246,0.35)' : 'rgba(6,182,212,0.35)', textShadowRadius: 10 }}>an</Text>
-                <Text style={{ fontSize: 16, color: st.onSurface, lineHeight: 24 }}> orange juice, </Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: st.secondary, textShadowColor: isSystemDark ? 'rgba(208,188,255,0.35)' : 'rgba(139,92,246,0.35)', textShadowRadius: 10 }}>please</Text>
-                <Text style={{ fontSize: 16, color: st.onSurface, lineHeight: 24 }}>."</Text>
+                <Text style={{ fontSize: 16, fontWeight: '700', color: st.primary, lineHeight: 24 }}>
+                  "{correctionResult ? correctionResult.better : 'I\'d like a chicken burger and an orange juice, please.'}"
+                </Text>
               </View>
             </View>
 
@@ -274,23 +305,36 @@ export default function GrammarScreen() {
               <Text style={{ fontSize: 18, fontWeight: '700', color: st.onSurface }}>Why is this better?</Text>
             </View>
             
-            <View style={[styles.explanationBullet, { backgroundColor: st.surfaceContainerLow }]}>
-              <View style={[styles.bulletIcon, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.1)' : 'rgba(6,182,212,0.1)' }]}>
-                <MaterialIcons name="record-voice-over" size={16} color={st.primary} />
-              </View>
-              <Text style={{ flex: 1, fontSize: 14, color: st.onSurface, lineHeight: 22 }}>
-                <Text style={{ fontWeight: '700', color: st.primary }}>"I'd like"</Text> sounds significantly more courteous in hospitality settings compared to the demanding nuance of <Text style={{ textDecorationLine: 'line-through', color: st.onSurfaceVariant }}>"I want"</Text>.
-              </Text>
-            </View>
+            {correctionResult && correctionResult.explanations.length > 0 ? (
+              correctionResult.explanations.map((exp, index) => (
+                <View key={index} style={[styles.explanationBullet, { backgroundColor: st.surfaceContainerLow, marginTop: index > 0 ? 12 : 0 }]}>
+                  <View style={[styles.bulletIcon, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.1)' : 'rgba(6,182,212,0.1)' }]}>
+                    <MaterialIcons name="auto-awesome" size={16} color={st.primary} />
+                  </View>
+                  <Text style={{ flex: 1, fontSize: 14, color: st.onSurface, lineHeight: 22 }}>{exp}</Text>
+                </View>
+              ))
+            ) : (
+              <>
+                <View style={[styles.explanationBullet, { backgroundColor: st.surfaceContainerLow }]}>
+                  <View style={[styles.bulletIcon, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.1)' : 'rgba(6,182,212,0.1)' }]}>
+                    <MaterialIcons name="record-voice-over" size={16} color={st.primary} />
+                  </View>
+                  <Text style={{ flex: 1, fontSize: 14, color: st.onSurface, lineHeight: 22 }}>
+                    <Text style={{ fontWeight: '700', color: st.primary }}>"I'd like"</Text> sounds significantly more courteous in hospitality settings compared to the demanding nuance of <Text style={{ textDecorationLine: 'line-through', color: st.onSurfaceVariant }}>"I want"</Text>.
+                  </Text>
+                </View>
 
-            <View style={[styles.explanationBullet, { backgroundColor: st.surfaceContainerLow, marginTop: 12 }]}>
-              <View style={[styles.bulletIcon, { backgroundColor: isSystemDark ? 'rgba(74,51,130,0.3)' : 'rgba(139,92,246,0.1)' }]}>
-                <MaterialIcons name="phonelink-ring" size={16} color={st.secondary} />
-              </View>
-              <Text style={{ flex: 1, fontSize: 14, color: st.onSurface, lineHeight: 22 }}>
-                Use <Text style={{ fontWeight: '700', color: st.secondary }}>"an"</Text> before words starting with vowel sounds. Saying <Text style={{ fontWeight: '700', color: st.primary }}>"an orange"</Text> allows effortless phonetic transition.
-              </Text>
-            </View>
+                <View style={[styles.explanationBullet, { backgroundColor: st.surfaceContainerLow, marginTop: 12 }]}>
+                  <View style={[styles.bulletIcon, { backgroundColor: isSystemDark ? 'rgba(74,51,130,0.3)' : 'rgba(139,92,246,0.1)' }]}>
+                    <MaterialIcons name="phonelink-ring" size={16} color={st.secondary} />
+                  </View>
+                  <Text style={{ flex: 1, fontSize: 14, color: st.onSurface, lineHeight: 22 }}>
+                    Use <Text style={{ fontWeight: '700', color: st.secondary }}>"an"</Text> before words starting with vowel sounds. Saying <Text style={{ fontWeight: '700', color: st.primary }}>"an orange"</Text> allows effortless phonetic transition.
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
 
           {/* Try These Examples */}
@@ -394,6 +438,16 @@ export default function GrammarScreen() {
           
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <PuterConnectModal
+        visible={isPuterModalOpen}
+        onClose={() => setIsPuterModalOpen(false)}
+        onConnected={() => {
+          setIsPuterConnected(true);
+        }}
+        userId={currentUserId}
+        isDark={isSystemDark}
+      />
     </SafeAreaView>
   );
 }

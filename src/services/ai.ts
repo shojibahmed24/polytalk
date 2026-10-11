@@ -17,6 +17,7 @@ export interface PedagogicalFeedback {
 export interface AIResponse {
   reply: string;
   pedagogical?: PedagogicalFeedback;
+  suggestedReplies?: string[];
   error?: string;
   unavailable?: boolean;
   needsPuterAuth?: boolean;
@@ -29,39 +30,93 @@ export interface AIChatContext {
   userId?: string | null;
 }
 
+export interface GrammarCorrectionResult {
+  original: string;
+  better: string;
+  explanations: string[];
+  examples: Array<{ incorrect: string; correct: string }>;
+  xpAwarded: number;
+  error?: string;
+  needsPuterAuth?: boolean;
+}
+
+export interface TranslationResult {
+  translatedText: string;
+  sourceLanguage: string;
+  targetLanguage: string;
+  error?: string;
+  needsPuterAuth?: boolean;
+}
+
+// In-flight request tracking to prevent accidental duplicate submissions
+const activeRequests = new Set<string>();
+
 /**
- * Requests an AI response using the user's connected Puter account.
- * Persists context and extracts pedagogic corrections when present.
+ * Resolves current user ID from Supabase if not explicitly passed
+ */
+async function resolveUserId(explicitUserId?: string | null): Promise<string | null> {
+  if (explicitUserId) return explicitUserId;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Validates Puter authorization for user.
+ */
+async function getValidatedPuterToken(userId: string | null): Promise<{ token: string | null; error?: string }> {
+  const puterToken = await getStoredPuterToken(userId);
+  if (!puterToken) {
+    return {
+      token: null,
+      error: 'Puter account not connected. Please connect your Puter account in Settings to use AI features.',
+    };
+  }
+  return { token: puterToken };
+}
+
+/**
+ * Central Puter AI Service: Handles conversation replies & pedagogical grammar tips.
  */
 export async function requestAIResponse(
   conversationId: string,
   messageText: string,
   context?: AIChatContext
 ): Promise<AIResponse> {
-  try {
-    // 1. Resolve current user ID if not explicitly passed
-    let userId = context?.userId;
-    if (!userId) {
-      const { data: { user } } = await supabase.auth.getUser();
-      userId = user?.id || null;
-    }
+  const requestKey = `chat_${conversationId}_${messageText.trim()}`;
+  if (activeRequests.has(requestKey)) {
+    return {
+      reply: '',
+      error: 'Request already in progress. Please wait.',
+      unavailable: true,
+    };
+  }
 
-    // 2. Check for Puter authorization
-    const puterToken = await getStoredPuterToken(userId);
-    if (!puterToken) {
+  activeRequests.add(requestKey);
+
+  try {
+    const userId = await resolveUserId(context?.userId);
+    const { token, error: authError } = await getValidatedPuterToken(userId);
+
+    if (!token) {
       return {
         reply: '',
-        error: 'Puter account not connected. Please connect your Puter account in Settings to chat with AI.',
+        error: authError || 'Puter account not connected.',
         unavailable: true,
         needsPuterAuth: true,
       };
     }
 
-    // 3. Retrieve conversation details & recent message history
     let targetLang = context?.targetLanguage || 'Spanish';
     let difficulty = context?.difficulty || 'B2';
-    
-    if (conversationId && !context?.targetLanguage) {
+    const explanationLang = context?.interfaceLanguage || 'English';
+
+    // Retrieve conversation history from Supabase if available
+    const recentMessages: PuterChatMessage[] = [];
+    if (conversationId) {
       try {
         const { data: conv } = await supabase
           .from('conversations')
@@ -72,13 +127,7 @@ export async function requestAIResponse(
           targetLang = conv.target_language || targetLang;
           difficulty = conv.difficulty || difficulty;
         }
-      } catch {}
-    }
 
-    // Fetch up to 8 recent messages for context
-    const recentMessages: PuterChatMessage[] = [];
-    if (conversationId) {
-      try {
         const { data: history } = await supabase
           .from('messages')
           .select('role, content')
@@ -87,7 +136,6 @@ export async function requestAIResponse(
           .limit(6);
 
         if (history && history.length > 0) {
-          // Reverse back to chronological order
           const ordered = [...history].reverse();
           for (const m of ordered) {
             recentMessages.push({
@@ -99,18 +147,19 @@ export async function requestAIResponse(
       } catch {}
     }
 
-    // 4. Construct System Prompt
-    const systemPrompt = `You are a supportive, friendly AI language tutor on PolyTalk.
+    const systemPrompt = `You are an expert, encouraging language coach in PolyTalk.
 Target Learning Language: ${targetLang}
-Target Level: ${difficulty}
-Interface/Explanation Language: ${context?.interfaceLanguage || 'English'}
+Target CEFR Level: ${difficulty}
+Learner's Explanation Language: ${explanationLang}
 
-Instructions:
-1. Respond naturally to the user in ${targetLang} to keep the conversation flowing.
-2. Keep your response conversational, concise (2-4 sentences), and engaging.
-3. If the user's message contains a grammar or phrasing mistake, offer a polite correction in a structured tip format at the very end like:
+Requirements:
+1. Respond naturally to the user in ${targetLang} (2 to 3 sentences).
+2. Keep the dialogue interactive and appropriate for ${difficulty} level.
+3. If the user's message contains any grammar, vocabulary, or phrasing errors, provide a helpful correction in ${explanationLang} at the very end in this exact tag format:
 [CORRECTION: original="..." | better="..." | note="..."]
-Only include [CORRECTION: ...] if there was an actual error.`;
+Do not invent errors if the user's message is grammatically fine.
+4. Also suggest 2 short relevant responses the learner could say next in this exact format:
+[SUGGESTIONS: "option 1" | "option 2"]`;
 
     const messagesToSend: PuterChatMessage[] = [
       { role: 'system', content: systemPrompt },
@@ -118,16 +167,23 @@ Only include [CORRECTION: ...] if there was an actual error.`;
       { role: 'user', content: messageText },
     ];
 
-    // 5. Send to Puter OpenAI-compatible completion endpoint
-    const { text } = await callPuterChatCompletion(puterToken, messagesToSend, 'gpt-4o-mini');
+    const { text } = await callPuterChatCompletion(token, messagesToSend, 'gpt-4o-mini');
 
-    // 6. Parse structured pedagogical feedback if present
     let cleanReply = text;
     let pedagogical: PedagogicalFeedback | undefined = undefined;
+    let suggestedReplies: string[] | undefined = undefined;
 
-    const correctionMatch = text.match(/\[CORRECTION:\s*original="([^"]+)"\s*\|\s*better="([^"]+)"\s*\|\s*note="([^"]+)"\]/i);
+    // Parse suggestions tag
+    const suggestionsMatch = text.match(/\[SUGGESTIONS:\s*"([^"]+)"\s*\|\s*"([^"]+)"\]/i);
+    if (suggestionsMatch) {
+      cleanReply = cleanReply.replace(suggestionsMatch[0], '').trim();
+      suggestedReplies = [suggestionsMatch[1], suggestionsMatch[2]];
+    }
+
+    // Parse correction tag
+    const correctionMatch = cleanReply.match(/\[CORRECTION:\s*original="([^"]+)"\s*\|\s*better="([^"]+)"\s*\|\s*note="([^"]+)"\]/i);
     if (correctionMatch) {
-      cleanReply = text.replace(correctionMatch[0], '').trim();
+      cleanReply = cleanReply.replace(correctionMatch[0], '').trim();
       pedagogical = {
         type: 'Grammar & Politeness Tip',
         xp: 15,
@@ -140,17 +196,18 @@ Only include [CORRECTION: ...] if there was an actual error.`;
     return {
       reply: cleanReply,
       pedagogical,
+      suggestedReplies,
     };
   } catch (err: any) {
     const errorMsg = err?.message || 'Could not reach Puter AI service.';
-    console.warn('AI request failed:', errorMsg);
+    console.warn('Puter AI request error:', errorMsg);
 
-    // If token was rejected
     if (errorMsg.includes('expired') || errorMsg.includes('401')) {
-      await clearPuterToken(context?.userId);
+      const userId = await resolveUserId(context?.userId);
+      await clearPuterToken(userId);
       return {
         reply: '',
-        error: 'Your Puter session has expired. Please reconnect your Puter account in Settings.',
+        error: 'Your Puter session has expired. Please reconnect in Settings.',
         unavailable: true,
         needsPuterAuth: true,
       };
@@ -160,6 +217,142 @@ Only include [CORRECTION: ...] if there was an actual error.`;
       reply: '',
       error: errorMsg,
       unavailable: true,
+    };
+  } finally {
+    activeRequests.delete(requestKey);
+  }
+}
+
+/**
+ * Central Puter AI Service: Dedicated grammar correction analysis (S007).
+ */
+export async function requestGrammarCorrection(
+  text: string,
+  context?: { targetLanguage?: string; interfaceLanguage?: string; userId?: string | null }
+): Promise<GrammarCorrectionResult> {
+  const userId = await resolveUserId(context?.userId);
+  const { token, error: authError } = await getValidatedPuterToken(userId);
+
+  if (!token) {
+    return {
+      original: text,
+      better: text,
+      explanations: [authError || 'Please connect your Puter account in Settings.'],
+      examples: [],
+      xpAwarded: 0,
+      error: authError,
+      needsPuterAuth: true,
+    };
+  }
+
+  const targetLang = context?.targetLanguage || 'English';
+  const explanationLang = context?.interfaceLanguage || 'English';
+
+  const systemPrompt = `You are a linguistics and grammar coach in PolyTalk.
+Analyze the following sentence in ${targetLang} and provide an improved, natural, and polite version.
+Explain the grammar rules in ${explanationLang}.
+
+Return your response in pure JSON format with this exact structure:
+{
+  "original": "${text}",
+  "better": "improved sentence here",
+  "explanations": ["explanation point 1", "explanation point 2"],
+  "examples": [
+    { "incorrect": "wrong example", "correct": "correct example" },
+    { "incorrect": "wrong example 2", "correct": "correct example 2" }
+  ],
+  "xp": 20
+}`;
+
+  try {
+    const { text: aiOutput } = await callPuterChatCompletion(
+      token,
+      [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Please review: "${text}"` }
+      ],
+      'gpt-4o-mini'
+    );
+
+    // Parse JSON safely
+    const jsonStart = aiOutput.indexOf('{');
+    const jsonEnd = aiOutput.lastIndexOf('}');
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      const parsed = JSON.parse(aiOutput.slice(jsonStart, jsonEnd + 1));
+      return {
+        original: parsed.original || text,
+        better: parsed.better || text,
+        explanations: Array.isArray(parsed.explanations) ? parsed.explanations : [],
+        examples: Array.isArray(parsed.examples) ? parsed.examples : [],
+        xpAwarded: parsed.xp || 20,
+      };
+    }
+
+    return {
+      original: text,
+      better: aiOutput.trim(),
+      explanations: ['Refined for natural conversational fluency.'],
+      examples: [],
+      xpAwarded: 15,
+    };
+  } catch (err: any) {
+    return {
+      original: text,
+      better: text,
+      explanations: [err?.message || 'Grammar analysis temporarily unavailable.'],
+      examples: [],
+      xpAwarded: 0,
+      error: err?.message,
+    };
+  }
+}
+
+/**
+ * Central Puter AI Service: Translation.
+ */
+export async function requestTranslation(
+  text: string,
+  targetLanguage: string,
+  sourceLanguage: string = 'Auto',
+  userId?: string | null
+): Promise<TranslationResult> {
+  const resolvedUid = await resolveUserId(userId);
+  const { token, error: authError } = await getValidatedPuterToken(resolvedUid);
+
+  if (!token) {
+    return {
+      translatedText: text,
+      sourceLanguage,
+      targetLanguage,
+      error: authError,
+      needsPuterAuth: true,
+    };
+  }
+
+  try {
+    const { text: result } = await callPuterChatCompletion(
+      token,
+      [
+        {
+          role: 'system',
+          content: `Translate the following text accurately into ${targetLanguage}. Return ONLY the direct translation without quotes or conversational filler.`,
+        },
+        { role: 'user', content: text },
+      ],
+      'gpt-4o-mini'
+    );
+
+    return {
+      translatedText: result.trim(),
+      sourceLanguage,
+      targetLanguage,
+    };
+  } catch (err: any) {
+    return {
+      translatedText: text,
+      sourceLanguage,
+      targetLanguage,
+      error: err?.message || 'Translation failed',
     };
   }
 }

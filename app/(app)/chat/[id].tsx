@@ -98,6 +98,7 @@ export default function AIChatScreen() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isPuterConnected, setIsPuterConnected] = useState(false);
   const [isPuterModalOpen, setIsPuterModalOpen] = useState(false);
+  const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
 
   useEffect(() => {
     async function loadOrCreateConversation() {
@@ -274,6 +275,14 @@ export default function AIChatScreen() {
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           pedagogical: aiRes.pedagogical
         }]);
+
+        if (aiRes.suggestedReplies && aiRes.suggestedReplies.length > 0) {
+          setSuggestedReplies(aiRes.suggestedReplies);
+        }
+
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100);
       }
     } catch (err) {
       console.warn('Send error:', err);
@@ -514,15 +523,18 @@ export default function AIChatScreen() {
 
           {/* Suggestions */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsList}>
-            <TouchableOpacity onPress={() => setInputText("Can I have the menu?")} style={[styles.suggestionChip, { backgroundColor: st.surfaceContainerHigh }]}>
-              <Text style={{ fontSize: 13, color: st.onSurface }}>"Can I have the menu?"</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setInputText("I'll have a coffee.")} style={[styles.suggestionChip, { backgroundColor: st.surfaceContainerHigh }]}>
-              <Text style={{ fontSize: 13, color: st.onSurface }}>"I'll have a coffee."</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setInputText("No, that is all for now.")} style={[styles.suggestionChip, { backgroundColor: st.surfaceContainerHigh }]}>
-              <Text style={{ fontSize: 13, color: st.onSurface }}>"No, that is all for now."</Text>
-            </TouchableOpacity>
+            {(suggestedReplies.length > 0
+              ? suggestedReplies
+              : ["Can I have the menu?", "I'll have a coffee.", "No, that is all for now."]
+            ).map((sugg, idx) => (
+              <TouchableOpacity
+                key={idx}
+                onPress={() => setInputText(sugg)}
+                style={[styles.suggestionChip, { backgroundColor: st.surfaceContainerHigh }]}
+              >
+                <Text style={{ fontSize: 13, color: st.onSurface }}>"{sugg}"</Text>
+              </TouchableOpacity>
+            ))}
           </ScrollView>
 
           {/* Input Row */}
