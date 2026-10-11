@@ -12,15 +12,16 @@ import { getTargetLanguage } from '@/utils/languageStorage';
 import { useTranslation } from '@/utils/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PuterBillingNoticeModal } from '@/components/PuterBillingNoticeModal';
+import { getCurrentUserProfile } from '@/utils/userProfile';
 
 import { TARGET_LANGUAGES } from '@/constants/languages';
 import Svg, { Path, Circle } from 'react-native-svg';
 
-
-
 export default function HomeScreen() {
   const { isDark: isSystemDark } = React.useContext(ThemeContext);
   const [selectedTarget, setSelectedTarget] = useState('es');
+  const [userDisplayName, setUserDisplayName] = useState('Learner');
+  const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
   const [puterNoticeVisible, setPuterNoticeVisible] = useState(false);
   const [puterNoticeUsername, setPuterNoticeUsername] = useState('Puter User');
   const { t } = useTranslation();
@@ -28,6 +29,14 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       getTargetLanguage().then(setSelectedTarget);
+
+      // Load authenticated user profile details
+      getCurrentUserProfile().then((p) => {
+        if (p) {
+          if (p.name) setUserDisplayName(p.name);
+          if (p.avatarUrl) setUserAvatarUrl(p.avatarUrl);
+        }
+      });
 
       // Check if user should be shown the Puter connected notice
       AsyncStorage.getItem('@polytalk_show_puter_connected_notice').then((val) => {
@@ -88,7 +97,7 @@ export default function HomeScreen() {
         <View style={styles.headerSection}>
           <View style={styles.greetingCol}>
             <Text variant="bodySmall" weight="medium" style={{ color: st.onSurfaceVariant }}>{t('good_morning')}</Text>
-            <Text style={{ fontSize: 28, fontWeight: '700', color: st.onSurface, marginTop: -2, letterSpacing: -0.5 }}>Shojib</Text>
+            <Text style={{ fontSize: 28, fontWeight: '700', color: st.onSurface, marginTop: -2, letterSpacing: -0.5 }}>{userDisplayName}</Text>
             <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 4, marginBottom: 8 }}>{t('ready_for_conversation')}</Text>
             
             <TouchableOpacity 
@@ -117,9 +126,8 @@ export default function HomeScreen() {
                 style={styles.avatarBorder}
               >
                 <View style={[styles.avatarInner, { backgroundColor: st.surfaceContainerHigh }]}>
-                  {/* Using a placeholder avatar since local asset might not exist */}
                   <Image 
-                    source={{ uri: 'https://i.pravatar.cc/150?img=11' }} 
+                    source={{ uri: userAvatarUrl || 'https://i.pravatar.cc/150?img=11' }} 
                     style={styles.avatarImg} 
                   />
                 </View>

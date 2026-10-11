@@ -363,6 +363,34 @@ export async function loginOrRegisterWithPuter(
       await savePuterToken(authenticatedUser.id, token);
       await savePuterToken(null, token); // Default fallback
 
+      const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanUsername}`;
+
+      // Ensure profile record exists in public.profiles table
+      try {
+        await supabase.from('profiles').upsert({
+          id: authenticatedUser.id,
+          username: profile.username,
+          full_name: profile.username,
+          avatar_url: avatarUrl,
+          updated_at: new Date().toISOString(),
+        });
+      } catch (upsertErr) {
+        console.warn('Profile upsert warning:', upsertErr);
+      }
+
+      // Save user details to local cache for instant profile display
+      await AsyncStorage.setItem(
+        '@polytalk_current_user_profile',
+        JSON.stringify({
+          id: authenticatedUser.id,
+          email: authenticatedUser.email || puterEmail,
+          username: profile.username,
+          name: profile.username,
+          avatarUrl: avatarUrl,
+          isPuterUser: true,
+        })
+      );
+
       // Flag that a Puter connection notice should be shown on Dashboard!
       await AsyncStorage.setItem(
         '@polytalk_show_puter_connected_notice',

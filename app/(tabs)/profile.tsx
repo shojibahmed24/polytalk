@@ -8,14 +8,34 @@ import {
   Image,
   SafeAreaView
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Text } from '@/components/ui';
 import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { getCurrentUserProfile, UserProfileData } from '@/utils/userProfile';
+import { supabase } from '@/utils/supabase';
+import { clearPuterToken } from '@/services/puter';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
   const { isDark: isSystemDark } = React.useContext(ThemeContext);
+  const [profile, setProfile] = React.useState<UserProfileData | null>(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getCurrentUserProfile().then(setProfile);
+    }, [])
+  );
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+    await clearPuterToken();
+    await AsyncStorage.removeItem('@polytalk_current_user_profile');
+    router.replace('/(auth)/login');
+  };
   
   const st = {
     surface: isSystemDark ? '#0E1320' : '#F8F9FC',
@@ -73,8 +93,12 @@ export default function ProfileScreen() {
           <View style={{ alignItems: 'center', zIndex: 2 }}>
             <View style={styles.avatarWrap}>
               <LinearGradient colors={[st.primary, st.secondary]} style={styles.avatarGradient}>
-                <View style={[styles.avatarInner, { backgroundColor: st.surfaceContainerHigh }]}>
-                  <MaterialIcons name="person" size={48} color={st.onSurfaceVariant} style={{ marginTop: 12 }} />
+                <View style={[styles.avatarInner, { backgroundColor: st.surfaceContainerHigh, overflow: 'hidden' }]}>
+                  {profile?.avatarUrl ? (
+                    <Image source={{ uri: profile.avatarUrl }} style={{ width: '100%', height: '100%' }} />
+                  ) : (
+                    <MaterialIcons name="person" size={48} color={st.onSurfaceVariant} style={{ marginTop: 12 }} />
+                  )}
                 </View>
               </LinearGradient>
               <View style={[styles.statusIndicator, { backgroundColor: st.surfaceContainerLow }]}>
@@ -82,12 +106,18 @@ export default function ProfileScreen() {
               </View>
             </View>
 
-            <Text style={{ fontSize: 22, fontWeight: '700', color: st.onSurface, letterSpacing: -0.5 }}>Alex Morgan</Text>
-            <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginTop: 4, marginBottom: 12 }}>alex.morgan@example.com</Text>
+            <Text style={{ fontSize: 22, fontWeight: '700', color: st.onSurface, letterSpacing: -0.5 }}>
+              {profile?.name || 'Alex Morgan'}
+            </Text>
+            <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginTop: 4, marginBottom: 12 }}>
+              {profile?.email || 'alex.morgan@example.com'}
+            </Text>
 
             <View style={[styles.proBadge, { backgroundColor: st.surfaceContainerHigh }]}>
-              <MaterialIcons name="verified" size={16} color={st.primary} />
-              <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary, textTransform: 'uppercase', letterSpacing: 0.5, marginLeft: 6 }}>PolyTalk Pro Member</Text>
+              <MaterialIcons name={profile?.isPuterUser ? "auto-awesome" : "verified"} size={16} color={st.primary} />
+              <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary, textTransform: 'uppercase', letterSpacing: 0.5, marginLeft: 6 }}>
+                {profile?.isPuterUser ? 'Puter AI Connected' : 'PolyTalk Member'}
+              </Text>
             </View>
 
             <TouchableOpacity style={[styles.editBtn, { backgroundColor: st.surfaceContainerHigh }]}>
@@ -277,6 +307,28 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             ))}
           </View>
+        </View>
+
+        {/* Sign Out Button */}
+        <View style={{ marginTop: 24, marginBottom: 12 }}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={handleSignOut}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: 14,
+              borderRadius: 12,
+              backgroundColor: isSystemDark ? 'rgba(239, 68, 68, 0.12)' : '#FEE2E2',
+              gap: 8,
+            }}
+          >
+            <MaterialIcons name="logout" size={18} color="#EF4444" />
+            <Text style={{ fontSize: 14, fontWeight: '700', color: '#EF4444' }}>
+              Sign Out
+            </Text>
+          </TouchableOpacity>
         </View>
 
       </ScrollView>

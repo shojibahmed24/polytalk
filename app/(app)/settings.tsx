@@ -13,12 +13,15 @@ import { Text } from '@/components/ui';
 import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '@/utils/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PuterConnectModal } from '@/components/PuterConnectModal';
 import { PuterBillingNoticeModal } from '@/components/PuterBillingNoticeModal';
+import { getCurrentUserProfile, UserProfileData } from '@/utils/userProfile';
 import { 
   getStoredPuterToken, 
   verifyPuterToken, 
   disconnectPuter, 
+  clearPuterToken,
   PuterProfile 
 } from '@/services/puter';
 
@@ -26,14 +29,18 @@ export default function SettingsScreen() {
   const { isDark: isSystemDark } = React.useContext(ThemeContext);
   
   const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
+  const [userProfile, setUserProfile] = React.useState<UserProfileData | null>(null);
   const [isPuterConnected, setIsPuterConnected] = React.useState(false);
   const [puterProfile, setPuterProfile] = React.useState<PuterProfile | null>(null);
   const [isPuterModalOpen, setIsPuterModalOpen] = React.useState(false);
   const [showBillingNotice, setShowBillingNotice] = React.useState(false);
 
   React.useEffect(() => {
-    async function checkPuterAuth() {
+    async function loadData() {
       try {
+        const uProfile = await getCurrentUserProfile();
+        setUserProfile(uProfile);
+
         const { data: { user } } = await supabase.auth.getUser();
         const uid = user?.id || null;
         setCurrentUserId(uid);
@@ -51,8 +58,17 @@ export default function SettingsScreen() {
         console.warn('Failed to check Puter auth:', err);
       }
     }
-    checkPuterAuth();
+    loadData();
   }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+    await clearPuterToken();
+    await AsyncStorage.removeItem('@polytalk_current_user_profile');
+    router.replace('/(auth)/login');
+  };
 
   const handleDisconnectPuter = async () => {
     await disconnectPuter(currentUserId);
@@ -141,11 +157,13 @@ export default function SettingsScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Text style={{ fontSize: 18, fontWeight: '700', color: st.onSurface }}>Elena Vance</Text>
+                <Text style={{ fontSize: 18, fontWeight: '700', color: st.onSurface }}>{userProfile?.name || 'PolyTalk User'}</Text>
                 <MaterialIcons name="verified" size={18} color={st.primary} />
               </View>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: st.primary, marginTop: 2 }}>PolyTalk Pro Member</Text>
-              <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginTop: 2 }}>elena.vance@soundmail.io</Text>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: st.primary, marginTop: 2 }}>
+                {userProfile?.isPuterUser ? 'Puter AI Member' : 'PolyTalk Member'}
+              </Text>
+              <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginTop: 2 }}>{userProfile?.email || 'user@polytalk.app'}</Text>
             </View>
           </View>
         </View>
@@ -369,9 +387,9 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           {renderSectionHeader('manage-accounts', 'Account', '#E11D48')}
           <View style={[styles.cardList, { backgroundColor: st.surfaceContainerHigh }]}>
-            {renderRow('logout', 'Sign Out', 'Securely exit Elena\'s session', (
+            {renderRow('logout', 'Sign Out', 'Securely exit your session', (
               <MaterialIcons name="arrow-forward" size={20} color={st.onSurfaceVariant} />
-            ), () => {}, '#E11D48')}
+            ), handleSignOut, '#E11D48')}
             <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: st.divider }} />
             {renderRow('delete-forever', 'Delete Account', 'Permanently wipe conversation & audio records', (
               <MaterialIcons name="warning" size={20} color={st.error} />

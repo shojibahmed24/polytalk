@@ -9,6 +9,7 @@ import { useAppColors, ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '@/utils/supabase';
 import { PuterConnectModal } from '@/components/PuterConnectModal';
 import { 
@@ -66,14 +67,25 @@ export default function AuthScreen() {
     setIsLoading(true);
     try {
       if (mode === 'signIn') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
           setErrors({ email: error.message });
         } else {
+          if (data.user) {
+            const uName = data.user.user_metadata?.full_name || email.split('@')[0];
+            await AsyncStorage.setItem('@polytalk_current_user_profile', JSON.stringify({
+              id: data.user.id,
+              email: data.user.email,
+              name: uName,
+              username: uName,
+              avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${uName}`,
+              isPuterUser: false,
+            }));
+          }
           router.replace('/(tabs)');
         }
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { data: { full_name: name } }
@@ -81,6 +93,16 @@ export default function AuthScreen() {
         if (error) {
           setErrors({ email: error.message });
         } else {
+          if (data.user) {
+            await AsyncStorage.setItem('@polytalk_current_user_profile', JSON.stringify({
+              id: data.user.id,
+              email: data.user.email,
+              name: name,
+              username: name,
+              avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${name}`,
+              isPuterUser: false,
+            }));
+          }
           router.replace('/(tabs)');
         }
       }
