@@ -14,6 +14,7 @@ import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '@/utils/supabase';
 import { PuterConnectModal } from '@/components/PuterConnectModal';
+import { PuterBillingNoticeModal } from '@/components/PuterBillingNoticeModal';
 import { 
   getStoredPuterToken, 
   verifyPuterToken, 
@@ -28,6 +29,7 @@ export default function SettingsScreen() {
   const [isPuterConnected, setIsPuterConnected] = React.useState(false);
   const [puterProfile, setPuterProfile] = React.useState<PuterProfile | null>(null);
   const [isPuterModalOpen, setIsPuterModalOpen] = React.useState(false);
+  const [showBillingNotice, setShowBillingNotice] = React.useState(false);
 
   React.useEffect(() => {
     async function checkPuterAuth() {
@@ -197,21 +199,31 @@ export default function SettingsScreen() {
           {renderSectionHeader('smart-toy', 'AI Provider (Puter)')}
           <View style={[styles.cardList, { backgroundColor: st.surfaceContainerHigh }]}>
             {isPuterConnected ? (
-              renderRow(
-                'check-circle',
-                `Connected as @${puterProfile?.username || 'user'}`,
-                'User-owned AI active (GPT-4o-mini via Puter)',
-                (
-                  <TouchableOpacity 
-                    onPress={handleDisconnectPuter}
-                    style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: 'rgba(239, 68, 68, 0.12)' }}
-                  >
-                    <Text style={{ fontSize: 12, fontWeight: '700', color: st.error }}>Disconnect</Text>
-                  </TouchableOpacity>
-                ),
-                undefined,
-                '#10B981'
-              )
+              <>
+                {renderRow(
+                  'check-circle',
+                  `Connected as @${puterProfile?.username || 'user'}`,
+                  'User-owned AI active (GPT-4o-mini via Puter)',
+                  (
+                    <TouchableOpacity 
+                      onPress={handleDisconnectPuter}
+                      style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: 'rgba(239, 68, 68, 0.12)' }}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: '700', color: st.error }}>Disconnect</Text>
+                    </TouchableOpacity>
+                  ),
+                  undefined,
+                  '#10B981'
+                )}
+                <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: st.divider }} />
+                {renderRow(
+                  'credit-card',
+                  'AI Billing & Credits',
+                  'Billed to your Puter account (Tap to view details)',
+                  <MaterialIcons name="chevron-right" size={20} color={st.onSurfaceVariant} />,
+                  () => setShowBillingNotice(true)
+                )}
+              </>
             ) : (
               renderRow(
                 'cloud-queue',
@@ -377,6 +389,13 @@ export default function SettingsScreen() {
           setIsPuterConnected(true);
         }}
         userId={currentUserId}
+        isDark={isSystemDark}
+      />
+
+      <PuterBillingNoticeModal
+        visible={showBillingNotice}
+        username={puterProfile?.username || 'Puter User'}
+        onDismiss={() => setShowBillingNotice(false)}
         isDark={isSystemDark}
       />
     </SafeAreaView>

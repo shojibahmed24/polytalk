@@ -110,60 +110,66 @@ export async function disconnectPuter(userId?: string | null): Promise<void> {
 }
 
 /**
+ * Dynamically loads official Puter.js in web environment.
+ */
+export async function loadPuterScript(): Promise<any> {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return null;
+  if ((window as any).puter) return (window as any).puter;
+
+  return new Promise((resolve) => {
+    try {
+      const existing = document.querySelector('script[src*="js.puter.com"]');
+      if (existing) {
+        if ((window as any).puter) return resolve((window as any).puter);
+        existing.addEventListener('load', () => resolve((window as any).puter));
+        existing.addEventListener('error', () => resolve(null));
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://js.puter.com/v2/';
+      script.async = true;
+      script.onload = () => resolve((window as any).puter);
+      script.onerror = () => resolve(null);
+      document.head.appendChild(script);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+/**
  * Initiates the Puter OAuth/browser sign-in flow.
- * Works across Web (window.open) and Mobile (WebBrowser.openBrowserAsync).
- * Uses Puter's official polling mechanism via /login/wait.
+ * Works across Web (Puter.js SDK + postMessage listener + auto-close) and Mobile (WebBrowser).
  */
 export async function startPuterBrowserAuth(
   userId: string | null | undefined,
   onStatusUpdate?: (status: string) => void
 ): Promise<{ success: boolean; token?: string; user?: PuterProfile; error?: string }> {
-  // Generate unique session ID
-  const sessionId = 'pt_' + Math.random().toString(36).substring(2, 15) + '_' + Date.now();
-  const authUrl = `${PUTER_GUI_BASE}/action/sign-in?embedded_in_popup=true&cross_origin_isolated=true&signin_session=${sessionId}`;
+  onStatusUpdate?.('Opening Puter sign-in...');
 
-  onStatusUpdate?.('Opening Puter sign-in window...');
-
-  let popupWindow: any = null;
+  // 1. Try official Puter SDK on Web first
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
-    popupWindow = window.open(authUrl, 'puter_auth', 'width=540,height=680,menubar=no,toolbar=no');
-  } else {
-    // Mobile React Native
     try {
-      await WebBrowser.openBrowserAsync(authUrl);
-    } catch (e) {
-      console.warn('WebBrowser open failed:', e);
-    }
-  }
-
-  onStatusUpdate?.('Waiting for Puter authorization...');
-
-  // Poll /login/wait for up to 3 minutes
-  const maxAttempts = 18; // 18 * ~10s = 180 seconds
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    try {
-      const waitRes = await fetch(`${PUTER_API_BASE}/login/wait`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ session: sessionId }),
-      });
-
-      if (waitRes.ok) {
-        const result = await waitRes.json();
-        if (result && result.auth_token) {
-          const token = result.auth_token;
-          if (popupWindow && !popupWindow.closed) {
-            popupWindow.close();
+      const puter = await loadPuterScript();
+      if (puter && puter.auth && typeof puter.auth.signIn === 'function') {
+        onStatusUpdate?.('Waiting for Puter authorization...');
+        const authRes = await puter.auth.signIn();
+        const token = puter.authToken || authRes?.token;
+        if (token) {
+          onStatusUpdate?.('Verifying Puter account...');
+          let profile = null;
+          try {
+            const u = await puter.auth.getUser();
+            if (u && u.username) {
+              profile = { username: u.username, uuid: u.uuid, email: u.email };
+            }
+          } catch {}
+          if (!profile) {
+            profile = await verifyPuterToken(token);
           }
-          if (Platform.OS !== 'web') {
-            WebBrowser.dismissBrowser();
-          }
-
-          onStatusUpdate?.('Verifying Puter session...');
-          const profile = await verifyPuterToken(token);
           await savePuterToken(userId, token);
+          await savePuterToken(null, token);
 
           return {
             success: true,
@@ -172,27 +178,142 @@ export async function startPuterBrowserAuth(
           };
         }
       }
-
-      // If status 408 (timeout), simply continue next attempt
-      if (waitRes.status === 408) {
-        continue;
+    } catch (sdkErr: any) {
+      console.warn('Puter SDK sign-in exception:', sdkErr);
+      if (sdkErr?.error === 'auth_window_closed') {
+        return { success: false, error: 'Sign-in window was closed.' };
       }
-
-      // If 400 or other bad request
-      if (waitRes.status === 400 || waitRes.status === 403) {
-        // Wait 2 seconds before retry
-        await new Promise((r) => setTimeout(r, 2000));
+      if (sdkErr?.error === 'popup_blocked') {
+        return { success: false, error: 'Popup was blocked by your browser. Please allow popups.' };
       }
-    } catch (err: any) {
-      // Network hiccup during polling
-      await new Promise((r) => setTimeout(r, 2000));
     }
   }
 
-  return {
-    success: false,
-    error: 'Authentication timed out. You can also connect directly with your Puter Auth Token from puter.com/dashboard.',
-  };
+  // 2. Custom Hybrid Browser/Mobile Flow (postMessage listener + polling + auto-closing popup)
+  return new Promise(async (resolve) => {
+    const msgId = Math.floor(Math.random() * 10000000);
+    const sessionId = 'pt_' + Math.random().toString(36).substring(2, 15) + '_' + Date.now();
+    const authUrl = `${PUTER_GUI_BASE}/action/sign-in?embedded_in_popup=true&msg_id=${msgId}&signin_session=${sessionId}`;
+
+    let popupWindow: any = null;
+    let isFinished = false;
+    let checkInterval: any = null;
+
+    const cleanup = () => {
+      isFinished = true;
+      if (checkInterval) clearInterval(checkInterval);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('message', handleMessage);
+      }
+      if (popupWindow && !popupWindow.closed) {
+        try {
+          popupWindow.close();
+        } catch {}
+      }
+      if (Platform.OS !== 'web') {
+        try {
+          WebBrowser.dismissBrowser();
+        } catch {}
+      }
+    };
+
+    const handleMessage = async (event: MessageEvent) => {
+      if (
+        event.origin.includes('puter.com') ||
+        event.origin.includes('localhost')
+      ) {
+        const data = event.data;
+        if (data) {
+          const possibleToken = data.token || (data.msg === 'puter.token' && data.token);
+          if (possibleToken && !isFinished) {
+            cleanup();
+            onStatusUpdate?.('Verifying Puter account...');
+            const profile = await verifyPuterToken(possibleToken);
+            await savePuterToken(userId, possibleToken);
+            await savePuterToken(null, possibleToken);
+            resolve({
+              success: true,
+              token: possibleToken,
+              user: profile || { username: 'Puter User' },
+            });
+          }
+        }
+      }
+    };
+
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      window.addEventListener('message', handleMessage);
+      popupWindow = window.open(authUrl, 'puter_auth', 'width=540,height=680,menubar=no,toolbar=no');
+
+      // Monitor if popup is closed by user or Puter
+      checkInterval = setInterval(async () => {
+        if (popupWindow && popupWindow.closed && !isFinished) {
+          // Check if puter globally received token
+          if (typeof window !== 'undefined' && (window as any).puter?.authToken) {
+            const token = (window as any).puter.authToken;
+            cleanup();
+            const profile = await verifyPuterToken(token);
+            await savePuterToken(userId, token);
+            await savePuterToken(null, token);
+            return resolve({
+              success: true,
+              token,
+              user: profile || { username: 'Puter User' },
+            });
+          }
+          cleanup();
+          resolve({ success: false, error: 'Sign-in window was closed.' });
+        }
+      }, 500);
+    } else {
+      try {
+        await WebBrowser.openBrowserAsync(authUrl);
+      } catch (e) {
+        console.warn('WebBrowser open failed:', e);
+      }
+    }
+
+    // Concurrent poll on /login/wait as fallback
+    (async () => {
+      const maxAttempts = 18;
+      for (let i = 0; i < maxAttempts && !isFinished; i++) {
+        try {
+          const waitRes = await fetch(`${PUTER_API_BASE}/login/wait`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session: sessionId }),
+          });
+          if (waitRes.ok) {
+            const result = await waitRes.json();
+            if (result?.auth_token && !isFinished) {
+              const token = result.auth_token;
+              cleanup();
+              onStatusUpdate?.('Verifying Puter account...');
+              const profile = await verifyPuterToken(token);
+              await savePuterToken(userId, token);
+              await savePuterToken(null, token);
+              return resolve({
+                success: true,
+                token,
+                user: profile || { username: 'Puter User' },
+              });
+            }
+          }
+          await new Promise((r) => setTimeout(r, 2000));
+        } catch {
+          await new Promise((r) => setTimeout(r, 2000));
+        }
+      }
+
+      if (!isFinished) {
+        cleanup();
+        resolve({
+          success: false,
+          error: 'Authentication timed out. You can also connect via your Puter Auth Token.',
+        });
+      }
+    })();
+  });
 }
 
 /**
@@ -241,6 +362,17 @@ export async function loginOrRegisterWithPuter(
       // Save Puter token for this user
       await savePuterToken(authenticatedUser.id, token);
       await savePuterToken(null, token); // Default fallback
+
+      // Flag that a Puter connection notice should be shown on Dashboard!
+      await AsyncStorage.setItem(
+        '@polytalk_show_puter_connected_notice',
+        JSON.stringify({
+          username: profile.username || 'Puter User',
+          tokenSnippet: token.substring(0, 8) + '...',
+          shown: false,
+        })
+      );
+
       return { success: true, user: authenticatedUser };
     }
 

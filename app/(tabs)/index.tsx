@@ -10,6 +10,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getTargetLanguage } from '@/utils/languageStorage';
 import { useTranslation } from '@/utils/i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PuterBillingNoticeModal } from '@/components/PuterBillingNoticeModal';
 
 import { TARGET_LANGUAGES } from '@/constants/languages';
 import Svg, { Path, Circle } from 'react-native-svg';
@@ -17,14 +19,32 @@ import Svg, { Path, Circle } from 'react-native-svg';
 
 
 export default function HomeScreen() {
-    const { isDark: isSystemDark } = React.useContext(ThemeContext);
+  const { isDark: isSystemDark } = React.useContext(ThemeContext);
   const [selectedTarget, setSelectedTarget] = useState('es');
+  const [puterNoticeVisible, setPuterNoticeVisible] = useState(false);
+  const [puterNoticeUsername, setPuterNoticeUsername] = useState('Puter User');
   const { t } = useTranslation();
-
 
   useFocusEffect(
     useCallback(() => {
       getTargetLanguage().then(setSelectedTarget);
+
+      // Check if user should be shown the Puter connected notice
+      AsyncStorage.getItem('@polytalk_show_puter_connected_notice').then((val) => {
+        if (val) {
+          try {
+            const data = JSON.parse(val);
+            if (data && data.shown === false) {
+              setPuterNoticeUsername(data.username || 'Puter User');
+              setPuterNoticeVisible(true);
+              AsyncStorage.setItem(
+                '@polytalk_show_puter_connected_notice',
+                JSON.stringify({ ...data, shown: true })
+              );
+            }
+          } catch {}
+        }
+      });
     }, [])
   );
   
@@ -262,6 +282,12 @@ export default function HomeScreen() {
         </View>
 
       </ScrollView>
+      <PuterBillingNoticeModal
+        visible={puterNoticeVisible}
+        username={puterNoticeUsername}
+        onDismiss={() => setPuterNoticeVisible(false)}
+        isDark={isSystemDark}
+      />
     </SafeAreaView>
   );
 }
