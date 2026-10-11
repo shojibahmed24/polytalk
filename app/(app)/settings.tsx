@@ -12,9 +12,51 @@ import { router } from 'expo-router';
 import { Text } from '@/components/ui';
 import { ThemeContext } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
+import { supabase } from '@/utils/supabase';
+import { PuterConnectModal } from '@/components/PuterConnectModal';
+import { 
+  getStoredPuterToken, 
+  verifyPuterToken, 
+  disconnectPuter, 
+  PuterProfile 
+} from '@/services/puter';
 
 export default function SettingsScreen() {
   const { isDark: isSystemDark } = React.useContext(ThemeContext);
+  
+  const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
+  const [isPuterConnected, setIsPuterConnected] = React.useState(false);
+  const [puterProfile, setPuterProfile] = React.useState<PuterProfile | null>(null);
+  const [isPuterModalOpen, setIsPuterModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    async function checkPuterAuth() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const uid = user?.id || null;
+        setCurrentUserId(uid);
+        const token = await getStoredPuterToken(uid);
+        if (token) {
+          const profile = await verifyPuterToken(token);
+          if (profile) {
+            setPuterProfile(profile);
+            setIsPuterConnected(true);
+          } else {
+            setIsPuterConnected(false);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to check Puter auth:', err);
+      }
+    }
+    checkPuterAuth();
+  }, []);
+
+  const handleDisconnectPuter = async () => {
+    await disconnectPuter(currentUserId);
+    setIsPuterConnected(false);
+    setPuterProfile(null);
+  };
   
   const st = {
     surface: isSystemDark ? '#0E1320' : '#F8F9FC',
@@ -147,6 +189,45 @@ export default function SettingsScreen() {
                 <MaterialIcons name="chevron-right" size={20} color={st.onSurfaceVariant} />
               </View>
             ), () => router.push('/(app)/languages'))}
+          </View>
+        </View>
+
+        {/* Section: AI Provider (Puter) */}
+        <View style={styles.section}>
+          {renderSectionHeader('smart-toy', 'AI Provider (Puter)')}
+          <View style={[styles.cardList, { backgroundColor: st.surfaceContainerHigh }]}>
+            {isPuterConnected ? (
+              renderRow(
+                'check-circle',
+                `Connected as @${puterProfile?.username || 'user'}`,
+                'User-owned AI active (GPT-4o-mini via Puter)',
+                (
+                  <TouchableOpacity 
+                    onPress={handleDisconnectPuter}
+                    style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: 'rgba(239, 68, 68, 0.12)' }}
+                  >
+                    <Text style={{ fontSize: 12, fontWeight: '700', color: st.error }}>Disconnect</Text>
+                  </TouchableOpacity>
+                ),
+                undefined,
+                '#10B981'
+              )
+            ) : (
+              renderRow(
+                'cloud-queue',
+                'Connect Puter Account',
+                'Unlock real-time AI conversation and coaching',
+                (
+                  <TouchableOpacity 
+                    onPress={() => setIsPuterModalOpen(true)}
+                    style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, backgroundColor: st.primary }}
+                  >
+                    <Text style={{ fontSize: 12, fontWeight: '700', color: '#003640' }}>Connect</Text>
+                  </TouchableOpacity>
+                ),
+                () => setIsPuterModalOpen(true)
+              )
+            )}
           </View>
         </View>
 
@@ -287,6 +368,17 @@ export default function SettingsScreen() {
         </View>
 
       </ScrollView>
+
+      <PuterConnectModal
+        visible={isPuterModalOpen}
+        onClose={() => setIsPuterModalOpen(false)}
+        onConnected={(profile) => {
+          setPuterProfile(profile);
+          setIsPuterConnected(true);
+        }}
+        userId={currentUserId}
+        isDark={isSystemDark}
+      />
     </SafeAreaView>
   );
 }

@@ -19,6 +19,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { TARGET_LANGUAGES } from '@/constants/languages';
 import { supabase } from '@/utils/supabase';
 import { requestAIResponse } from '@/services/ai';
+import { PuterConnectModal } from '@/components/PuterConnectModal';
+import { getStoredPuterToken, verifyPuterToken, PuterProfile } from '@/services/puter';
 
 type Message = {
   id: string;
@@ -89,10 +91,13 @@ export default function AIChatScreen() {
 
   
 
-    const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isPuterConnected, setIsPuterConnected] = useState(false);
+  const [isPuterModalOpen, setIsPuterModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadOrCreateConversation() {
@@ -100,6 +105,16 @@ export default function AIChatScreen() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return; // Unauthenticated
+        setCurrentUserId(user.id);
+
+        // Check if Puter token is stored
+        const token = await getStoredPuterToken(user.id);
+        if (token) {
+          const profile = await verifyPuterToken(token);
+          setIsPuterConnected(!!profile);
+        } else {
+          setIsPuterConnected(false);
+        }
 
         let targetId = id;
         
@@ -177,6 +192,11 @@ export default function AIChatScreen() {
     Keyboard.dismiss();
     setIsSending(true);
 
+    if (!isPuterConnected) {
+      setIsPuterModalOpen(true);
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       setIsSending(false);
@@ -210,8 +230,17 @@ export default function AIChatScreen() {
         setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: insertedUserMsg.id } : m));
       }
 
-      // Request AI response
-      const aiRes = await requestAIResponse(conversationId, textToSend);
+      // Request AI response via Puter
+      const aiRes = await requestAIResponse(conversationId, textToSend, {
+        targetLanguage: languageName,
+        difficulty: 'B2',
+        userId: user.id,
+      });
+
+      if (aiRes.needsPuterAuth) {
+        setIsPuterConnected(false);
+        setIsPuterModalOpen(true);
+      }
       
       if (aiRes.error) {
         // Fallback for missing AI / error
@@ -418,20 +447,18 @@ export default function AIChatScreen() {
                           <View style={styles.compareRow}>
                             <Text style={[styles.compareLabel, { color: st.error }]}>ORIGINAL</Text>
                             <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
-                              <View style={[styles.errorWrap, { backgroundColor: st.errorContainer }]}><Text style={[styles.errorText, { color: st.error }]}>I want</Text></View>
-                              <Text style={{ color: st.onSurfaceVariant, fontSize: 13 }}> a chicken burger and </Text>
-                              <View style={[styles.errorWrap, { backgroundColor: st.errorContainer }]}><Text style={[styles.errorText, { color: st.error }]}>a</Text></View>
-                              <Text style={{ color: st.onSurfaceVariant, fontSize: 13 }}> orange juice.</Text>
+                              <View style={[styles.errorWrap, { backgroundColor: st.errorContainer }]}>
+                                <Text style={[styles.errorText, { color: st.error }]}>{msg.pedagogical.originalHtml}</Text>
+                              </View>
                             </View>
                           </View>
 
                           <View style={[styles.compareRow, { marginTop: 8 }]}>
                             <Text style={[styles.compareLabel, { color: st.primary }]}>BETTER</Text>
                             <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
-                              <View style={[styles.betterWrap, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.15)' : 'rgba(6,182,212,0.15)' }]}><Text style={[styles.betterText, { color: st.primary }]}>I'd like</Text></View>
-                              <Text style={{ color: st.onSurface, fontSize: 13, fontWeight: '500' }}> a chicken burger and </Text>
-                              <View style={[styles.betterWrap, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.15)' : 'rgba(6,182,212,0.15)' }]}><Text style={[styles.betterText, { color: st.primary }]}>an</Text></View>
-                              <Text style={{ color: st.onSurface, fontSize: 13, fontWeight: '500' }}> orange juice, please.</Text>
+                              <View style={[styles.betterWrap, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.15)' : 'rgba(6,182,212,0.15)' }]}>
+                                <Text style={[styles.betterText, { color: st.primary }]}>{msg.pedagogical.betterHtml}</Text>
+                              </View>
                             </View>
                           </View>
                         </View>
@@ -453,6 +480,38 @@ export default function AIChatScreen() {
         {/* Input Area */}
         <View style={[styles.inputArea, { backgroundColor: st.surface, borderTopColor: st.divider }]}>
           
+          {/* Puter Connect Banner */}
+          {!isPuterConnected && (
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              backgroundColor: isSystemDark ? 'rgba(76,215,246,0.1)' : 'rgba(6,182,212,0.1)',
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: st.divider,
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, marginRight: 8 }}>
+                <MaterialIcons name="auto-awesome" size={18} color={st.primary} />
+                <Text style={{ fontSize: 12, color: st.onSurface, flex: 1 }} numberOfLines={2}>
+                  Connect Puter account to unlock AI conversation & coaching
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setIsPuterModalOpen(true)}
+                style={{
+                  backgroundColor: st.primary,
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 6,
+                }}
+              >
+                <Text style={{ fontSize: 12, fontWeight: '700', color: '#003640' }}>Connect</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Suggestions */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsList}>
             <TouchableOpacity onPress={() => setInputText("Can I have the menu?")} style={[styles.suggestionChip, { backgroundColor: st.surfaceContainerHigh }]}>
@@ -511,6 +570,16 @@ export default function AIChatScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      <PuterConnectModal
+        visible={isPuterModalOpen}
+        onClose={() => setIsPuterModalOpen(false)}
+        onConnected={(profile) => {
+          setIsPuterConnected(true);
+        }}
+        userId={currentUserId}
+        isDark={isSystemDark}
+      />
     </SafeAreaView>
   );
 }
