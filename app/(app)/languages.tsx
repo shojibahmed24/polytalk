@@ -50,13 +50,38 @@ export default function LanguageSelectionScreen() {
 
   const handleContinue = async () => {
     setIsSaving(true);
+    let iface = selectedInterface;
+    if (selectedTarget === 'bn' && iface !== 'বাংলা') {
+      iface = 'বাংলা';
+    }
     await saveTargetLanguage(selectedTarget);
-    await saveInterfaceLanguage(selectedInterface);
+    await saveInterfaceLanguage(iface);
+    setLang(iface);
     setIsSaving(false);
     if (router.canGoBack()) {
       router.back();
     } else {
       router.replace('/(tabs)');
+    }
+  };
+
+  const handleSelectTarget = (langId: string) => {
+    setSelectedTarget(langId);
+    if (langId === 'bn') {
+      setSelectedInterface('বাংলা');
+      setLang('বাংলা');
+    } else if (langId === 'es') {
+      setSelectedInterface('Español');
+      setLang('Español');
+    } else if (langId === 'ja') {
+      setSelectedInterface('日本語');
+      setLang('日本語');
+    } else if (langId === 'fr') {
+      setSelectedInterface('Français');
+      setLang('Français');
+    } else if (langId === 'ar') {
+      setSelectedInterface('العربية');
+      setLang('العربية');
     }
   };
 
@@ -247,7 +272,7 @@ export default function LanguageSelectionScreen() {
         {/* Visual Section Divider */}
         <View style={styles.dividerRow}>
           <Text style={{ fontSize: 10, fontWeight: '700', color: st.onSurfaceVariant, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {searchQuery ? 'Search Results' : 'Popular & Recommended'}
+            {searchQuery ? t('search_results') : t('popular_recommended')}
           </Text>
           <Text style={{ fontSize: 10, fontWeight: '700', color: st.outline }}>
             {filteredTargets.length} of {TARGET_LANGUAGES.length} {t('available')}
@@ -265,7 +290,7 @@ export default function LanguageSelectionScreen() {
               <TouchableOpacity 
                 key={lang.id}
                 activeOpacity={0.8}
-                onPress={() => setSelectedTarget(lang.id)}
+                onPress={() => handleSelectTarget(lang.id)}
                 style={[
                   styles.targetCard,
                   { backgroundColor: isSelected ? st.surfaceContainerHigh : st.surfaceContainer },

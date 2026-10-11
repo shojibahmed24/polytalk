@@ -106,7 +106,7 @@ export default function HomeScreen() {
               style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', backgroundColor: st.surfaceContainerHigh, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, gap: 4 }}
             >
               <Text style={{ fontSize: 12 }}>{activeLang.flag}</Text>
-              <Text variant="label" style={{ color: st.onSurface, fontSize: 12, fontWeight: '600' }}>{activeLang.englishName}</Text>
+              <Text variant="label" style={{ color: st.onSurface, fontSize: 12, fontWeight: '600' }}>{activeLang.name || activeLang.englishName}</Text>
               <MaterialIcons name="edit" size={12} color={st.onSurfaceVariant} style={{ marginLeft: 2 }} />
             </TouchableOpacity>
           </View>
@@ -146,20 +146,20 @@ export default function HomeScreen() {
           <View style={styles.heroTop}>
             <View style={[styles.aiCoachPill, { backgroundColor: st.surfaceContainerHigh }]}>
               <View style={[styles.pulseDot, { backgroundColor: st.primary }]} />
-              <Text variant="caption" weight="bold" style={{ color: st.primary, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 10 }}>Your AI Coach</Text>
+              <Text variant="caption" weight="bold" style={{ color: st.primary, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 10 }}>{t('your_ai_coach')}</Text>
             </View>
             <View style={styles.onlineStatus}>
               <View style={[styles.onlineDot, { backgroundColor: st.primary }]} />
-              <Text variant="label" weight="medium" style={{ color: st.onSurfaceVariant, fontSize: 12 }}>Online</Text>
+              <Text variant="label" weight="medium" style={{ color: st.onSurfaceVariant, fontSize: 12 }}>{t('online')}</Text>
             </View>
           </View>
 
           {/* Main Content */}
           <View style={styles.heroMain}>
             <View style={styles.heroTextCol}>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: st.onSurface, letterSpacing: -0.5 }}>Ready to speak?</Text>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: st.onSurface, letterSpacing: -0.5 }}>{t('ready_to_speak')}</Text>
               <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 6, lineHeight: 20 }}>
-                Practice real conversations and build confidence, one gentle session at a time.
+                {t('ready_to_speak_desc')}
               </Text>
             </View>
             
@@ -184,7 +184,7 @@ export default function HomeScreen() {
               start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
               style={styles.heroBtn}
             >
-              <Text variant="body" weight="bold" style={{ color: '#FFFFFF' }}>Start a Conversation</Text>
+              <Text variant="body" weight="bold" style={{ color: '#FFFFFF' }}>{t('start_conversation')}</Text>
               <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" style={{ marginLeft: 8 }} />
             </LinearGradient>
           </TouchableOpacity>
@@ -192,9 +192,9 @@ export default function HomeScreen() {
 
         {/* Section 3: Daily Learning Progress */}
         <View style={styles.sectionHeader}>
-          <Text variant="title" weight="bold" style={{ color: st.onSurface }}>Your Progress</Text>
+          <Text variant="title" weight="bold" style={{ color: st.onSurface }}>{t('your_progress')}</Text>
           <TouchableOpacity>
-            <Text variant="label" weight="bold" style={{ color: st.primary }}>View details</Text>
+            <Text variant="label" weight="bold" style={{ color: st.primary }}>{t('view_details')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -212,15 +212,15 @@ export default function HomeScreen() {
                 </View>
               </View>
               <View>
-                <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 14 }}>15 min daily goal</Text>
-                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, fontSize: 12 }}>8 of 15 min completed</Text>
+                <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 14 }}>{t('daily_goal')}</Text>
+                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, fontSize: 12 }}>{t('daily_goal_progress')}</Text>
               </View>
             </View>
 
             {/* Streak Badge */}
             <View style={[styles.streakBadge, { backgroundColor: isSystemDark ? 'rgba(250,134,87,0.15)' : '#FFEDD5' }]}>
               <MaterialIcons name="local-fire-department" size={16} color={st.tertiaryContainer} />
-              <Text style={{ fontSize: 11, fontWeight: '700', color: st.tertiary, marginLeft: 4 }}>3-day streak</Text>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: st.tertiary, marginLeft: 4 }}>{t('streak_count')}</Text>
             </View>
           </View>
           
@@ -232,8 +232,8 @@ export default function HomeScreen() {
 
         {/* Section 4: Practice Modes (Vertical List) */}
         <View style={styles.sectionHeader}>
-          <Text variant="title" weight="bold" style={{ color: st.onSurface }}>Choose Your Practice</Text>
-          <Text variant="caption" weight="bold" style={{ color: st.onSurfaceVariant, textTransform: 'uppercase' }}>3 Modes</Text>
+          <Text variant="title" weight="bold" style={{ color: st.onSurface }}>{t('choose_practice')}</Text>
+          <Text variant="caption" weight="bold" style={{ color: st.onSurfaceVariant, textTransform: 'uppercase' }}>{t('modes_count')}</Text>
         </View>
 
         <View style={styles.modesList}>
@@ -245,12 +245,12 @@ export default function HomeScreen() {
               </View>
               <View style={styles.modeTextCol}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>AI Conversation</Text>
+                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>{t('ai_conversation')}</Text>
                   <View style={[styles.modeTag, { backgroundColor: st.surfaceContainerHighest }]}>
-                    <Text style={{ fontSize: 9, fontWeight: '700', color: st.primary, textTransform: 'uppercase' }}>Interactive</Text>
+                    <Text style={{ fontSize: 9, fontWeight: '700', color: st.primary, textTransform: 'uppercase' }}>{t('interactive')}</Text>
                   </View>
                 </View>
-                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>Speak naturally with your AI coach.</Text>
+                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>{t('speak_naturally')}</Text>
               </View>
             </View>
             <MaterialIcons name="chevron-right" size={22} color={st.onSurfaceVariant} />
@@ -264,9 +264,9 @@ export default function HomeScreen() {
               </View>
               <View style={styles.modeTextCol}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>Pronunciation</Text>
+                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>{t('pronunciation')}</Text>
                 </View>
-                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>Sound clearer and more confident.</Text>
+                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>{t('sound_clearer')}</Text>
               </View>
             </View>
             <MaterialIcons name="chevron-right" size={22} color={st.onSurfaceVariant} />
@@ -280,9 +280,9 @@ export default function HomeScreen() {
               </View>
               <View style={styles.modeTextCol}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>Grammar & Vocab</Text>
+                  <Text variant="label" weight="bold" style={{ color: st.onSurface, fontSize: 15 }}>{t('grammar_vocab')}</Text>
                 </View>
-                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>Expand your language foundation.</Text>
+                <Text variant="bodySmall" style={{ color: st.onSurfaceVariant, marginTop: 2 }}>{t('expand_foundation')}</Text>
               </View>
             </View>
             <MaterialIcons name="chevron-right" size={22} color={st.onSurfaceVariant} />

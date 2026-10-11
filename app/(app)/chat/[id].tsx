@@ -18,6 +18,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { TARGET_LANGUAGES } from '@/constants/languages';
 import { supabase } from '@/utils/supabase';
+import { getInterfaceLanguage } from '@/utils/languageStorage';
 import { requestAIResponse } from '@/services/ai';
 import { PuterConnectModal } from '@/components/PuterConnectModal';
 import { getStoredPuterToken, verifyPuterToken, PuterProfile } from '@/services/puter';
@@ -61,8 +62,14 @@ export default function AIChatScreen() {
   }, [isListening, micPulse]);
 
   // Find actual language object or fallback
-  const langMatch = TARGET_LANGUAGES.find(l => l.englishName.toLowerCase() === (id || 'spanish').toLowerCase());
+  const langMatch = TARGET_LANGUAGES.find(l => 
+    l.englishName.toLowerCase() === (id || 'spanish').toLowerCase() ||
+    l.id.toLowerCase() === (id || '').toLowerCase() ||
+    l.name.toLowerCase() === (id || '').toLowerCase() ||
+    l.searchAliases.some(a => a.toLowerCase() === (id || '').toLowerCase())
+  );
   const languageName = langMatch ? langMatch.englishName : 'Language';
+  const displayLanguageName = langMatch ? (langMatch.name || langMatch.englishName) : languageName;
   
   const st = {
     surface: isSystemDark ? '#0E1320' : '#F8F9FC',
@@ -232,9 +239,11 @@ export default function AIChatScreen() {
       }
 
       // Request AI response via Puter
+      const ifaceLang = await getInterfaceLanguage();
       const aiRes = await requestAIResponse(conversationId, textToSend, {
         targetLanguage: languageName,
         difficulty: 'B2',
+        interfaceLanguage: ifaceLang,
         userId: user.id,
       });
 
@@ -321,7 +330,7 @@ export default function AIChatScreen() {
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
                 <Text style={{ fontSize: 12, color: st.onSurfaceVariant }} numberOfLines={1}>
-                  Practicing {languageName} • Restaurant
+                  Practicing {displayLanguageName} • Restaurant
                 </Text>
               </View>
             </View>

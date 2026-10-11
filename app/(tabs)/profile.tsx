@@ -17,14 +17,20 @@ import { getCurrentUserProfile, UserProfileData } from '@/utils/userProfile';
 import { supabase } from '@/utils/supabase';
 import { clearPuterToken } from '@/services/puter';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getTargetLanguage, getInterfaceLanguage } from '@/utils/languageStorage';
+import { TARGET_LANGUAGES } from '@/constants/languages';
 
 export default function ProfileScreen() {
   const { isDark: isSystemDark } = React.useContext(ThemeContext);
   const [profile, setProfile] = React.useState<UserProfileData | null>(null);
+  const [targetLangId, setTargetLangId] = React.useState('es');
+  const [interfaceLang, setInterfaceLang] = React.useState('English (US)');
 
   useFocusEffect(
     React.useCallback(() => {
       getCurrentUserProfile().then(setProfile);
+      getTargetLanguage().then(setTargetLangId);
+      getInterfaceLanguage().then(setInterfaceLang);
     }, [])
   );
 
@@ -220,40 +226,45 @@ export default function ProfileScreen() {
           </View>
 
           {/* Active Target Language */}
-          <View style={[styles.langCard, { backgroundColor: st.surfaceContainerLow }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
-              <View style={[styles.langIconWrap, { backgroundColor: st.surfaceContainerHigh }]}>
-                <Text style={{ fontSize: 18, color: st.onSurface }}>🇺🇸</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Text style={{ fontSize: 14, fontWeight: '700', color: st.onSurface }}>Learning English (US)</Text>
-                  <View style={[styles.activeBadge, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.15)' : 'rgba(6,182,212,0.1)' }]}>
-                    <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary }}>Active</Text>
+          {(() => {
+            const activeLang = TARGET_LANGUAGES.find(l => l.id === targetLangId) || TARGET_LANGUAGES[0];
+            return (
+              <TouchableOpacity activeOpacity={0.8} onPress={() => router.push('/(app)/languages' as never)} style={[styles.langCard, { backgroundColor: st.surfaceContainerLow }]}>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+                  <View style={[styles.langIconWrap, { backgroundColor: st.surfaceContainerHigh }]}>
+                    <Text style={{ fontSize: 18 }}>{activeLang.flag}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <Text style={{ fontSize: 14, fontWeight: '700', color: st.onSurface }}>Learning {activeLang.name || activeLang.englishName}</Text>
+                      <View style={[styles.activeBadge, { backgroundColor: isSystemDark ? 'rgba(76,215,246,0.15)' : 'rgba(6,182,212,0.1)' }]}>
+                        <Text style={{ fontSize: 10, fontWeight: '700', color: st.primary }}>Active</Text>
+                      </View>
+                    </View>
+                    <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginTop: 2 }}>{activeLang.englishName} • {activeLang.dialect || 'Standard'}</Text>
                   </View>
                 </View>
-                <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginTop: 2 }}>Level: B2 Upper Intermediate</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: st.divider }}>
-              <MaterialIcons name="work-outline" size={16} color={st.primary} />
-              <Text style={{ fontSize: 13, color: st.onSurfaceVariant }}>Goal: Speak confidently at work</Text>
-            </View>
-          </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: st.divider }}>
+                  <MaterialIcons name="work-outline" size={16} color={st.primary} />
+                  <Text style={{ fontSize: 13, color: st.onSurfaceVariant }}>Goal: Speak confidently in {activeLang.name || activeLang.englishName}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })()}
 
           {/* App Interface Language */}
-          <View style={[styles.interfaceLangCard, { backgroundColor: st.surfaceContainerLow }]}>
+          <TouchableOpacity activeOpacity={0.8} onPress={() => router.push('/(app)/languages' as never)} style={[styles.interfaceLangCard, { backgroundColor: st.surfaceContainerLow }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
               <View style={[styles.interfaceLangIcon, { backgroundColor: st.surfaceContainerHigh }]}>
                 <MaterialIcons name="translate" size={18} color={st.onSurfaceVariant} />
               </View>
               <View>
                 <Text style={{ fontSize: 12, fontWeight: '700', color: st.onSurface }}>App Interface Language</Text>
-                <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginTop: 2 }}>Bengali / English</Text>
+                <Text style={{ fontSize: 13, color: st.onSurfaceVariant, marginTop: 2 }}>{interfaceLang}</Text>
               </View>
             </View>
             <MaterialIcons name="swap-horiz" size={20} color={st.onSurfaceVariant} />
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* Achievements */}
